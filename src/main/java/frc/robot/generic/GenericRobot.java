@@ -1,7 +1,53 @@
 package frc.robot.generic;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 public interface GenericRobot {
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
+///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
+    public default void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
+                               SwerveModuleState backLeft, SwerveModuleState backRight){
+        setLeftDriveARPM(frontLeft.speedMetersPerSecond);
+        setPivotLeftMotorA(frontLeft.angle.getDegrees());
+
+        setRightDriveARPM(frontRight.speedMetersPerSecond);
+        setPivotRightMotorA(frontRight.angle.getDegrees());
+
+        setLeftDriveBRPM(backLeft.speedMetersPerSecond);
+        setPivotLeftMotorB(backLeft.angle.getDegrees());
+
+        setRightDriveBRPM(backRight.speedMetersPerSecond);
+        setPivotRightMotorB(backRight.angle.getDegrees());
+    }
+
+    public default void stopSwerve(){
+        setLeftDriveARPM(0);
+        setRightDriveARPM(0);
+        setLeftDriveBRPM(0);
+        setRightDriveBRPM(0);
+    }
+
+    public default double deadzone(double value, double zone){
+        if (Math.abs(value) < zone){
+            value = 0;
+        }
+        else{
+            if (value < 0) value = (value + zone)/(1 - zone);
+            if (value > 0) value = (value - zone)/(1 - zone);
+        }
+        return value;
+    }
+    public default double getMaxMeterPerSec(){
+        return 0;
+    }
+    public default double getMaxRadPerSec(){
+        return 0;
+    }
+    public default SwerveDriveKinematics kinematics(){
+        return null;
+    }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
     public default double getYaw() {
         return 0;
     }
@@ -11,8 +57,11 @@ public interface GenericRobot {
     public default double getPitch() {
         return 0;
     }
-//
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
+    public default void resetAttitude(){
+
+    }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
     ////////////////////////////////////////////////////////// Encoders
     public default double encoderLeftADriveTicksPerInch() {
@@ -53,94 +102,65 @@ public interface GenericRobot {
     }
 
     ////////////////////////////////////////////////////////// Motor Velocity
-    public default void setLeftDriveAPowerPercentage() {
+    public default void setLeftDriveAPowerPercentage(double power) {
 
     }
-    public default void setLeftDriveBPowerPercentage() {
+    public default void setLeftDriveBPowerPercentage(double power) {
 
     }
-    public default void setRightDriveAPowerPercentage() {
+    public default void setRightDriveAPowerPercentage(double power) {
 
     }
-    public default void setRightDriveBPowerPercentage() {
+    public default void setRightDriveBPowerPercentage(double power) {
 
     }
-    public default void setLeftDriveARPM() {
+    public default void setLeftDriveARPM(double rpm) {
 
     }
-    public default void setLeftDriveBRPM() {
+    public default void setLeftDriveBRPM(double rpm) {
 
     }
-    public default void setRightDriveARPM() {
+    public default void setRightDriveARPM(double rpm) {
 
     }
-    public default void setRightDriveBRPM() {
+    public default void setRightDriveBRPM(double rpm) {
 
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pivot Motor Commands
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pivot Motor Commands
+
+    public default void resetPIDPivot(){
+
+    }
 
     ////////////////////////////////////////////////////////// Encoders
-    public default double encoderLeftAPivotTicksPerInch() {
-        return 1.0;
-    }
-    public default double encoderLeftBPivotTicksPerInch() {
-        return 1.0;
-    }
-    public default double encoderRightAPivotTicksPerInch() {
-        return 1.0;
-    }
-    public default double encoderRightBPivotTicksPerInch() {
-        return 1.0;
-    }
-    public default double encoderTicksLeftPivotA() {
-        return 0.0;
-    }
-    public default double encoderTicksLeftPivotB() {
-        return 0.0;
-    }
-    public default double encoderTicksRightPivotA() {
-        return 0.0;
-    }
-    public default double encoderTicksRightPivotB() {
-        return 0.0;
-    }
-    public default double getPivotDistanceInchesLeftA() {
-        return encoderTicksLeftPivotA()/encoderLeftAPivotTicksPerInch();
-    }
-    public default double getPivotDistanceInchesLeftB() {
-        return encoderTicksLeftPivotB()/encoderLeftBPivotTicksPerInch();
-    }
-    public default double getPivotDistanceInchesRightA() {
-        return encoderTicksRightPivotA()/encoderRightAPivotTicksPerInch();
-    }
-    public default double getPivotDistanceInchesRightB() {
-        return encoderTicksRightPivotB()/encoderRightBPivotTicksPerInch();
-    }
 
-    ////////////////////////////////////////////////////////// Motor Velocity
-    public default void setPivotLeftMotorA(double Pivot) {
-
-    }
     public default double getPivotLeftMotorA() {
         return 0.0;
-    }
-    public default void setPivotLeftMotorB(double Pivot) {
-
     }
     public default double getPivotLeftMotorB() {
         return 0.0;
     }
-    public default void setPivotRighttMotorA(double Pivot) {
-
-    }
     public default double getPivotRightMotorA() {
         return 0.0;
-    }
-    public default void setPivotRightMotorB(double Pivot) {
-
     }
     public default double getPivotRightMotorB() {
         return 0.0;
     }
+
+    ////////////////////////////////////////////////////////// Motor Velocity
+
+    public default void setPivotLeftMotorA(double Pivot) {
+
+    }
+    public default void setPivotLeftMotorB(double Pivot) {
+
+    }
+    public default void setPivotRightMotorA(double Pivot) {
+
+    }
+    public default void setPivotRightMotorB(double Pivot) {
+
+    }
+
 }
