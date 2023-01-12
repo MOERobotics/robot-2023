@@ -51,6 +51,66 @@ public class swerveBot implements GenericRobot{
     SparkMaxPIDController leftMotorBRPM = leftMotorB.getPIDController();
     SparkMaxPIDController rightMotorARPM = rightMotorA.getPIDController();
     SparkMaxPIDController rightMotorBRPM = rightMotorB.getPIDController();
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////Further Motor Stuff
+    public swerveBot(){
+
+        PivotMotorPIDLeftA.enableContinuousInput(-180,180);
+        PivotMotorPIDLeftB.enableContinuousInput(-180,180);
+        PivotMotorPIDRightA.enableContinuousInput(-180,180);
+        PivotMotorPIDRightB.enableContinuousInput(-180,180);
+
+        leftMotorA.setInverted(false);
+        leftMotorB.setInverted(false);
+        rightMotorA.setInverted(false);
+        rightMotorB.setInverted(false);
+
+        pivotLeftMotorA.setInverted(true);
+        pivotLeftMotorB.setInverted(true);
+        pivotRightMotorA.setInverted(true);
+        pivotRightMotorB.setInverted(true);
+
+        leftMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        leftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        rightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        rightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        pivotLeftMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        pivotRightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+
+        leftMotorARPM.setP(3.0e-4);
+        leftMotorARPM.setI(1.0e-7);
+        leftMotorARPM.setD(9.0e-4);
+        leftMotorARPM.setFF(1.7e-4);
+        leftMotorARPM.setIZone(500);
+        leftMotorARPM.setDFilter(0);
+        leftMotorARPM.setOutputRange(0,1);
+
+        leftMotorBRPM.setP(1.8e-4);
+        leftMotorBRPM.setI(2.0e-7);
+        leftMotorBRPM.setD(3.0);
+        leftMotorBRPM.setFF(1.08e-4);
+        leftMotorBRPM.setIZone(1000);
+        leftMotorBRPM.setDFilter(0);
+        leftMotorBRPM.setOutputRange(0, 1);
+
+        rightMotorARPM.setP(5.0e-4);
+        rightMotorARPM.setI(5.0e-7);
+        rightMotorARPM.setD(5.0e-1);
+        rightMotorARPM.setFF(1.7e-4);
+        rightMotorARPM.getIZone(500);
+        rightMotorARPM.getDFilter(0);
+
+        rightMotorBRPM.setP(5.0e-4);
+        rightMotorBRPM.setI(5.0e-7);
+        rightMotorBRPM.setD(5.0e-1);
+        rightMotorBRPM.setFF(1.7e-4);
+        rightMotorBRPM.getIZone(500);
+        rightMotorBRPM.getDFilter(0);
+
+    }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
     public double getMaxMeterPerSec() {
@@ -62,13 +122,12 @@ public class swerveBot implements GenericRobot{
     }
     @Override
     public SwerveDriveKinematics kinematics() {
-        SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
+        return new SwerveDriveKinematics(
                 new Translation2d(Units.inchesToMeters(14), Units.inchesToMeters(14)),
                 new Translation2d(Units.inchesToMeters(14), -Units.inchesToMeters(14)),
                 new Translation2d(-Units.inchesToMeters(14), Units.inchesToMeters(14)),
                 new Translation2d(-Units.inchesToMeters(14), -Units.inchesToMeters(14))
         );
-        return kDriveKinematics;
     }
 ////////////////////////////////////////////////////////////////////////////////navx commands
     @Override
@@ -170,7 +229,7 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public void setRightDriveBRPM(double rpm) {
-        rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);;
+        rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
     @Override
