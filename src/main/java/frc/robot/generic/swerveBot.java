@@ -127,11 +127,11 @@ public class swerveBot implements GenericRobot{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
     public double getMaxMeterPerSec() {
-        return 5000; //TODO: verify this
+        return 14.5; //TODO: verify this
     }
     @Override
     public double getMaxRadPerSec(){
-        return 5000; //TODO: idk if this even matters
+        return 18; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
@@ -275,21 +275,25 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public void setLeftDriveARPM(double rpm) {
+        rpm*= 5000/14.5;
         leftMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setLeftDriveBRPM(double rpm) {
+        rpm*= 5000/14.5;
         leftMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setRightDriveARPM(double rpm) {
+        rpm*= 5000/14.5;
         rightMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setRightDriveBRPM(double rpm) {
+        rpm*= 5000/14.5;
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
