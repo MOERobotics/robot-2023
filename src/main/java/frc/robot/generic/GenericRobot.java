@@ -1,8 +1,14 @@
 package frc.robot.generic;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.Trajectory;
 
 public interface GenericRobot {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
@@ -26,6 +32,15 @@ public interface GenericRobot {
         setRightDriveARPM(0);
         setLeftDriveBRPM(0);
         setRightDriveBRPM(0);
+    }
+
+    public default void SwerveAutoReset(){}
+
+    public default void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
+                                                PIDController yController, ProfiledPIDController thetaController, Rotation2d desiredRotation){}
+
+    public default Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose){
+        return null;
     }
 
     public default double deadzone(double value, double zone){
