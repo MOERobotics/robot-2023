@@ -21,11 +21,11 @@ public class DriveCode extends GenericTeleop{
 
         startHeading = robot.getYaw();
 
-        startDists = new double[] {robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesLeftB(),
-                robot.getDriveDistanceInchesRightA(),robot.getDriveDistanceInchesRightB()};
+        startDists = new double[] {robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesRightA(),
+                robot.getDriveDistanceInchesLeftB(),robot.getDriveDistanceInchesRightB()};
 
-        startPivots = new double[] {robot.getPivotLeftMotorA(), robot.getPivotLeftMotorB(),
-                robot.getPivotRightMotorA(), robot.getPivotRightMotorB()};
+        startPivots = new double[] {robot.getPivotLeftMotorA(), robot.getPivotRightMotorA(),
+                robot.getPivotLeftMotorB(), robot.getPivotRightMotorB()};
     }
 
     @Override
