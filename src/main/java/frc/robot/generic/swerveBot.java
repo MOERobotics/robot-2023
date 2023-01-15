@@ -15,14 +15,16 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
 public class swerveBot implements GenericRobot{
-
+    private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
 
 ////////////////////////////////////////////////////////////////////////////////Motor definitions
@@ -132,9 +134,29 @@ public class swerveBot implements GenericRobot{
     }
 
     @Override
+    public void SwerveAutoReset() {
+        m_timer.reset();
+        m_timer.start();
+    }
+
+    @Override
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
                                         PIDController yController, ProfiledPIDController thetaController, Rotation2d desiredRotation) {
         HolonomicDriveController controller = new HolonomicDriveController(xController,yController,thetaController);
+        var desiredState = trajectory.sample(m_timer.get());
+        var targetChassisSpeeds = controller.calculate(pose, desiredState, desiredRotation);
+        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
+        SwerveModuleState frontLeftState = moduleStates[0],
+                frontRightState = moduleStates[1],
+                backLeftState = moduleStates[2],
+                backRightState = moduleStates[3];
+
+        frontLeftState = SwerveModuleState.optimize(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
+        frontRightState = SwerveModuleState.optimize(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));
+        backLeftState = SwerveModuleState.optimize(backLeftState, Rotation2d.fromDegrees(getPivotLeftMotorB()));
+        backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
+
+        swerve(frontLeftState, frontRightState, backLeftState, backRightState);
                  
 
     }

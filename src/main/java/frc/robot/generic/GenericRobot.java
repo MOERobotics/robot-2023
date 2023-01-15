@@ -34,6 +34,8 @@ public interface GenericRobot {
         setRightDriveBRPM(0);
     }
 
+    public default void SwerveAutoReset(){}
+
     public default void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
                                                 PIDController yController, ProfiledPIDController thetaController, Rotation2d desiredRotation){}
 
