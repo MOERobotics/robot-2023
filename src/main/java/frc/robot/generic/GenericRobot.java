@@ -1,7 +1,10 @@
 package frc.robot.generic;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface GenericRobot {
@@ -26,6 +29,12 @@ public interface GenericRobot {
         setRightDriveARPM(0);
         setLeftDriveBRPM(0);
         setRightDriveBRPM(0);
+    }
+
+    public default void SwerveControllerCommand(){}
+
+    public default Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose){
+        return null;
     }
 
     public default double deadzone(double value, double zone){
