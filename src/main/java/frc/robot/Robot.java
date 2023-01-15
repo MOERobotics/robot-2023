@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.createTrajectory;
+import frc.robot.autonomous.genericAutonomous;
+import frc.robot.autonomous.trajectoryAuto;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
@@ -20,7 +22,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-
+  genericAutonomous autonomous = new trajectoryAuto();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
@@ -35,11 +37,15 @@ public class Robot extends TimedRobot {
 
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    autonomous.autonomousInit(robot);
+  }
 
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    autonomous.autonomousPeriodic(robot);
+  }
 
 
   @Override
