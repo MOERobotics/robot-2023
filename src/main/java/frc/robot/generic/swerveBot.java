@@ -27,7 +27,7 @@ public class swerveBot implements GenericRobot{
     private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
 
-////////////////////////////////////////////////////////////////////////////////Motor definitions
+///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
     CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(1);
     CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
     CANCoder RightApivotAbsEncoder = new WPI_CANCoder(2);
@@ -50,7 +50,7 @@ public class swerveBot implements GenericRobot{
     RelativeEncoder encoderRightB = rightMotorB.getEncoder();
     RelativeEncoder encoderLeftB = leftMotorB.getEncoder();
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
+/////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
     SparkMaxPIDController PivotMotorPIDLeftA = pivotLeftMotorA.getPIDController();
     SparkMaxPIDController PivotMotorPIDRightA = pivotRightMotorA.getPIDController();
     SparkMaxPIDController PivotMotorPIDLeftB = pivotLeftMotorB.getPIDController();
@@ -124,7 +124,7 @@ public class swerveBot implements GenericRobot{
         rightMotorBRPM.setOutputRange(-1,1);
 
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
+//////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
     public double getMaxMeterPerSec() {
         return 14.5; //TODO: verify this
@@ -191,7 +191,7 @@ public class swerveBot implements GenericRobot{
         });
     }
 
-    ////////////////////////////////////////////////////////////////////////////////navx commands
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////navx commands
     @Override
     public double getYaw() {
         return navx.getYaw();
