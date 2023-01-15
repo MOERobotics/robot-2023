@@ -23,6 +23,10 @@ public class DriveCode extends GenericTeleop{
         double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35)*robot.getMaxMeterPerSec();
         double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35)*robot.getMaxRadPerSec();
 
+        if (swerveStick.getRawButton(4)){ // for varun
+            turnspd /= 2;
+        }
+
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
                 yspd, turnspd, Rotation2d.fromDegrees(-robot.getYaw()));
         SwerveModuleState[] moduleStates = robot.kinematics().toSwerveModuleStates(chassisSpeeds);
