@@ -68,6 +68,16 @@ public class swerveBot implements GenericRobot{
         PivotMotorPIDRightA.setP(0.1);
         PivotMotorPIDRightB.setP(0.1);
 
+        PivotMotorPIDLeftA.setI(0);
+        PivotMotorPIDLeftB.setI(0);
+        PivotMotorPIDRightA.setI(0);
+        PivotMotorPIDRightB.setI(0);
+
+        PivotMotorPIDLeftA.setD(0);
+        PivotMotorPIDLeftB.setD(0);
+        PivotMotorPIDRightA.setD(0);
+        PivotMotorPIDRightB.setD(0);
+
         leftMotorA.setInverted(false);
         leftMotorB.setInverted(false);
         rightMotorA.setInverted(false);
@@ -266,21 +276,25 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public void setLeftDriveARPM(double rpm) {
+        rpm*= 5000/14.5;
         leftMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setLeftDriveBRPM(double rpm) {
+        rpm*= 5000/14.5;
         leftMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setRightDriveARPM(double rpm) {
+        rpm*= 5000/14.5;
         rightMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setRightDriveBRPM(double rpm) {
+        rpm*= 5000/14.5;
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
