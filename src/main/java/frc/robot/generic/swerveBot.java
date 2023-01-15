@@ -127,11 +127,11 @@ public class swerveBot implements GenericRobot{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
     public double getMaxMeterPerSec() {
-        return 14.5; //TODO: verify this
+        return 5000; //TODO: verify this
     }
     @Override
     public double getMaxRadPerSec(){
-        return 18; //TODO: idk if this even matters
+        return 5000; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
