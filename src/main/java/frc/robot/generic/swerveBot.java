@@ -68,6 +68,16 @@ public class swerveBot implements GenericRobot{
         PivotMotorPIDRightA.setP(0.1);
         PivotMotorPIDRightB.setP(0.1);
 
+        PivotMotorPIDLeftA.setI(0);
+        PivotMotorPIDLeftB.setI(0);
+        PivotMotorPIDRightA.setI(0);
+        PivotMotorPIDRightB.setI(0);
+
+        PivotMotorPIDLeftA.setD(0);
+        PivotMotorPIDLeftB.setD(0);
+        PivotMotorPIDRightA.setD(0);
+        PivotMotorPIDRightB.setD(0);
+
         leftMotorA.setInverted(false);
         leftMotorB.setInverted(false);
         rightMotorA.setInverted(false);

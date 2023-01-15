@@ -1,23 +1,40 @@
 package frc.robot.teleop;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
 public class DriveCode extends GenericTeleop{
-
+    double[] startDists;
+    double[] startPivots;
+    double startHeading;
     Joystick swerveStick = new Joystick(1);
 
     @Override
     public void teleopInit(GenericRobot robot) {
         robot.resetAttitude();
         robot.resetPIDPivot();
+
+        startHeading = robot.getYaw();
+
+        startDists = new double[] {robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesLeftB(),
+                robot.getDriveDistanceInchesRightA(),robot.getDriveDistanceInchesRightB()};
+
+        startPivots = new double[] {robot.getPivotLeftMotorA(), robot.getPivotLeftMotorB(),
+                robot.getPivotRightMotorA(), robot.getPivotRightMotorB()};
     }
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
+////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
+        Pose2d robotPose = robot.getPose(startHeading, robot.getYaw(), startDists, startPivots, new Pose2d(0,0,Rotation2d.fromDegrees(0)));
+        SmartDashboard.putNumber("xPose", robotPose.getX());
+        SmartDashboard.putNumber("yPose", robotPose.getY());
+        SmartDashboard.putNumber("rotation", robotPose.getRotation().getDegrees());
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
         double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35)*robot.getMaxMeterPerSec();
         double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35)*robot.getMaxMeterPerSec();
