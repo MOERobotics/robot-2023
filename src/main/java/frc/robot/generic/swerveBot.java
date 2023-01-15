@@ -141,7 +141,8 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
-                                        PIDController yController, ProfiledPIDController thetaController, Rotation2d desiredRotation) {
+                                        PIDController yController, ProfiledPIDController thetaController) {
+        Rotation2d desiredRotation = trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation();
         HolonomicDriveController controller = new HolonomicDriveController(xController,yController,thetaController);
         var desiredState = trajectory.sample(m_timer.get());
         var targetChassisSpeeds = controller.calculate(pose, desiredState, desiredRotation);
