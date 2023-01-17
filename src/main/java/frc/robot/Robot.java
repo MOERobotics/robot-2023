@@ -29,11 +29,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
+
   }
 
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+   SmartDashboard.putNumber("yaw", robot.getYaw());
+   SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
+   SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
+   SmartDashboard.putNumber("rightApivot", robot.getPivotRightMotorA());
+   SmartDashboard.putNumber("rightBpivot", robot.getPivotRightMotorB());
+
+  }
 
 
   @Override

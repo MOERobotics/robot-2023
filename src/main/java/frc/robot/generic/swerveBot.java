@@ -25,6 +25,7 @@ import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
 public class swerveBot implements GenericRobot{
     private final Timer m_timer = new Timer();
+    double offsetLeftA, offsetLeftB, offsetRightA, offsetRightB;
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
@@ -49,6 +50,11 @@ public class swerveBot implements GenericRobot{
     RelativeEncoder encoderLeftA   = leftMotorA.getEncoder();
     RelativeEncoder encoderRightB = rightMotorB.getEncoder();
     RelativeEncoder encoderLeftB = leftMotorB.getEncoder();
+
+    RelativeEncoder encoderPivotRightA  = pivotRightMotorA.getEncoder();
+    RelativeEncoder encoderPivotLeftA   = pivotLeftMotorA.getEncoder();
+    RelativeEncoder encoderPivotRightB = pivotRightMotorB.getEncoder();
+    RelativeEncoder encoderPivotLeftB = pivotLeftMotorB.getEncoder();
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
     SparkMaxPIDController PivotMotorPIDLeftA = pivotLeftMotorA.getPIDController();
@@ -77,6 +83,11 @@ public class swerveBot implements GenericRobot{
         PivotMotorPIDLeftB.setD(0);
         PivotMotorPIDRightA.setD(0);
         PivotMotorPIDRightB.setD(0);
+
+        PivotMotorPIDLeftA.setFF(0);
+        PivotMotorPIDLeftB.setFF(0);
+        PivotMotorPIDRightA.setFF(0);
+        PivotMotorPIDRightB.setFF(0);
 
         leftMotorA.setInverted(false);
         leftMotorB.setInverted(false);
@@ -293,6 +304,26 @@ public class swerveBot implements GenericRobot{
     }
 
     @Override
+    public void setOffsetLeftA() {
+        offsetLeftA = encoderPivotLeftA.getPosition()*rotOverDeg - getPivotLeftMotorA();
+    }
+
+    @Override
+    public void setOffsetLeftB() {
+        offsetLeftB = encoderPivotLeftB.getPosition()*rotOverDeg - getPivotLeftMotorB();
+    }
+
+    @Override
+    public void setOffsetRightA() {
+        offsetRightA = encoderPivotRightA.getPosition()*rotOverDeg - getPivotRightMotorA();
+    }
+
+    @Override
+    public void setOffsetRightB() {
+        offsetRightB = encoderPivotRightB.getPosition()*rotOverDeg - getPivotRightMotorB();
+    }
+
+    @Override
     public void setRightDriveBRPM(double rpm) {
         rpm*= 5000/14.5;
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -300,7 +331,10 @@ public class swerveBot implements GenericRobot{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
     @Override
     public void resetPIDPivot() {
-
+        setOffsetLeftA();
+        setOffsetRightA();
+        setOffsetLeftB();
+        setOffsetRightB();
     }
 //////////////////////////////////////////////////////////////////////////////pivot encoders
 
@@ -347,21 +381,25 @@ public class swerveBot implements GenericRobot{
     double rotOverDeg = (150.0/7)/360;
     @Override
     public void setPivotLeftMotorA(double Pivot) {
+        Pivot += offsetLeftA;
         PivotMotorPIDLeftA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
     }
 
     @Override
     public void setPivotLeftMotorB(double Pivot) {
+        Pivot += offsetLeftB;
         PivotMotorPIDLeftB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
     }
 
     @Override
     public void setPivotRightMotorA(double Pivot) {
+        Pivot += offsetRightA;
         PivotMotorPIDRightA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
     }
 
     @Override
     public void setPivotRightMotorB(double Pivot) {
+        Pivot += offsetRightB;
         PivotMotorPIDRightB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
     }
 

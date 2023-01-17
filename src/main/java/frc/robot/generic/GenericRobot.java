@@ -79,6 +79,11 @@ public interface GenericRobot {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
     ////////////////////////////////////////////////////////// Encoders
+    public default void setOffsetLeftA(){}
+    public default void setOffsetLeftB(){}
+    public default void setOffsetRightA(){}
+    public default void setOffsetRightB(){}
+
     public default double encoderLeftADriveTicksPerInch() {
         return 1.0;
     }
