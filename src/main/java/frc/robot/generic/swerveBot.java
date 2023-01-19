@@ -119,25 +119,25 @@ public class swerveBot implements GenericRobot{
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
-        leftMotorARPM.setP(5.0e-5);
+        leftMotorARPM.setP(7.0e-5);
         leftMotorARPM.setI(0);
         leftMotorARPM.setD(1.0e-4);
         leftMotorARPM.setFF(1.76182e-4);
         leftMotorARPM.setOutputRange(-1,1);
 
-        leftMotorBRPM.setP(5.0e-5);
+        leftMotorBRPM.setP(7.0e-5);
         leftMotorBRPM.setI(0);
         leftMotorBRPM.setD(1.0e-4);
         leftMotorBRPM.setFF(1.76182e-4);
         leftMotorBRPM.setOutputRange(-1,1);
 
-        rightMotorARPM.setP(5.0e-5);
+        rightMotorARPM.setP(7.0e-5);
         rightMotorARPM.setI(0);
         rightMotorARPM.setD(1.0e-4);
         rightMotorARPM.setFF(1.76182e-4);
         rightMotorARPM.setOutputRange(-1,1);
 
-        rightMotorBRPM.setP(5.0e-5);
+        rightMotorBRPM.setP(7.0e-5);
         rightMotorBRPM.setI(0);
         rightMotorBRPM.setD(1.0e-4);
         rightMotorBRPM.setFF(1.76182e-4);
@@ -297,24 +297,32 @@ public class swerveBot implements GenericRobot{
     @Override
     public void setLeftDriveARPM(double rpm) {
         rpm*= 5000/14.5;
+        SmartDashboard.putNumber("leftMotorArpm", encoderLeftA.getVelocity());
+        SmartDashboard.putNumber("leftAWantRPM", rpm);
         leftMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setLeftDriveBRPM(double rpm) {
         rpm*= 5000/14.5;
+        SmartDashboard.putNumber("leftMotorBrpm", encoderLeftB.getVelocity());
+        SmartDashboard.putNumber("leftBWantRPM", rpm);
         leftMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setRightDriveARPM(double rpm) {
         rpm*= 5000/14.5;
+        SmartDashboard.putNumber("rightMotorArpm", encoderRightA.getVelocity());
+        SmartDashboard.putNumber("rightAWantRPM", rpm);
         rightMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setRightDriveBRPM(double rpm) {
         rpm*= 5000/14.5;
+        SmartDashboard.putNumber("rightMotorBrpm", encoderRightB.getVelocity());
+        SmartDashboard.putNumber("rightBWantRPM", rpm);
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
