@@ -79,10 +79,7 @@ public interface GenericRobot {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
     ////////////////////////////////////////////////////////// Encoders
-    public default void setOffsetLeftA(){}
-    public default void setOffsetLeftB(){}
-    public default void setOffsetRightA(){}
-    public default void setOffsetRightB(){}
+
 
     public default double encoderLeftADriveTicksPerInch() {
         return 1.0;
@@ -154,6 +151,24 @@ public interface GenericRobot {
     }
 
     ////////////////////////////////////////////////////////// Encoders
+
+    public default void setOffsetLeftA(){}
+    public default void setOffsetLeftB(){}
+    public default void setOffsetRightA(){}
+    public default void setOffsetRightB(){}
+
+    public default double rawEncoderLeftA(){
+        return 0;
+    }
+    public default double rawEncoderLeftB(){
+        return 0;
+    }
+    public default double rawEncoderRightA(){
+        return 0;
+    }
+    public default double rawEncoderRightB(){
+        return 0;
+    }
 
     public default double getPivotLeftMotorA() {
         return 0.0;

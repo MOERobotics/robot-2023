@@ -41,6 +41,10 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("rightApivot", robot.getPivotRightMotorA());
    SmartDashboard.putNumber("rightBpivot", robot.getPivotRightMotorB());
 
+   SmartDashboard.putNumber("leftApivotRaw", robot.rawEncoderLeftA());
+   SmartDashboard.putNumber("leftBpivotRaw", robot.rawEncoderLeftB());
+   SmartDashboard.putNumber("rightApivotRaw", robot.rawEncoderRightA());
+   SmartDashboard.putNumber("rightBpivotRaw", robot.rawEncoderRightB());
   }
 
 

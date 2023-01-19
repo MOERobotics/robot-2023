@@ -16,6 +16,10 @@ public class DriveCode extends GenericTeleop{
 
     @Override
     public void teleopInit(GenericRobot robot) {
+        robot.setOffsetLeftA();
+        robot.setOffsetLeftB();
+        robot.setOffsetRightA();
+        robot.setOffsetRightB();
 
         robot.resetAttitude();
         robot.resetPIDPivot();
