@@ -48,7 +48,7 @@ public class trajectoryAuto extends genericAutonomous{
                 }
                 break;
             case 2:
-                robot.stopSwerve();
+                robot.stopSwerve(0,0,0,0);
                 break;
         }
     }

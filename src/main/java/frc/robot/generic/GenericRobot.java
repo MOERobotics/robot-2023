@@ -27,13 +27,21 @@ public interface GenericRobot {
         setPivotRightMotorB(backRight.angle.getDegrees());
     }
 
-    public default void stopSwerve(){
+    public default void stopSwerve(double oldLA, double oldRA, double oldLB, double oldRB){
         setLeftDriveARPM(0);
         setRightDriveARPM(0);
         setLeftDriveBRPM(0);
         setRightDriveBRPM(0);
+
+        setPivotLeftMotorA(oldLA);
+        setPivotLeftMotorB(oldLB);
+        setPivotRightMotorA(oldRA);
+        setPivotRightMotorB(oldRB);
     }
 
+    /*public default double optimizeSwervePivots(double desPivot, double currPivot){
+        return
+    }*/
     public default void SwerveAutoReset(){}
 
     public default void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,

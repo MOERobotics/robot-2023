@@ -12,6 +12,10 @@ public class DriveCode extends GenericTeleop{
     double[] startDists;
     double[] startPivots;
     double startHeading;
+    double oldLeftA = 0;
+    double oldLeftB = 0;
+    double oldRightA = 0;
+    double oldRightB = 0;
     Joystick swerveStick = new Joystick(1);
 
     @Override
@@ -45,7 +49,7 @@ public class DriveCode extends GenericTeleop{
         double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35)*robot.getMaxMeterPerSec();
         double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35)*robot.getMaxRadPerSec();
 
-        if (swerveStick.getRawButton(4)){ // for varun
+        if (swerveStick.getRawButton(5)){ // for varun
             turnspd /= 2;
         }
 
@@ -63,10 +67,31 @@ public class DriveCode extends GenericTeleop{
         backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(robot.getPivotRightMotorB()));
 
         if (xspd == 0 && yspd == 0 && turnspd == 0){
-            robot.stopSwerve();
+            robot.stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
         }
         else{
             robot.swerve(frontLeftState, frontRightState, backLeftState, backRightState);
+            oldLeftA = frontLeftState.angle.getDegrees();
+            oldLeftB = backLeftState.angle.getDegrees();
+            oldRightA = frontRightState.angle.getDegrees();
+            oldRightB = backRightState.angle.getDegrees();
+        }
+        if(swerveStick.getRawButton(1)){
+            robot.setOffsetLeftA();
+            robot.setOffsetLeftB();
+            robot.setOffsetRightA();
+            robot.setOffsetRightB();
+
+            robot.resetAttitude();
+            robot.resetPIDPivot();
+
+            startHeading = robot.getYaw();
+
+            startDists = new double[] {robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesRightA(),
+                    robot.getDriveDistanceInchesLeftB(),robot.getDriveDistanceInchesRightB()};
+
+            startPivots = new double[] {robot.getPivotLeftMotorA(), robot.getPivotRightMotorA(),
+                    robot.getPivotLeftMotorB(), robot.getPivotRightMotorB()};
         }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
 

@@ -68,10 +68,20 @@ public class swerveBot implements GenericRobot{
     SparkMaxPIDController rightMotorARPM = rightMotorA.getPIDController();
     SparkMaxPIDController rightMotorBRPM = rightMotorB.getPIDController();
 
+    PIDController pivotLeftAPID = new PIDController(4.0e-3,0,0);
+    PIDController pivotLeftBPID = new PIDController(4.0e-3,0,0);
+    PIDController pivotRightAPID = new PIDController(4.0e-3,0,0);
+    PIDController pivotRightBPID = new PIDController(4.0e-3,0,0);
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////Further Motor Stuff
     public swerveBot(){
+
+        pivotLeftAPID.enableContinuousInput(-180,180);
+        pivotLeftBPID.enableContinuousInput(-180,180);
+        pivotRightAPID.enableContinuousInput(-180,180);
+        pivotRightBPID.enableContinuousInput(-180,180);
 
         PivotMotorPIDLeftA.setP(0.1);
         PivotMotorPIDLeftB.setP(0.1);
@@ -121,6 +131,7 @@ public class swerveBot implements GenericRobot{
 
         leftMotorARPM.setP(7.0e-5);
         leftMotorARPM.setI(0);
+        leftMotorARPM.setIZone(0);
         leftMotorARPM.setD(1.0e-4);
         leftMotorARPM.setFF(1.76182e-4);
         leftMotorARPM.setOutputRange(-1,1);
@@ -128,17 +139,20 @@ public class swerveBot implements GenericRobot{
         leftMotorBRPM.setP(7.0e-5);
         leftMotorBRPM.setI(0);
         leftMotorBRPM.setD(1.0e-4);
+        leftMotorBRPM.setIZone(0);
         leftMotorBRPM.setFF(1.76182e-4);
         leftMotorBRPM.setOutputRange(-1,1);
 
         rightMotorARPM.setP(7.0e-5);
         rightMotorARPM.setI(0);
+        rightMotorARPM.setIZone(0);
         rightMotorARPM.setD(1.0e-4);
         rightMotorARPM.setFF(1.76182e-4);
         rightMotorARPM.setOutputRange(-1,1);
 
         rightMotorBRPM.setP(7.0e-5);
         rightMotorBRPM.setI(0);
+        rightMotorBRPM.setIZone(0);
         rightMotorBRPM.setD(1.0e-4);
         rightMotorBRPM.setFF(1.76182e-4);
         rightMotorBRPM.setOutputRange(-1,1);
@@ -332,6 +346,10 @@ public class swerveBot implements GenericRobot{
         setOffsetRightA();
         setOffsetLeftB();
         setOffsetRightB();
+        pivotLeftAPID.reset();
+        pivotLeftBPID.reset();
+        pivotRightAPID.reset();
+        pivotRightBPID.reset();
     }
 //////////////////////////////////////////////////////////////////////////////pivot encoders
 
@@ -427,30 +445,36 @@ public class swerveBot implements GenericRobot{
     double rotOverDeg = (150.0/7)/360;
     @Override
     public void setPivotLeftMotorA(double Pivot) {
-        Pivot += offsetLeftA;
+
+        //Pivot += offsetLeftA;
         SmartDashboard.putNumber("PivotLeftMotorADesiredPivot", Pivot);
-        PivotMotorPIDLeftA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        //PivotMotorPIDLeftA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        pivotLeftMotorA.set(pivotLeftAPID.calculate(-Pivot + getPivotLeftMotorA()));
+
     }
 
     @Override
     public void setPivotLeftMotorB(double Pivot) {
-        Pivot += offsetLeftB;
+        //Pivot += offsetLeftB;
         SmartDashboard.putNumber("PivotLeftMotorBDesiredPivot", Pivot);
-        PivotMotorPIDLeftB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        //PivotMotorPIDLeftB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        pivotLeftMotorB.set(pivotLeftBPID.calculate(-Pivot + getPivotLeftMotorB()));
     }
 
     @Override
     public void setPivotRightMotorA(double Pivot) {
-        Pivot += offsetRightA;
+       // Pivot += offsetRightA;
         SmartDashboard.putNumber("PivotRightMotorADesiredPivot", Pivot);
-        PivotMotorPIDRightA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        //PivotMotorPIDRightA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        pivotRightMotorA.set(pivotRightAPID.calculate(-Pivot + getPivotRightMotorA()));
     }
 
     @Override
     public void setPivotRightMotorB(double Pivot) {
-        Pivot += offsetRightB;
+        //Pivot += offsetRightB;
         SmartDashboard.putNumber("PivotRightMotorBDesiredPivot", Pivot);
-        PivotMotorPIDRightB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        //PivotMotorPIDRightB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
+        pivotRightMotorB.set(pivotRightBPID.calculate(-Pivot + getPivotRightMotorB()));
     }
 
 
