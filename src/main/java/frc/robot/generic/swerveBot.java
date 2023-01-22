@@ -68,10 +68,10 @@ public class swerveBot implements GenericRobot{
     SparkMaxPIDController rightMotorARPM = rightMotorA.getPIDController();
     SparkMaxPIDController rightMotorBRPM = rightMotorB.getPIDController();
 
-    PIDController pivotLeftAPID = new PIDController(4.0e-3,0,0);
-    PIDController pivotLeftBPID = new PIDController(4.0e-3,0,0);
-    PIDController pivotRightAPID = new PIDController(4.0e-3,0,0);
-    PIDController pivotRightBPID = new PIDController(4.0e-3,0,0);
+    PIDController pivotLeftAPID = new PIDController(8.0e-3,0,0);
+    PIDController pivotLeftBPID = new PIDController(8.0e-3,0,0);
+    PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
+    PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
 
 
@@ -216,13 +216,17 @@ public class swerveBot implements GenericRobot{
                         new SwerveModulePosition(startDistances[2], Rotation2d.fromDegrees(-startPivots[2])),
                         new SwerveModulePosition(startDistances[3], Rotation2d.fromDegrees(-startPivots[3]))
                 }, startPose);
-        return m_odometry.update(Rotation2d.fromDegrees(-currHeading),
+        Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(-getPivotLeftMotorA())),
                         new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(-getPivotRightMotorA())),
                         new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(-getPivotLeftMotorB())),
                         new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(-getPivotRightMotorB()))
         });
+        SmartDashboard.putNumber("xPose", myPose.getX());
+        SmartDashboard.putNumber("yPose", myPose.getY());
+        SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
+        return myPose;
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////navx commands
@@ -250,22 +254,22 @@ public class swerveBot implements GenericRobot{
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return GenericRobot.super.encoderLeftADriveTicksPerInch();
+        return 6.75*4*Math.PI/1.27/1.0625;
     }
 
     @Override
     public double encoderLeftBDriveTicksPerInch() {
-        return GenericRobot.super.encoderLeftBDriveTicksPerInch();
+        return 6.75/(4*Math.PI)/1.27/1.0625;
     }
 
     @Override
     public double encoderRightADriveTicksPerInch() {
-        return GenericRobot.super.encoderRightADriveTicksPerInch();
+        return 6.75/(4*Math.PI)/1.27/1.0625;
     }
 
     @Override
     public double encoderRightBDriveTicksPerInch() {
-        return GenericRobot.super.encoderRightBDriveTicksPerInch();
+        return 6.75/(4*Math.PI)/1.27/1.0625;
     }
 
     @Override
@@ -448,6 +452,7 @@ public class swerveBot implements GenericRobot{
 
         //Pivot += offsetLeftA;
         SmartDashboard.putNumber("PivotLeftMotorADesiredPivot", Pivot);
+        SmartDashboard.putBoolean("LeftAAligned", Math.abs(Pivot-getPivotLeftMotorA()) <= 4);
         //PivotMotorPIDLeftA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
         pivotLeftMotorA.set(pivotLeftAPID.calculate(-Pivot + getPivotLeftMotorA()));
 
@@ -457,6 +462,7 @@ public class swerveBot implements GenericRobot{
     public void setPivotLeftMotorB(double Pivot) {
         //Pivot += offsetLeftB;
         SmartDashboard.putNumber("PivotLeftMotorBDesiredPivot", Pivot);
+        SmartDashboard.putBoolean("LeftBAligned", Math.abs(Pivot-getPivotLeftMotorB()) <= 4);
         //PivotMotorPIDLeftB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
         pivotLeftMotorB.set(pivotLeftBPID.calculate(-Pivot + getPivotLeftMotorB()));
     }
@@ -465,6 +471,7 @@ public class swerveBot implements GenericRobot{
     public void setPivotRightMotorA(double Pivot) {
        // Pivot += offsetRightA;
         SmartDashboard.putNumber("PivotRightMotorADesiredPivot", Pivot);
+        SmartDashboard.putBoolean("RightAAligned", Math.abs(Pivot-getPivotRightMotorA()) <= 4);
         //PivotMotorPIDRightA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
         pivotRightMotorA.set(pivotRightAPID.calculate(-Pivot + getPivotRightMotorA()));
     }
@@ -473,6 +480,7 @@ public class swerveBot implements GenericRobot{
     public void setPivotRightMotorB(double Pivot) {
         //Pivot += offsetRightB;
         SmartDashboard.putNumber("PivotRightMotorBDesiredPivot", Pivot);
+        SmartDashboard.putBoolean("RightBAligned", Math.abs(Pivot-getPivotRightMotorB()) <= 4);
         //PivotMotorPIDRightB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
         pivotRightMotorB.set(pivotRightBPID.calculate(-Pivot + getPivotRightMotorB()));
     }

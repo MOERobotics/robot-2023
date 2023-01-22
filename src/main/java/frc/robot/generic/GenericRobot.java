@@ -39,9 +39,16 @@ public interface GenericRobot {
         setPivotRightMotorB(oldRB);
     }
 
-    /*public default double optimizeSwervePivots(double desPivot, double currPivot){
-        return
-    }*/
+    public default SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
+            var delta = desiredState.angle.minus(currentAngle);
+            if (Math.abs(delta.getDegrees()) > 150.0) {
+                return new SwerveModuleState(
+                        -desiredState.speedMetersPerSecond,
+                        desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
+            } else {
+                return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+            }
+    }
     public default void SwerveAutoReset(){}
 
     public default void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
@@ -157,6 +164,7 @@ public interface GenericRobot {
     public default void resetPIDPivot(){
 
     }
+
 
     ////////////////////////////////////////////////////////// Encoders
 

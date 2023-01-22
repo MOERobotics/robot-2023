@@ -15,13 +15,13 @@ public class createTrajectory {
     public static Trajectory generateTrajectory(){
         Pose2d start;
         Pose2d end;
-        start = new Pose2d(Units.feetToMeters(0),Units.feetToMeters(0), Rotation2d.fromDegrees(0));
-        end = new Pose2d(Units.feetToMeters(10),Units.feetToMeters(0), Rotation2d.fromDegrees(0));
+        start = new Pose2d(0,0, Rotation2d.fromDegrees(0));
+        end = new Pose2d(48,0, Rotation2d.fromDegrees(90));
         var interiorWaypoints = new ArrayList<Translation2d>();
-        interiorWaypoints.add(new Translation2d(Units.feetToMeters(3), Units.feetToMeters(0)));
-        interiorWaypoints.add(new Translation2d(Units.feetToMeters(7), Units.feetToMeters(0)));
+        interiorWaypoints.add(new Translation2d(10, 0));
+        interiorWaypoints.add(new Translation2d(30, 0));
 
-        TrajectoryConfig config = new TrajectoryConfig(Units.feetToMeters(10), Units.feetToMeters(8));
+        TrajectoryConfig config = new TrajectoryConfig(3,2);
         config.setReversed(false);
 
         var trajectory = TrajectoryGenerator.generateTrajectory(
