@@ -189,6 +189,8 @@ public class swerveBot implements GenericRobot{
         Rotation2d desiredRotation = trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation();
         HolonomicDriveController controller = new HolonomicDriveController(xController,yController,thetaController);
         var desiredState = trajectory.sample(m_timer.get());
+        SmartDashboard.putNumber("timeStep", m_timer.get());
+        SmartDashboard.putNumber("desiredRot", desiredRotation.getDegrees());
         var targetChassisSpeeds = controller.calculate(pose, desiredState, desiredRotation);
         SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],

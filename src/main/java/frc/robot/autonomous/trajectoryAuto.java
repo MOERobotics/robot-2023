@@ -22,6 +22,7 @@ public class trajectoryAuto extends genericAutonomous{
 
     @Override
     public void autonomousInit(GenericRobot robot) {
+        autonomousStep = 0;
         myTrajectory = createTrajectory.generateTrajectory();
         radControl.enableContinuousInput(-Math.PI, Math.PI);
         robot.setOffsetLeftA();
