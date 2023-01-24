@@ -52,7 +52,7 @@ public interface GenericRobot {
     public default void SwerveAutoReset(){}
 
     public default void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
-                                                PIDController yController, ProfiledPIDController thetaController){}
+                                                PIDController yController, PIDController thetaController){}
 
     public default Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose){
         return null;

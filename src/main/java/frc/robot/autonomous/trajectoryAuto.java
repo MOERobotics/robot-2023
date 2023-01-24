@@ -15,15 +15,14 @@ public class trajectoryAuto extends genericAutonomous{
     double startYaw;
     double[] startDist;
     double[] startPivot;
-    PIDController xControl = new PIDController(0,0,0);
+    PIDController xControl = new PIDController(0.15,0,0);
     PIDController yControl = new PIDController(0,0,0);
-    ProfiledPIDController radControl = new ProfiledPIDController(1.0,0,0,
-            new TrapezoidProfile.Constraints(3, 2));
+    PIDController radControl = new PIDController(0.7,0.01,0);
 
     @Override
     public void autonomousInit(GenericRobot robot) {
         autonomousStep = 0;
-        myTrajectory = createTrajectory.generateTrajectory();
+        myTrajectory = createTrajectory.generateTrajectory(robot);
         radControl.enableContinuousInput(-Math.PI, Math.PI);
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
@@ -32,6 +31,9 @@ public class trajectoryAuto extends genericAutonomous{
 
         robot.resetAttitude();
         robot.resetPIDPivot();
+        xControl.reset();
+        yControl.reset();
+        radControl.reset();
 
         startYaw = robot.getYaw();
 
@@ -60,10 +62,10 @@ public class trajectoryAuto extends genericAutonomous{
                 currPose = robot.getPose(startYaw, robot.getYaw(),startDist, startPivot, startPose);
                 robot.SwerveControllerCommand(myTrajectory, currPose, robot.kinematics(), xControl, yControl,
                         radControl);
-                if (currPose.getX() >= 48){
+                /*if (currPose.getX() >= 48){
                     robot.stopSwerve(0,0,0,0);
                     autonomousStep += 1;
-                }
+                }*/
                 break;
             case 2:
                 robot.stopSwerve(0,0,0,0);

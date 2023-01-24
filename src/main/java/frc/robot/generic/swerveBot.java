@@ -12,10 +12,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SPI;
@@ -185,14 +182,19 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
-                                        PIDController yController, ProfiledPIDController thetaController) {
-        Rotation2d desiredRotation = trajectory.getStates().get(trajectory.getStates().size() - 1).poseMeters.getRotation();
-        HolonomicDriveController controller = new HolonomicDriveController(xController,yController,thetaController);
-        var desiredState = trajectory.sample(m_timer.get());
-        SmartDashboard.putNumber("timeStep", m_timer.get());
-        SmartDashboard.putNumber("desiredRot", desiredRotation.getDegrees());
-        var targetChassisSpeeds = controller.calculate(pose, desiredState, desiredRotation);
-        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
+                                        PIDController yController, PIDController thetaController) {
+
+       var desiredState = trajectory.sample(m_timer.get());
+       var desiredPose = desiredState.poseMeters;
+       SmartDashboard.putNumber("poseX", desiredPose.getX());
+       SmartDashboard.putNumber("poseY", desiredPose.getY());
+       SmartDashboard.putNumber("posrotation", desiredPose.getRotation().getDegrees());
+       var xVelocity = xController.calculate(pose.getX(), desiredPose.getX());
+       var yVelocity = yController.calculate(pose.getY(), desiredPose.getY());
+       var angularVel = thetaController.calculate(pose.getRotation().getDegrees(), desiredPose.getRotation().getDegrees());
+
+       ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(xVelocity, yVelocity, angularVel);
+       SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],
                 frontRightState = moduleStates[1],
                 backLeftState = moduleStates[2],
@@ -211,7 +213,7 @@ public class swerveBot implements GenericRobot{
     @Override
     public Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose) {
         SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-                kinematics(), Rotation2d.fromDegrees(startHeading),
+                kinematics(), Rotation2d.fromDegrees(-startHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(startDistances[0], Rotation2d.fromDegrees(-startPivots[0])),
                         new SwerveModulePosition(startDistances[1], Rotation2d.fromDegrees(-startPivots[1])),
