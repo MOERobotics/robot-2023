@@ -107,6 +107,20 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putBoolean("I am resetting", resetting);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////start auto balance
+        double current_roll = robot.getRoll();
+        double current_pitch = robot.getPitch();
+
+        //TODO: find actual inches of robot
+        double base = 18.0;
+        //TODO: see if i can just delete angle of board
+        double angle_of_board = 0.19;
+
+        double power_percentage = 0.5;
+        double climb_percentage = 0.4;
+        double correction_percentage = 0.25;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////end auto balance
 
 
     }
