@@ -11,7 +11,7 @@ public interface GenericRobot {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public default void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
                                SwerveModuleState backLeft, SwerveModuleState backRight){
-        setLeftDriveARPM(frontLeft.speedMetersPerSecond);
+        setLeftDriveARPM(frontLeft.speedMetersPerSecond*encoderLeftADriveTicksPerInch());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
         setRightDriveARPM(frontRight.speedMetersPerSecond);
