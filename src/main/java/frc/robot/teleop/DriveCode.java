@@ -16,10 +16,13 @@ public class DriveCode extends GenericTeleop{
     double oldLeftB = 0;
     double oldRightA = 0;
     double oldRightB = 0;
+
+    boolean resetting = false;
     Joystick swerveStick = new Joystick(1);
 
     @Override
     public void teleopInit(GenericRobot robot) {
+        resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
         robot.setOffsetRightA();
@@ -39,19 +42,25 @@ public class DriveCode extends GenericTeleop{
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
-////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
-        Pose2d robotPose = robot.getPose(startHeading, robot.getYaw(), startDists, startPivots, new Pose2d(0,0,Rotation2d.fromDegrees(0)));
-        SmartDashboard.putNumber("xPose", robotPose.getX());
-        SmartDashboard.putNumber("yPose", robotPose.getY());
-        SmartDashboard.putNumber("rotation", robotPose.getRotation().getDegrees());
-////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
-        double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35)*robot.getMaxMeterPerSec();
-        double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35)*robot.getMaxMeterPerSec();
-        double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35)*robot.getMaxRadPerSec();
 
-        if (swerveStick.getRawButton(5)){ // for varun
-            turnspd /= 2;
-        }
+        if (resetting) robot.resetAttitude();
+        if (!resetting || (resetting && Math.abs(robot.getYaw()) < 1)) {
+            resetting = false;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
+            Pose2d robotPose = robot.getPose(startHeading, robot.getYaw(), startDists, startPivots, new Pose2d(0, 0, Rotation2d.fromDegrees(0)));
+////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
+            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxMeterPerSec() / 2;
+            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxMeterPerSec() / 2;
+            double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
+
+
+            if (swerveStick.getRawButton(5)) { // for varun
+                turnspd *= 2;
+            }
+            if (swerveStick.getRawButton(6)) {
+                xspd *= 2;
+                yspd *= 2;
+            }
 
         drive_maybe_question_mark(robot, xspd, yspd, turnspd);
 
@@ -91,16 +100,40 @@ public class DriveCode extends GenericTeleop{
         backLeftState = SwerveModuleState.optimize(backLeftState, Rotation2d.fromDegrees(robot.getPivotLeftMotorB()));
         backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(robot.getPivotRightMotorB()));
 
-        if (xspd == 0 && yspd == 0 && turnspd == 0){
-            robot.stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
+            if (xspd == 0 && yspd == 0 && turnspd == 0) {
+                robot.stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
+            } else {
+                robot.swerve(frontLeftState, frontRightState, backLeftState, backRightState);
+                oldLeftA = frontLeftState.angle.getDegrees();
+                oldLeftB = backLeftState.angle.getDegrees();
+                oldRightA = frontRightState.angle.getDegrees();
+                oldRightB = backRightState.angle.getDegrees();
+            }
+
+            if (swerveStick.getRawButton(1)) {
+                resetting = true;
+                robot.setOffsetLeftA();
+                robot.setOffsetLeftB();
+                robot.setOffsetRightA();
+                robot.setOffsetRightB();
+
+                robot.resetAttitude();
+                robot.resetPIDPivot();
+
+                startHeading = robot.getYaw();
+
+                startDists = new double[]{robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesRightA(),
+                        robot.getDriveDistanceInchesLeftB(), robot.getDriveDistanceInchesRightB()};
+
+                startPivots = new double[]{robot.getPivotLeftMotorA(), robot.getPivotRightMotorA(),
+                        robot.getPivotLeftMotorB(), robot.getPivotRightMotorB()};
+            }
         }
-        else{
-            robot.swerve(frontLeftState, frontRightState, backLeftState, backRightState);
-            oldLeftA = frontLeftState.angle.getDegrees();
-            oldLeftB = backLeftState.angle.getDegrees();
-            oldRightA = frontRightState.angle.getDegrees();
-            oldRightB = backRightState.angle.getDegrees();
-        }
+        SmartDashboard.putBoolean("I am resetting", resetting);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
+
+
+
     }
 
 
