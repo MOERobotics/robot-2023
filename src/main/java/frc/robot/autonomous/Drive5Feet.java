@@ -1,9 +1,10 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.generic.GenericRobot;
-import frc.robot.teleop.DriveCode;
 
 public class Drive5Feet extends genericAutonomous {
+    Pose2d current_position;
     int autonomousStep = 0;
 
     double start_distance;
@@ -24,7 +25,8 @@ public class Drive5Feet extends genericAutonomous {
                 }
                 break;
             case 1: //drive forward 5ft
-                drive_maybe_question_mark(robot);
+                current_position = robot.getPose();
+                //TODO: add getPose stuff
                 autonomousStep += 1;
                 break;
             case 2: //stop

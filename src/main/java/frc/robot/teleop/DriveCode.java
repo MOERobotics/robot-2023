@@ -1,3 +1,4 @@
+
 package frc.robot.teleop;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -62,53 +63,7 @@ public class DriveCode extends GenericTeleop{
                 yspd *= 2;
             }
 
-        drive_maybe_question_mark(robot, xspd, yspd, turnspd);
-
-        if(swerveStick.getRawButton(1)){
-            robot.setOffsetLeftA();
-            robot.setOffsetLeftB();
-            robot.setOffsetRightA();
-            robot.setOffsetRightB();
-
-            robot.resetAttitude();
-            robot.resetPIDPivot();
-
-            startHeading = robot.getYaw();
-
-            startDists = new double[] {robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesRightA(),
-                    robot.getDriveDistanceInchesLeftB(),robot.getDriveDistanceInchesRightB()};
-
-            startPivots = new double[] {robot.getPivotLeftMotorA(), robot.getPivotRightMotorA(),
-                    robot.getPivotLeftMotorB(), robot.getPivotRightMotorB()};
-        }
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
-
-    }
-
-
-    public void drive_maybe_question_mark(GenericRobot robot, double xspd, double yspd, double turnspd) {
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
-                yspd, turnspd, Rotation2d.fromDegrees(-robot.getYaw()));
-        SwerveModuleState[] moduleStates = robot.kinematics().toSwerveModuleStates(chassisSpeeds);
-        SwerveModuleState frontLeftState = moduleStates[0],
-                frontRightState = moduleStates[1],
-                backLeftState = moduleStates[2],
-                backRightState = moduleStates[3];
-
-        frontLeftState = SwerveModuleState.optimize(frontLeftState, Rotation2d.fromDegrees(robot.getPivotLeftMotorA()));
-        frontRightState = SwerveModuleState.optimize(frontRightState, Rotation2d.fromDegrees(robot.getPivotRightMotorA()));
-        backLeftState = SwerveModuleState.optimize(backLeftState, Rotation2d.fromDegrees(robot.getPivotLeftMotorB()));
-        backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(robot.getPivotRightMotorB()));
-
-            if (xspd == 0 && yspd == 0 && turnspd == 0) {
-                robot.stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
-            } else {
-                robot.swerve(frontLeftState, frontRightState, backLeftState, backRightState);
-                oldLeftA = frontLeftState.angle.getDegrees();
-                oldLeftB = backLeftState.angle.getDegrees();
-                oldRightA = frontRightState.angle.getDegrees();
-                oldRightB = backRightState.angle.getDegrees();
-            }
+            drive(robot, xspd, yspd, turnspd);
 
             if (swerveStick.getRawButton(1)) {
                 resetting = true;
@@ -131,10 +86,30 @@ public class DriveCode extends GenericTeleop{
         }
         SmartDashboard.putBoolean("I am resetting", resetting);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
-
-
-
     }
 
+    public void drive(GenericRobot robot, double xspd, double yspd, double turnspd) {
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
+                yspd, turnspd, Rotation2d.fromDegrees(-robot.getYaw()));
+        SwerveModuleState[] moduleStates = robot.kinematics().toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState frontLeftState = moduleStates[0],
+                frontRightState = moduleStates[1],
+                backLeftState = moduleStates[2],
+                backRightState = moduleStates[3];
 
+        frontLeftState = robot.optimizeSwervePivots(frontLeftState, Rotation2d.fromDegrees(robot.getPivotLeftMotorA()));
+        frontRightState = robot.optimizeSwervePivots(frontRightState, Rotation2d.fromDegrees(robot.getPivotRightMotorA()));
+        backLeftState = robot.optimizeSwervePivots(backLeftState, Rotation2d.fromDegrees(robot.getPivotLeftMotorB()));
+        backRightState = robot.optimizeSwervePivots(backRightState, Rotation2d.fromDegrees(robot.getPivotRightMotorB()));
+
+        if (xspd == 0 && yspd == 0 && turnspd == 0) {
+            robot.stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
+        } else {
+            robot.swerve(frontLeftState, frontRightState, backLeftState, backRightState);
+            oldLeftA = frontLeftState.angle.getDegrees();
+            oldLeftB = backLeftState.angle.getDegrees();
+            oldRightA = frontRightState.angle.getDegrees();
+            oldRightB = backRightState.angle.getDegrees();
+        }
+    }
 }
