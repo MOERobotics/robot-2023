@@ -4,11 +4,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autonomous.createTrajectory;
 import frc.robot.autonomous.genericAutonomous;
 import frc.robot.autonomous.trajectoryAuto;
 import frc.robot.generic.GenericRobot;
@@ -61,15 +58,11 @@ public class Robot extends TimedRobot {
 
 
   @Override
-  public void teleopInit() {
-    driveCode.teleopInit(robot);
-  }
+  public void teleopInit() { driveCode.teleopInit(robot); }
 
 
   @Override
-  public void teleopPeriodic() {
-    driveCode.teleopPeriodic(robot);
-  }
+  public void teleopPeriodic() { driveCode.teleopPeriodic(robot); }
 
 
   @Override
