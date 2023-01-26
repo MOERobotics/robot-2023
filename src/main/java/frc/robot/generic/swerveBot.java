@@ -157,7 +157,7 @@ public class swerveBot implements GenericRobot{
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
-    public double getMaxMeterPerSec() {
+    public double getMaxInchesPerSecond() {
         return 14.5; //TODO: verify this
     }
     @Override
@@ -185,6 +185,7 @@ public class swerveBot implements GenericRobot{
                                         PIDController yController, PIDController thetaController) {
 
        var desiredState = trajectory.sample(m_timer.get());
+       var desiredVel = desiredState.velocityMetersPerSecond;
        var desiredPose = desiredState.poseMeters;
        SmartDashboard.putNumber("poseX", desiredPose.getX());
        SmartDashboard.putNumber("poseY", desiredPose.getY());

@@ -1,12 +1,9 @@
 package frc.robot.generic;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 
@@ -68,7 +65,7 @@ public interface GenericRobot {
         }
         return value;
     }
-    public default double getMaxMeterPerSec(){
+    public default double getMaxInchesPerSecond(){
         return 0;
     }
     public default double getMaxRadPerSec(){
