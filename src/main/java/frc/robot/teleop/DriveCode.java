@@ -260,7 +260,7 @@ public class DriveCode extends GenericTeleop{
     }
 
     public void driving(GenericRobot robot, double xspd, double yspd, double turnspd) {
-        //everything from line 65-86 go to seperate function, thats gonna be drive function
+        //everything from line 65-86 go to separate function, that's going to be drive function
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
                 yspd, turnspd, Rotation2d.fromDegrees(-robot.getYaw()));
         SwerveModuleState[] moduleStates = robot.kinematics().toSwerveModuleStates(chassisSpeeds);
