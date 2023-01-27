@@ -14,13 +14,13 @@ public interface GenericRobot {
         setLeftDriveARPM(frontLeft.speedMetersPerSecond*encoderLeftADriveTicksPerInch());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
-        setRightDriveARPM(frontRight.speedMetersPerSecond);
+        setRightDriveARPM(frontRight.speedMetersPerSecond*encoderRightADriveTicksPerInch());
         setPivotRightMotorA(frontRight.angle.getDegrees());
 
-        setLeftDriveBRPM(backLeft.speedMetersPerSecond);
+        setLeftDriveBRPM(backLeft.speedMetersPerSecond*encoderLeftBDriveTicksPerInch());
         setPivotLeftMotorB(backLeft.angle.getDegrees());
 
-        setRightDriveBRPM(backRight.speedMetersPerSecond);
+        setRightDriveBRPM(backRight.speedMetersPerSecond*encoderRightBDriveTicksPerInch());
         setPivotRightMotorB(backRight.angle.getDegrees());
     }
 

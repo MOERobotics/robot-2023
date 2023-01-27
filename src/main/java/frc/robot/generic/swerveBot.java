@@ -162,7 +162,7 @@ public class swerveBot implements GenericRobot{
     }
     @Override
     public double getMaxRadPerSec(){
-        return 5.68; //TODO: idk if this even matters
+        return 79.5; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
@@ -279,21 +279,25 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public double encoderTicksLeftDriveA() {
+        SmartDashboard.putNumber("encoderTicksLeftA", encoderLeftA.getPosition());
         return encoderLeftA.getPosition();
     }
 
     @Override
     public double encoderTicksLeftDriveB() {
+        SmartDashboard.putNumber("encoderTicksLeftB", encoderLeftB.getPosition());
         return encoderLeftB.getPosition();
     }
 
     @Override
     public double encoderTicksRightDriveA() {
+        SmartDashboard.putNumber("encoderTicksRightA", encoderRightA.getPosition());
         return encoderRightA.getPosition();
     }
 
     @Override
     public double encoderTicksRightDriveB() {
+        SmartDashboard.putNumber("encoderTicksRightB", encoderRightB.getPosition());
         return encoderRightB.getPosition();
     }
 //////////////////////////////////////////////////////////////////////////////////////drive power
