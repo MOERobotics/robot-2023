@@ -86,6 +86,7 @@ public class DriveCode extends GenericTeleop{
 
             currPitch = robot.getPitch(); //test switching roll and pitch
             currRoll = robot.getRoll();
+
             SmartDashboard.putNumber("poseX",robotPose.getX());
             SmartDashboard.putNumber("poseY",robotPose.getY());
             SmartDashboard.putNumber("poseZ",robotPose.getRotation().getDegrees());
