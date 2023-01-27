@@ -102,6 +102,13 @@ public class DriveCode extends GenericTeleop{
             double correctionPower = 2.0;
 
             curPosOnRamp = 0;
+            if (swerveStick.getRawButton(5)) { // for varun
+                turnspd *= 2;
+            }
+            if (swerveStick.getRawButton(6)) {
+                xspd *= 2;
+                yspd *= 2;
+            }
 //1.087
             if(swerveStick.getRawButton(7)) {
                 driving(robot, 0, 0,0);
@@ -206,13 +213,7 @@ public class DriveCode extends GenericTeleop{
                 driving(robot, xspd, yspd, turnspd);
             }
 
-            if (swerveStick.getRawButton(5)) { // for varun
-                turnspd *= 2;
-            }
-            if (swerveStick.getRawButton(6)) {
-                xspd *= 2;
-                yspd *= 2;
-            }
+
 
             if (swerveStick.getRawButton(1)) {
                 resetting = true;
@@ -255,7 +256,7 @@ public class DriveCode extends GenericTeleop{
     }
 
     public void driving(GenericRobot robot, double xspd, double yspd, double turnspd) {
-        //everything from line 65-86 go to seperate function, thats gonna be drive function
+        //everything from line 65-86 go to separate function, that's going to be drive function
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
                 yspd, turnspd, Rotation2d.fromDegrees(-robot.getYaw()));
         SwerveModuleState[] moduleStates = robot.kinematics().toSwerveModuleStates(chassisSpeeds);
