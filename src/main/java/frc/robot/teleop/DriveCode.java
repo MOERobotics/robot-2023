@@ -84,14 +84,20 @@ public class DriveCode extends GenericTeleop{
             double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxMeterPerSec() / 2;
             double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
 
-            currPitch = robot.getRoll(); //test switching roll and pitch
-            currRoll = robot.getPitch();
+            currPitch = robot.getPitch(); //test switching roll and pitch
+            currRoll = robot.getRoll();
             SmartDashboard.putNumber("poseX",robotPose.getX());
             SmartDashboard.putNumber("poseY",robotPose.getY());
             SmartDashboard.putNumber("poseZ",robotPose.getRotation().getDegrees());
             SmartDashboard.putNumber("bound1", boundPos1);
             SmartDashboard.putNumber("bound2", boundPos2);
             SmartDashboard.putNumber("bound3", boundPos3);
+            SmartDashboard.putNumber("Pitch", robot.getPitch());
+            SmartDashboard.putNumber("Roll", robot.getRoll());
+            SmartDashboard.putNumber("Yaw", robot.getYaw());
+            SmartDashboard.putNumber("xspd", xspd);
+            SmartDashboard.putNumber("yspd", yspd);
+            SmartDashboard.putNumber("turnspd", turnspd);
 
 
 
@@ -101,23 +107,28 @@ public class DriveCode extends GenericTeleop{
             double climbPower = 2.4;
             double correctionPower = 2.0;
 
+            if (swerveStick.getRawButton(5)) { // for varun
+                turnspd *= 2;
+            }
+            if (swerveStick.getRawButton(6)) {
+                xspd *= 2;
+                yspd *= 2;
+            }
+
             curPosOnRamp = 0;
-//1.087
+
             if(swerveStick.getRawButton(7)) {
                 driving(robot, 0, 0,0);
                 switch (autoStep) {
                     case 0:
                         driving(robot, basePower,0,0);
                         if (Math.abs(currPitch)> 5) {
-                            
-                            //old - robotPose.getY()
-                            //new
-                            robotPose.getY();
-                            boundPos1 = robotPose.getY()/1.087;//Add length of the robot from front encoder to end of back wheel.
+
+                            boundPos1 = robotPose.getX();//Add length of the robot from front encoder to end of back wheel.
                             boundPos2 = boundPos1+30-(totalPathLength+57);
                             boundPos3 = boundPos1+57-(totalPathLength-57);
                             autoStep += 1;
-                            
+
 
 
                         }
@@ -138,7 +149,7 @@ public class DriveCode extends GenericTeleop{
                         }
                         break;
                     case 3:
-                        //initPos = robotPose.getY()/1.087;
+                        //initPos = robotPose.getX() ;
                         driving(robot, -correctionPower,0,0);
                         //This is a future feature to stop and let others get on before autobalancing.
                     /*if(Math.abs(curPitch)<15){
@@ -151,7 +162,7 @@ public class DriveCode extends GenericTeleop{
                         autoStep++;
                         break;
                 /*case 4:
-                    currentpos = robotPose.getY()/1.087;
+                    currentpos = robotPose.getY() ;
                     leftside = -climbPower;
                     rightside = -climbPower;
                     if(Math.abs(initPos - currentpos) > 1){
@@ -168,28 +179,28 @@ public class DriveCode extends GenericTeleop{
                     }
                     break;*/
                     case 4:
-                        //currPosInAutoBalance = robotPose.getY()/1.087;
+                        currPosInAutoBalance = robotPose.getX() ;
                         if(currPitch<-desiredPitch){
                             if(currPosInAutoBalance > boundPos2){
                                 driving(robot, -correctionPower,0,0);
-                                initPos = robotPose.getY() / 1.087;
+                                initPos = robotPose.getX();
                             }else{
                                 driving(robot, 0, 0,0);
-                                initPos = robotPose.getY()/1.087;
+                                initPos = robotPose.getX() ;
                                 autoStep++;
                             }
                         } else if(currPitch>desiredPitch){
                             if(currPosInAutoBalance < boundPos3){
                                 driving(robot, -correctionPower,0,0);
-                                initPos = robotPose.getY()/1.087;
+                                initPos = robotPose.getX() ;
                             } else{
                                 driving(robot, 0, 0,0);
-                                initPos = robotPose.getY()/1.087;
+                                initPos = robotPose.getX() ;
                                 autoStep++;
                             }
                         } else{
                             driving(robot, 0, 0,0);
-                            initPos = robotPose.getY()/1.087;
+                            initPos = robotPose.getX() ;
                             autoStep++;
                         }
                         break;
@@ -197,8 +208,7 @@ public class DriveCode extends GenericTeleop{
                         if(Math.abs(currPitch) > desiredPitch){
                             autoStep--;
                         } else{
-                            leftside = 0;
-                            rightside = 0;
+                            driving(robot, 0, 0,0);
                         }
                         break;
                 }
@@ -206,13 +216,7 @@ public class DriveCode extends GenericTeleop{
                 driving(robot, xspd, yspd, turnspd);
             }
 
-            if (swerveStick.getRawButton(5)) { // for varun
-                turnspd *= 2;
-            }
-            if (swerveStick.getRawButton(6)) {
-                xspd *= 2;
-                yspd *= 2;
-            }
+
 
             if (swerveStick.getRawButton(1)) {
                 resetting = true;
