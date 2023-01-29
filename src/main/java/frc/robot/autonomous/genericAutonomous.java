@@ -1,7 +1,6 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import frc.robot.generic.GenericRobot;
 
 public abstract class genericAutonomous {
@@ -18,6 +17,9 @@ public abstract class genericAutonomous {
 
     }
     public Pose2d diff(GenericRobot robot, Pose2d one, Pose2d two) {
+        return new Pose2d();
+    }
+    public Pose2d getNextPose(GenericRobot robot, Pose2d one, double dx, double dy) {
         return new Pose2d();
     }
 }
