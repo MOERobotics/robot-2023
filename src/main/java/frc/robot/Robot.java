@@ -45,6 +45,13 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("leftBpivotRaw", robot.rawEncoderLeftB());
    SmartDashboard.putNumber("rightApivotRaw", robot.rawEncoderRightA());
    SmartDashboard.putNumber("rightBpivotRaw", robot.rawEncoderRightB());
+   SmartDashboard.putNumber("pitch", robot.getPitch());
+   SmartDashboard.putNumber("roll", robot.getRoll());
+
+   robot.getDriveDistanceInchesLeftA();
+   robot.getDriveDistanceInchesLeftB();
+   robot.getDriveDistanceInchesRightB();
+   robot.getDriveDistanceInchesRightA();
   }
 
 

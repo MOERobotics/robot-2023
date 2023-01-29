@@ -155,19 +155,19 @@ public class swerveBot extends GenericRobot{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
     public double getMaxInchesPerSecond() {
-        return 79.5; //TODO: verify this
+        return 120; //TODO: verify this
     }
     @Override
     public double getMaxRadPerSec(){
-        return 5.68; //TODO: idk if this even matters
+        return 120/14; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
         return new SwerveDriveKinematics(
-                new Translation2d(Units.inchesToMeters(14), Units.inchesToMeters(14)),
-                new Translation2d(Units.inchesToMeters(14), -Units.inchesToMeters(14)),
-                new Translation2d(-Units.inchesToMeters(14), Units.inchesToMeters(14)),
-                new Translation2d(-Units.inchesToMeters(14), -Units.inchesToMeters(14))
+                new Translation2d(14, 14),//everything is in inches
+                new Translation2d(14, -14),
+                new Translation2d(-14, 14),
+                new Translation2d(-14, -14)
         );
     }
 
@@ -260,41 +260,51 @@ public class swerveBot extends GenericRobot{
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return 62.86;
+        return 6.75/12.375*1.03;
     }
 
     @Override
     public double encoderLeftBDriveTicksPerInch() {
-        return 62.86;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
     public double encoderRightADriveTicksPerInch() {
-        return 62.86;
+        return encoderLeftADriveTicksPerInch();
+    }
+
+    @Override
+    public double convertInchpsToRPM() {
+        return 32.73*1.03;
     }
 
     @Override
     public double encoderRightBDriveTicksPerInch() {
-        return 62.86;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
     public double encoderTicksLeftDriveA() {
+        SmartDashboard.putNumber("encoderTicksLeftA", encoderLeftA.getPosition());
         return encoderLeftA.getPosition();
     }
 
     @Override
     public double encoderTicksLeftDriveB() {
+        SmartDashboard.putNumber("encoderTicksLeftB", encoderLeftB.getPosition());
         return encoderLeftB.getPosition();
     }
 
     @Override
     public double encoderTicksRightDriveA() {
+        SmartDashboard.putNumber("encoderTicksRightA", encoderRightA.getPosition());
+        SmartDashboard.putNumber("conversionFactor", encoderRightA.getPositionConversionFactor());
         return encoderRightA.getPosition();
     }
 
     @Override
     public double encoderTicksRightDriveB() {
+        SmartDashboard.putNumber("encoderTicksRightB", encoderRightB.getPosition());
         return encoderRightB.getPosition();
     }
 //////////////////////////////////////////////////////////////////////////////////////drive power
