@@ -259,27 +259,27 @@ public class swerveBot implements GenericRobot{
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return 6.75/12.375;
+        return 6.75/12.375*1.03;
     }
 
     @Override
     public double encoderLeftBDriveTicksPerInch() {
-        return 6.75/12.375;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
     public double encoderRightADriveTicksPerInch() {
-        return 6.75/12.375;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
     public double convertInchpsToRPM() {
-        return 32.73;
+        return 32.73*1.03;
     }
 
     @Override
     public double encoderRightBDriveTicksPerInch() {
-        return 6.75/12.375;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
