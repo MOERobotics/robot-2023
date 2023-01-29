@@ -23,7 +23,7 @@ public class DriveCode extends GenericTeleop{
     int autoStep;
     double currentpos;
     double initPos;
-    double desiredPitch = 6.0;
+    double desiredPitch = 9.0;
     double initpos;
     double boundPos1;
     double boundPos2;
@@ -91,14 +91,19 @@ public class DriveCode extends GenericTeleop{
             SmartDashboard.putNumber("xspd", xspd);
             SmartDashboard.putNumber("yspd", yspd);
             SmartDashboard.putNumber("turnspd", turnspd);
+            SmartDashboard.putNumber("autostep", autoStep);
+            SmartDashboard.putNumber("boundPos1", boundPos1);
+            SmartDashboard.putNumber("boundPos2", boundPos2);
+            SmartDashboard.putNumber("boundPos3", boundPos3);
+
 
 
 
             double base = 18.0;
             double angleOfBoard = .19;
-            double basePower = 4.0;
-            double climbPower = 2.4;
-            double correctionPower = 2.0;
+            double basePower = 35.0;
+            double climbPower = 30.0;
+            double correctionPower = 14.0;
 
             if (swerveStick.getRawButton(5)) { // for varun
                 turnspd *= 2;
@@ -112,15 +117,15 @@ public class DriveCode extends GenericTeleop{
             curPosOnRamp = 0;
 
             if(swerveStick.getRawButton(7)) {
-                robot.setDrive(0, 0,0);
+
                 switch (autoStep) {
                     case 0:
                         robot.setDrive(basePower,0,0);
                         if (Math.abs(currPitch)> 5) {
 
                             boundPos1 = robotPose.getX();//Add length of the robot from front encoder to end of back wheel.
-                            boundPos2 = boundPos1+30-(totalPathLength+57);
-                            boundPos3 = boundPos1+57-(totalPathLength-57);
+                            boundPos2 = boundPos1+29-(totalPathLength+56);
+                            boundPos3 = boundPos1+56-(totalPathLength-56);
                             autoStep += 1;
 
 
@@ -185,7 +190,7 @@ public class DriveCode extends GenericTeleop{
                             }
                         } else if(currPitch>desiredPitch){
                             if(currPosInAutoBalance < boundPos3){
-                                robot.setDrive(-correctionPower,0,0);
+                                robot.setDrive(correctionPower,0,0);
                                 initPos = robotPose.getX() ;
                             } else{
                                 robot.setDrive(0, 0,0);
