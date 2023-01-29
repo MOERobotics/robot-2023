@@ -1,12 +1,9 @@
 package frc.robot.generic;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 
@@ -27,7 +24,7 @@ public abstract class GenericRobot {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
                                SwerveModuleState backLeft, SwerveModuleState backRight){
-        setLeftDriveARPM(frontLeft.speedMetersPerSecond);
+        setLeftDriveARPM(frontLeft.speedMetersPerSecond*encoderLeftADriveTicksPerInch());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
         setRightDriveARPM(frontRight.speedMetersPerSecond);
@@ -81,7 +78,7 @@ public abstract class GenericRobot {
         }
         return value;
     }
-    public double getMaxMeterPerSec(){
+    public double getMaxInchesPerSecond(){
         return 0;
     }
     public double getMaxRadPerSec(){
@@ -238,7 +235,7 @@ public abstract class GenericRobot {
         return defaultPose;
     }
 
-    
+
     public void resetStartHeading() {
         startHeading = getYaw();
     }

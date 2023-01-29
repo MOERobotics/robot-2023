@@ -71,8 +71,8 @@ public class DriveCode extends GenericTeleop{
             Pose2d robotPose = robot.getPose();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
-            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxMeterPerSec() / 2;
-            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxMeterPerSec() / 2;
+            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
+            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
             double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
 
             currPitch = robot.getPitch(); //test switching roll and pitch

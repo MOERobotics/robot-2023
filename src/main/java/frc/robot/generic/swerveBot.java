@@ -154,12 +154,12 @@ public class swerveBot extends GenericRobot{
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
-    public double getMaxMeterPerSec() {
-        return 14.5; //TODO: verify this
+    public double getMaxInchesPerSecond() {
+        return 79.5; //TODO: verify this
     }
     @Override
     public double getMaxRadPerSec(){
-        return 18; //TODO: idk if this even matters
+        return 5.68; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
@@ -182,6 +182,7 @@ public class swerveBot extends GenericRobot{
                                         PIDController yController, PIDController thetaController) {
 
         var desiredState = trajectory.sample(m_timer.get());
+        var desiredVel = desiredState.velocityMetersPerSecond;
         var desiredPose = desiredState.poseMeters;
         SmartDashboard.putNumber("poseX", desiredPose.getX());
         SmartDashboard.putNumber("poseY", desiredPose.getY());
@@ -259,22 +260,22 @@ public class swerveBot extends GenericRobot{
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return 6.75*4*Math.PI/1.27/1.0625;
+        return 62.86;
     }
 
     @Override
     public double encoderLeftBDriveTicksPerInch() {
-        return 6.75/(4*Math.PI)/1.27/1.0625;
+        return 62.86;
     }
 
     @Override
     public double encoderRightADriveTicksPerInch() {
-        return 6.75/(4*Math.PI)/1.27/1.0625;
+        return 62.86;
     }
 
     @Override
     public double encoderRightBDriveTicksPerInch() {
-        return 6.75/(4*Math.PI)/1.27/1.0625;
+        return 62.86;
     }
 
     @Override
@@ -319,7 +320,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setLeftDriveARPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("leftMotorArpm", encoderLeftA.getVelocity());
         SmartDashboard.putNumber("leftAWantRPM", rpm);
         leftMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -327,7 +327,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setLeftDriveBRPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("leftMotorBrpm", encoderLeftB.getVelocity());
         SmartDashboard.putNumber("leftBWantRPM", rpm);
         leftMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -335,7 +334,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setRightDriveARPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("rightMotorArpm", encoderRightA.getVelocity());
         SmartDashboard.putNumber("rightAWantRPM", rpm);
         rightMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -343,7 +341,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setRightDriveBRPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("rightMotorBrpm", encoderRightB.getVelocity());
         SmartDashboard.putNumber("rightBWantRPM", rpm);
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
