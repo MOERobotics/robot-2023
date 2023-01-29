@@ -60,6 +60,7 @@ public class DriveCode extends GenericTeleop{
             if (swerveStick.getRawButton(6)) {
                 xspd *= 2;
                 yspd *= 2;
+                SmartDashboard.putNumber("xspd", xspd);
             }
 
             ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,

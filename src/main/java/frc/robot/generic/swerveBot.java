@@ -158,19 +158,19 @@ public class swerveBot implements GenericRobot{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
     public double getMaxInchesPerSecond() {
-        return 79.5; //TODO: verify this
+        return 120; //TODO: verify this
     }
     @Override
     public double getMaxRadPerSec(){
-        return 79.5; //TODO: idk if this even matters
+        return 120/14; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
         return new SwerveDriveKinematics(
-                new Translation2d(Units.inchesToMeters(14), Units.inchesToMeters(14)),
-                new Translation2d(Units.inchesToMeters(14), -Units.inchesToMeters(14)),
-                new Translation2d(-Units.inchesToMeters(14), Units.inchesToMeters(14)),
-                new Translation2d(-Units.inchesToMeters(14), -Units.inchesToMeters(14))
+                new Translation2d(14, 14),//everything is in inches
+                new Translation2d(14, -14),
+                new Translation2d(-14, 14),
+                new Translation2d(-14, -14)
         );
     }
 
@@ -259,22 +259,27 @@ public class swerveBot implements GenericRobot{
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return 62.86;
+        return 6.75/12.375;
     }
 
     @Override
     public double encoderLeftBDriveTicksPerInch() {
-        return 62.86;
+        return 6.75/12.375;
     }
 
     @Override
     public double encoderRightADriveTicksPerInch() {
-        return 62.86;
+        return 6.75/12.375;
+    }
+
+    @Override
+    public double convertInchpsToRPM() {
+        return 32.73;
     }
 
     @Override
     public double encoderRightBDriveTicksPerInch() {
-        return 62.86;
+        return 6.75/12.375;
     }
 
     @Override
@@ -292,6 +297,7 @@ public class swerveBot implements GenericRobot{
     @Override
     public double encoderTicksRightDriveA() {
         SmartDashboard.putNumber("encoderTicksRightA", encoderRightA.getPosition());
+        SmartDashboard.putNumber("conversionFactor", encoderRightA.getPositionConversionFactor());
         return encoderRightA.getPosition();
     }
 

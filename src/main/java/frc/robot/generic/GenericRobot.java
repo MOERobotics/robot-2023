@@ -6,21 +6,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public interface GenericRobot {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public default void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
                                SwerveModuleState backLeft, SwerveModuleState backRight){
-        setLeftDriveARPM(frontLeft.speedMetersPerSecond*encoderLeftADriveTicksPerInch());
+        setLeftDriveARPM(frontLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
-        setRightDriveARPM(frontRight.speedMetersPerSecond*encoderRightADriveTicksPerInch());
+        setRightDriveARPM(frontRight.speedMetersPerSecond*convertInchpsToRPM());
         setPivotRightMotorA(frontRight.angle.getDegrees());
 
-        setLeftDriveBRPM(backLeft.speedMetersPerSecond*encoderLeftBDriveTicksPerInch());
+        setLeftDriveBRPM(backLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorB(backLeft.angle.getDegrees());
 
-        setRightDriveBRPM(backRight.speedMetersPerSecond*encoderRightBDriveTicksPerInch());
+        setRightDriveBRPM(backRight.speedMetersPerSecond*convertInchpsToRPM());
         setPivotRightMotorB(backRight.angle.getDegrees());
     }
 
@@ -117,17 +118,31 @@ public interface GenericRobot {
     public default double encoderTicksRightDriveB() {
         return 0.0;
     }
+
+    public default double convertInchpsToRPM(){
+        return 0.0;
+    }
+
     public default double getDriveDistanceInchesLeftA() {
-        return encoderTicksLeftDriveA()/encoderLeftADriveTicksPerInch();
+        double val = encoderTicksLeftDriveA()/encoderLeftADriveTicksPerInch();
+        SmartDashboard.putNumber("DriveInchesLeftA", val);
+        return val;
+
     }
     public default double getDriveDistanceInchesLeftB() {
-        return encoderTicksLeftDriveB()/encoderLeftBDriveTicksPerInch();
+        double val = encoderTicksLeftDriveB()/encoderLeftBDriveTicksPerInch();
+        SmartDashboard.putNumber("DriveInchesLeftB", val);
+        return val;
     }
     public default double getDriveDistanceInchesRightA() {
-        return encoderTicksRightDriveA()/encoderRightADriveTicksPerInch();
+        double val = encoderTicksRightDriveA()/encoderRightADriveTicksPerInch();
+        SmartDashboard.putNumber("DriveInchesRightA", val);
+        return val;
     }
     public default double getDriveDistanceInchesRightB() {
-        return encoderTicksRightDriveB()/encoderRightBDriveTicksPerInch();
+        double val = encoderTicksRightDriveB()/encoderRightBDriveTicksPerInch();
+        SmartDashboard.putNumber("DriveInchesRightB", val);
+        return val;
     }
 
     ////////////////////////////////////////////////////////// Motor Velocity
