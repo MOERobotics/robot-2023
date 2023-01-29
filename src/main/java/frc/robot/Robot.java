@@ -4,8 +4,10 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.createTrajectory;
@@ -15,6 +17,7 @@ import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
 import frc.robot.teleop.GenericTeleop;
+import frc.robot.vision.MoeNetVision;
 
 
 public class Robot extends TimedRobot {
@@ -26,6 +29,8 @@ public class Robot extends TimedRobot {
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
+  MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+  Field2d field = new Field2d();
 
   @Override
   public void robotInit() {
@@ -81,11 +86,20 @@ public class Robot extends TimedRobot {
 
 
   @Override
-  public void testInit() {}
+  public void testInit() {
+   SmartDashboard.putData("Field", field);
+
+  }
 
 
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+   var pose = vision.getPose();
+   if (pose != null){
+    field.setRobotPose(pose.toPose2d());
+   }
+   SmartDashboard.putData("Field", field);
+  }
 
 
   @Override
