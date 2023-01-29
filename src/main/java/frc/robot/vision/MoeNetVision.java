@@ -17,7 +17,7 @@ public final class MoeNetVision {
         var sd = nt.getTable("SmartDashboard");
         poseEntry = sd.getEntry("pose");
     }
-    public Pose2d getPose(){
+    public Pose3d getPose(){
         var pose = poseEntry.getDoubleArray(new double[0]);
         if (pose.length == 0){
             return null;
@@ -30,8 +30,8 @@ public final class MoeNetVision {
         double roll = pose[4];
         double yaw = pose[5];
 
-        var rotation = new Rotation2d(yaw);
-        var pose2d = new Pose2d(x, y, rotation);
-        return pose2d;
+        var rotation = new Rotation3d(roll, pitch, yaw);
+        var pose3d = new Pose3d(x, y, z, rotation);
+        return pose3d;
     }
 }
