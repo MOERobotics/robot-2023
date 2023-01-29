@@ -99,6 +99,9 @@ public class Robot extends TimedRobot {
     field.setRobotPose(pose.toPose2d());
    }
    SmartDashboard.putData("Field", field);
+   SmartDashboard.putNumber("x", pose.getX());
+   SmartDashboard.putNumber("y", pose.getY());
+   SmartDashboard.putNumber("z", pose.getZ());
   }
 
 
