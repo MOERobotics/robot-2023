@@ -2,6 +2,7 @@ package frc.robot.generic;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -25,8 +26,11 @@ public class swerveBot implements GenericRobot{
     private final Timer m_timer = new Timer();
     double offsetLeftA, offsetLeftB, offsetRightA, offsetRightB;
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
+    WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
     CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(1);
     CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
     CANCoder RightApivotAbsEncoder = new WPI_CANCoder(2);
@@ -254,6 +258,34 @@ public class swerveBot implements GenericRobot{
     public void resetAttitude() {
         navx.reset();
     }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////pigeon commmands
+
+    @Override
+    public double getPigeonYaw() {
+        return pigeon.getYaw();
+    }
+
+    @Override
+    public double getPigeonRoll() {
+        return pigeon.getRoll();
+    }
+
+    @Override
+    public double getPigeonPitch() {
+        return pigeon.getPitch();
+    }
+
+    @Override
+    public double getAbsoluteCompassHeadingPigeon() {
+        return pigeon.getAbsoluteCompassHeading();
+    }
+
+    @Override
+    public void resetPigeon() {
+        pigeon.reset();
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
 
 //////////////////////////////////////////////////////////////////////////drive encoders

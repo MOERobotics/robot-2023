@@ -88,6 +88,26 @@ public interface GenericRobot {
     public default void resetAttitude(){
 
     }
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pigeon Commands
+
+    public default double getPigeonYaw(){
+        return 0;
+    }
+
+    public default double getPigeonRoll(){
+        return 0;
+    }
+
+    public default double getPigeonPitch(){
+        return 0;
+    }
+
+    public default double getAbsoluteCompassHeadingPigeon(){
+        return 0;
+    }
+
+    public default void resetPigeon(){
+    }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
