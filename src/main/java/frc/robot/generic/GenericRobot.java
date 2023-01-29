@@ -10,9 +10,22 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 
-public interface GenericRobot {
+public abstract class GenericRobot {
+
+    double oldLeftA = 0;
+    double oldLeftB = 0;
+    double oldRightA = 0;
+    double oldRightB = 0;
+
+
+    double offsetLeftA, offsetLeftB, offsetRightA, offsetRightB;
+
+    double[] startDists;
+    double[] startPivots;
+    double startHeading;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
-    public default void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
+    public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
                                SwerveModuleState backLeft, SwerveModuleState backRight){
         setLeftDriveARPM(frontLeft.speedMetersPerSecond);
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
@@ -27,7 +40,7 @@ public interface GenericRobot {
         setPivotRightMotorB(backRight.angle.getDegrees());
     }
 
-    public default void stopSwerve(double oldLA, double oldRA, double oldLB, double oldRB){
+    public void stopSwerve(double oldLA, double oldRA, double oldLB, double oldRB){
         setLeftDriveARPM(0);
         setRightDriveARPM(0);
         setLeftDriveBRPM(0);
@@ -39,7 +52,7 @@ public interface GenericRobot {
         setPivotRightMotorB(oldRB);
     }
 
-    public default SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
+    public SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
             var delta = desiredState.angle.minus(currentAngle);
             if (Math.abs(delta.getDegrees()) > 150.0) {
                 return new SwerveModuleState(
@@ -49,16 +62,16 @@ public interface GenericRobot {
                 return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
             }
     }
-    public default void SwerveAutoReset(){}
+    public void SwerveAutoReset(){}
 
-    public default void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
+    public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
                                                 PIDController yController, PIDController thetaController){}
 
-    public default Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose){
+    public Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose){
         return null;
     }
 
-    public default double deadzone(double value, double zone){
+    public double deadzone(double value, double zone){
         if (Math.abs(value) < zone){
             value = 0;
         }
@@ -68,26 +81,26 @@ public interface GenericRobot {
         }
         return value;
     }
-    public default double getMaxMeterPerSec(){
+    public double getMaxMeterPerSec(){
         return 0;
     }
-    public default double getMaxRadPerSec(){
+    public double getMaxRadPerSec(){
         return 0;
     }
-    public default SwerveDriveKinematics kinematics(){
+    public SwerveDriveKinematics kinematics(){
         return null;
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
-    public default double getYaw() {
+    public double getYaw() {
         return 0;
     }
-    public default double getRoll() {
+    public double getRoll() {
         return 0;
     }
-    public default double getPitch() {
+    public double getPitch() {
         return 0;
     }
-    public default void resetAttitude(){
+    public void resetAttitude(){
 
     }
 
@@ -96,122 +109,147 @@ public interface GenericRobot {
     ////////////////////////////////////////////////////////// Encoders
 
 
-    public default double encoderLeftADriveTicksPerInch() {
+    public double encoderLeftADriveTicksPerInch() {
         return 1.0;
     }
-    public default double encoderLeftBDriveTicksPerInch() {
+    public double encoderLeftBDriveTicksPerInch() {
         return 1.0;
     }
-    public default double encoderRightADriveTicksPerInch() {
+    public double encoderRightADriveTicksPerInch() {
         return 1.0;
     }
-    public default double encoderRightBDriveTicksPerInch() {
+    public double encoderRightBDriveTicksPerInch() {
         return 1.0;
     }
-    public default double encoderTicksLeftDriveA() {
+    public double encoderTicksLeftDriveA() {
         return 0.0;
     }
-    public default double encoderTicksLeftDriveB() {
+    public double encoderTicksLeftDriveB() {
         return 0.0;
     }
-    public default double encoderTicksRightDriveA() {
+    public double encoderTicksRightDriveA() {
         return 0.0;
     }
-    public default double encoderTicksRightDriveB() {
+    public double encoderTicksRightDriveB() {
         return 0.0;
     }
-    public default double getDriveDistanceInchesLeftA() {
+    public double getDriveDistanceInchesLeftA() {
         return encoderTicksLeftDriveA()/encoderLeftADriveTicksPerInch();
     }
-    public default double getDriveDistanceInchesLeftB() {
+    public double getDriveDistanceInchesLeftB() {
         return encoderTicksLeftDriveB()/encoderLeftBDriveTicksPerInch();
     }
-    public default double getDriveDistanceInchesRightA() {
+    public double getDriveDistanceInchesRightA() {
         return encoderTicksRightDriveA()/encoderRightADriveTicksPerInch();
     }
-    public default double getDriveDistanceInchesRightB() {
+    public double getDriveDistanceInchesRightB() {
         return encoderTicksRightDriveB()/encoderRightBDriveTicksPerInch();
     }
 
     ////////////////////////////////////////////////////////// Motor Velocity
-    public default void setLeftDriveAPowerPercentage(double power) {
+    public void setLeftDriveAPowerPercentage(double power) {
 
     }
-    public default void setLeftDriveBPowerPercentage(double power) {
+    public void setLeftDriveBPowerPercentage(double power) {
 
     }
-    public default void setRightDriveAPowerPercentage(double power) {
+    public void setRightDriveAPowerPercentage(double power) {
 
     }
-    public default void setRightDriveBPowerPercentage(double power) {
+    public void setRightDriveBPowerPercentage(double power) {
 
     }
-    public default void setLeftDriveARPM(double rpm) {
+    public void setLeftDriveARPM(double rpm) {
 
     }
-    public default void setLeftDriveBRPM(double rpm) {
+    public void setLeftDriveBRPM(double rpm) {
 
     }
-    public default void setRightDriveARPM(double rpm) {
+    public void setRightDriveARPM(double rpm) {
 
     }
-    public default void setRightDriveBRPM(double rpm) {
+    public void setRightDriveBRPM(double rpm) {
 
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pivot Motor Commands
 
-    public default void resetPIDPivot(){
+    ///////////////////////////////////////////////////////////////////////////drive motor
+
+    public void resetPIDPivot(){
 
     }
 
 
     ////////////////////////////////////////////////////////// Encoders
 
-    public default void setOffsetLeftA(){}
-    public default void setOffsetLeftB(){}
-    public default void setOffsetRightA(){}
-    public default void setOffsetRightB(){}
+    public void setOffsetLeftA(){}
+    public void setOffsetLeftB(){}
+    public void setOffsetRightA(){}
+    public void setOffsetRightB(){}
 
-    public default double rawEncoderLeftA(){
+    public double rawEncoderLeftA(){
         return 0;
     }
-    public default double rawEncoderLeftB(){
+    public double rawEncoderLeftB(){
         return 0;
     }
-    public default double rawEncoderRightA(){
+    public double rawEncoderRightA(){
         return 0;
     }
-    public default double rawEncoderRightB(){
+    public double rawEncoderRightB(){
         return 0;
     }
 
-    public default double getPivotLeftMotorA() {
+    public double getPivotLeftMotorA() {
         return 0.0;
     }
-    public default double getPivotLeftMotorB() {
+    public double getPivotLeftMotorB() {
         return 0.0;
     }
-    public default double getPivotRightMotorA() {
+    public double getPivotRightMotorA() {
         return 0.0;
     }
-    public default double getPivotRightMotorB() {
+    public double getPivotRightMotorB() {
         return 0.0;
     }
 
     ////////////////////////////////////////////////////////// Motor Velocity
 
-    public default void setPivotLeftMotorA(double Pivot) {
+    public void setPivotLeftMotorA(double Pivot) {
 
     }
-    public default void setPivotLeftMotorB(double Pivot) {
+    public void setPivotLeftMotorB(double Pivot) {
 
     }
-    public default void setPivotRightMotorA(double Pivot) {
+    public void setPivotRightMotorA(double Pivot) {
 
     }
-    public default void setPivotRightMotorB(double Pivot) {
+    public void setPivotRightMotorB(double Pivot) {
+
+    }
+    ////////////////////////////////////////////////////////////////////Drive function
+    public void setDrive(double xspd, double yspd, double turnspd){
 
     }
 
+    static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
+    public Pose2d getPose() {
+        return defaultPose;
+    }
+
+    
+    public void resetStartHeading() {
+        startHeading = getYaw();
+    }
+
+    public void resetStartDists() {
+        startDists = new double[] {getDriveDistanceInchesLeftA(), getDriveDistanceInchesRightA(),
+                getDriveDistanceInchesLeftB(),getDriveDistanceInchesRightB()};
+    }
+
+    public void resetStartPivots() {
+        startPivots = new double[] {getPivotLeftMotorA(), getPivotRightMotorA(),
+                getPivotLeftMotorB(), getPivotRightMotorB()};
+    }
 }
