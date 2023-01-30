@@ -21,8 +21,10 @@ public class DriveCode extends GenericTeleop{
     double leftside;
     double rightside;
     int autoStep;
+    int autoSequenceStep;
     double currentpos;
     double initPos;
+    double startingPose;
     double desiredPitch = 9.0;
     double initpos;
     double boundPos1;
@@ -115,6 +117,79 @@ public class DriveCode extends GenericTeleop{
             }
 
             curPosOnRamp = 0;
+            if(swerveStick.getRawButton(3)){
+                switch(autoSequenceStep){
+                    case 0:
+                        startingPose = robotPose.getX();
+                        robot.setDrive(basePower,0,0);
+                        autoSequenceStep++;
+
+                        break;
+                    case 1:
+                        if(robotPose.getX() >= startingPose+12){
+                            robot.setDrive(0,0,0);
+                            autoSequenceStep++;
+                        }
+                        break;
+                    case 2:
+                        startingPose = robotPose.getY();
+                        robot.setDrive(0,basePower, 0);
+                        autoSequenceStep++;
+                        break;
+                    case 3:
+                        if(robotPose.getY()<= startingPose-12){
+                            robot.setDrive(0,0,0);
+                            autoSequenceStep++;
+                        }
+                        break;
+                    case 4:
+                        startingPose = robotPose.getX();
+                        robot.setDrive(-basePower,0,0);
+                        autoSequenceStep++;
+                        break;
+                    case 5:
+                        if(robotPose.getX()<= startingPose-12){
+                            robot.setDrive(0,0,0);
+                            autoSequenceStep++;
+                        }
+                        break;
+                    case 6:
+                        startingPose = robotPose.getRotation().getDegrees();
+                        robot.setDrive(0,0,2.5);
+                        autoSequenceStep++;
+                        break;
+                    case 7:
+                        if(robotPose.getRotation().getDegrees()<=startingPose-90){
+                            robot.setDrive(0,0,0);
+                            autoSequenceStep++;
+                        }
+                        break;
+                    case 8:
+                        startingPose = robotPose.getY();
+                        robot.setDrive(0,basePower,0);
+                        autoSequenceStep++;
+                        break;
+                    case 9:
+                        if(robotPose.getY()<= startingPose+12){
+                            robot.setDrive(0,0,0);
+                            autoSequenceStep++;
+                        }
+                        break;
+                    case 10:
+                        startingPose = robotPose.getRotation().getDegrees();
+                        robot.setDrive(0,0,-2.5);
+                        autoSequenceStep++;
+                        break;
+                    case 11:
+                        if(robotPose.getRotation().getDegrees() <=90 && robotPose.getRotation().getDegrees() > 0){
+                            robot.setDrive(0,0,0);
+                            autoSequenceStep++;
+                        }
+                        break;
+                }
+            } else{
+                autoSequenceStep = 0;
+            }
 
             if(swerveStick.getRawButton(7)) {
 
