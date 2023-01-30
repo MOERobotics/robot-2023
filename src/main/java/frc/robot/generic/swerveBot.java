@@ -7,9 +7,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -22,9 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
-public class swerveBot implements GenericRobot{
+public class swerveBot extends GenericRobot{
     private final Timer m_timer = new Timer();
-    double offsetLeftA, offsetLeftB, offsetRightA, offsetRightB;
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 
@@ -188,18 +185,18 @@ public class swerveBot implements GenericRobot{
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
                                         PIDController yController, PIDController thetaController) {
 
-       var desiredState = trajectory.sample(m_timer.get());
-       var desiredVel = desiredState.velocityMetersPerSecond;
-       var desiredPose = desiredState.poseMeters;
-       SmartDashboard.putNumber("poseX", desiredPose.getX());
-       SmartDashboard.putNumber("poseY", desiredPose.getY());
-       SmartDashboard.putNumber("posrotation", desiredPose.getRotation().getDegrees());
-       var xVelocity = xController.calculate(pose.getX(), desiredPose.getX());
-       var yVelocity = yController.calculate(pose.getY(), desiredPose.getY());
-       var angularVel = thetaController.calculate(pose.getRotation().getDegrees(), desiredPose.getRotation().getDegrees());
+        var desiredState = trajectory.sample(m_timer.get());
+        var desiredVel = desiredState.velocityMetersPerSecond;
+        var desiredPose = desiredState.poseMeters;
+        SmartDashboard.putNumber("poseX", desiredPose.getX());
+        SmartDashboard.putNumber("poseY", desiredPose.getY());
+        SmartDashboard.putNumber("posrotation", desiredPose.getRotation().getDegrees());
+        var xVelocity = xController.calculate(pose.getX(), desiredPose.getX());
+        var yVelocity = yController.calculate(pose.getY(), desiredPose.getY());
+        var angularVel = thetaController.calculate(pose.getRotation().getDegrees(), desiredPose.getRotation().getDegrees());
 
-       ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(xVelocity, yVelocity, angularVel);
-       SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
+        ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(xVelocity, yVelocity, angularVel);
+        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],
                 frontRightState = moduleStates[1],
                 backLeftState = moduleStates[2],
@@ -211,19 +208,21 @@ public class swerveBot implements GenericRobot{
         backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
 
         swerve(frontLeftState, frontRightState, backLeftState, backRightState);
-                 
+
 
     }
 
     @Override
-    public Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose) {
+    public Pose2d getPose() {
+        double currHeading = this.getYaw();
+        Pose2d startPose = GenericRobot.defaultPose;
         SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
                 kinematics(), Rotation2d.fromDegrees(-startHeading),
                 new SwerveModulePosition[] {
-                        new SwerveModulePosition(startDistances[0], Rotation2d.fromDegrees(-startPivots[0])),
-                        new SwerveModulePosition(startDistances[1], Rotation2d.fromDegrees(-startPivots[1])),
-                        new SwerveModulePosition(startDistances[2], Rotation2d.fromDegrees(-startPivots[2])),
-                        new SwerveModulePosition(startDistances[3], Rotation2d.fromDegrees(-startPivots[3]))
+                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(-startPivots[0])),
+                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(-startPivots[1])),
+                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(-startPivots[2])),
+                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
                 }, startPose);
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
                 new SwerveModulePosition[] {
@@ -287,6 +286,8 @@ public class swerveBot implements GenericRobot{
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
+
+
 
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
@@ -386,6 +387,33 @@ public class swerveBot implements GenericRobot{
         SmartDashboard.putNumber("rightBWantRPM", rpm);
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
+
+///////////////////////////////////////////////////////////////////////////drive motor
+    @Override
+    public void setDrive(double xspd, double yspd, double turnspd) {
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
+                yspd, turnspd, Rotation2d.fromDegrees(-getYaw()));
+        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);
+        SwerveModuleState frontLeftState = moduleStates[0],
+                          frontRightState = moduleStates[1],
+                          backLeftState = moduleStates[2],
+                          backRightState = moduleStates[3];
+
+        frontLeftState = optimizeSwervePivots(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
+        frontRightState = optimizeSwervePivots(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));
+        backLeftState = optimizeSwervePivots(backLeftState, Rotation2d.fromDegrees(getPivotLeftMotorB()));
+        backRightState = optimizeSwervePivots(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
+
+        if (xspd == 0 && yspd == 0 && turnspd == 0) {
+            stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
+        } else {
+            swerve(frontLeftState, frontRightState, backLeftState, backRightState);
+            oldLeftA = frontLeftState.angle.getDegrees();
+            oldLeftB = backLeftState.angle.getDegrees();
+            oldRightA = frontRightState.angle.getDegrees();
+            oldRightB = backRightState.angle.getDegrees();
+        }
+    }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
     @Override
     public void resetPIDPivot() {
@@ -446,7 +474,7 @@ public class swerveBot implements GenericRobot{
 
     @Override
     public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight, SwerveModuleState backLeft, SwerveModuleState backRight) {
-        GenericRobot.super.swerve(frontLeft, frontRight, backLeft, backRight);
+        super.swerve(frontLeft, frontRight, backLeft, backRight);
     }
 
     @Override
