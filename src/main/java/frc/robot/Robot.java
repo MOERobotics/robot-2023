@@ -6,6 +6,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.Drive5Feet;
 import frc.robot.autonomous.genericAutonomous;
 import frc.robot.autonomous.trajectoryAuto;
 import frc.robot.generic.GenericRobot;
@@ -19,7 +20,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new trajectoryAuto();
+  genericAutonomous autonomous = new Drive5Feet();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
