@@ -103,23 +103,23 @@ public abstract class GenericRobot {
     }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pigeon Commands
 
-    public default double getPigeonYaw(){
+    public double getPigeonYaw(){
         return 0;
     }
 
-    public default double getPigeonRoll(){
+    public double getPigeonRoll(){
         return 0;
     }
 
-    public default double getPigeonPitch(){
+    public double getPigeonPitch(){
         return 0;
     }
 
-    public default double getAbsoluteCompassHeadingPigeon(){
+    public double getAbsoluteCompassHeadingPigeon(){
         return 0;
     }
 
-    public default void resetPigeon(){
+    public void resetPigeon(){
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands

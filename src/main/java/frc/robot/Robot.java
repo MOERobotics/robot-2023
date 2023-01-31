@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.circlePath;
 import frc.robot.autonomous.createTrajectory;
 import frc.robot.autonomous.genericAutonomous;
 import frc.robot.autonomous.trajectoryAuto;
@@ -22,7 +23,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new trajectoryAuto();
+  genericAutonomous autonomous = new circlePath();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
