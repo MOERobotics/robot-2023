@@ -1,13 +1,10 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 import frc.robot.vision.MoeNetVision;
 
@@ -17,33 +14,39 @@ public class visionTestPose extends genericAutonomous {
     Field2d field = new Field2d();
     double xPosStar, yPosStar, xspd, yspd, turnspd;
     double defaultSpeed = 10;
+    Pose2d currPose = null;
+    Pose2d desiredPose;
     @Override
     public void autonomousInit(GenericRobot robot) {
-        Pose3d currPose = vision.getPose();
+
         if (vision.poseFound()){
-            field.setRobotPose(currPose.toPose2d());
+            currPose = vision.robotFieldPoseInches();
+            xPosStar = field.getRobotPose().getX();
+            yPosStar = field.getRobotPose().getY();
         }
-        xPosStar = field.getRobotPose().getX();
-        yPosStar = field.getRobotPose().getY();
+
     }
 
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
         ///////////////////////////////////////////////////find robot pose on field
-        Pose3d currPose = vision.getPose();
-        if (vision.poseFound()){
-            field.setRobotPose(currPose.toPose2d());
-        }
-        double xPos = field.getRobotPose().getX();
-        double yPos = field.getRobotPose().getY();
 
-        Pose2d desiredPose = new Pose2d(new Translation2d(xPosStar + 12, yPosStar + 12),
-                new Rotation2d(0));
+        if (vision.poseFound()){
+            currPose = vision.robotFieldPoseInches();
+        }
+        double xPos = currPose.getX();
+        double yPos = currPose.getY();
 
         switch (autonomousStep){
             case 0:
                 xspd = yspd = turnspd = 0;
-                autonomousStep ++;
+                if (vision.poseFound()){
+                    xPosStar = vision.robotFieldPoseInches().getX();
+                    yPosStar = vision.robotFieldPoseInches().getY();
+                    desiredPose = new Pose2d(xPosStar + 12, yPosStar + 12,
+                            new Rotation2d(0));
+                    autonomousStep ++;
+                }
                 break;
             case 1:
                 double xDiff = desiredPose.getX()-xPos;
