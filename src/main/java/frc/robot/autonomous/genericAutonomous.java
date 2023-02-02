@@ -13,7 +13,26 @@ public abstract class genericAutonomous {
 
     }
 
-    public abstract void autonomousInit();
+    public double positionFunctionX(double s){
+        return 0;
+    }
+    public double positionFunctionY(double s){
+        return 0;
+    }
+    public double positionFunctionTheta(double s){
+        return 0;
+    }
+    public double velocityFunctionX(double s){
+        return 0;
+    }
+    public double velocityFunctionY(double s){
+        return 0;
+    }
+    public double velocityFunctionTheta(double s){
+        return 0;
+    }
+    public double getS(double time){
+        return time;
+    }
 
-    public abstract void autonomousPeriodic();
 }

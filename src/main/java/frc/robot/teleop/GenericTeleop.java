@@ -16,6 +16,4 @@ public abstract class GenericTeleop {
     public void teleopPeriodic(GenericRobot robot) {
 
     }
-
-
 }
