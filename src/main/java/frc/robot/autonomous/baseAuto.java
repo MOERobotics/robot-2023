@@ -8,10 +8,10 @@ import frc.robot.generic.GenericRobot;
 public class baseAuto extends genericAutonomous{
 
     private final Timer m_timer = new Timer();
-    double firstDist = 24;
-    double secondDist = 24;
-    double radius = 24;
-    double desiredTheta = Math.PI/2;
+    double firstDist = 48;
+    double secondDist = 48;
+    double radius = 30;
+    double desiredTheta = 5*Math.PI/2;
     double desiredInchesPerSecond = 12;
     double ds = desiredInchesPerSecond;
     double xspd, yspd, turnspd;
@@ -77,7 +77,7 @@ public class baseAuto extends genericAutonomous{
             return 0;
         }
         else if (s <= firstDist + radius*desiredTheta){
-            return radius*Math.cos((s-firstDist)/radius);
+            return -radius*Math.cos((s-firstDist)/radius);
         }
         else{
             double a = firstDist + radius*desiredTheta;
@@ -107,7 +107,7 @@ public class baseAuto extends genericAutonomous{
             return 0;
         }
         else if (s <= firstDist + radius*desiredTheta){
-            return radius*-Math.sin((s-firstDist)/radius)*(1/radius)*ds;
+            return radius*Math.sin((s-firstDist)/radius)*(1/radius)*ds;
         }
         else{
             double a = firstDist + radius*desiredTheta;
