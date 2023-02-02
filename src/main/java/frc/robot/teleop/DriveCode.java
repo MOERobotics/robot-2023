@@ -6,9 +6,12 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.autoBalance;
+import frc.robot.commands.autoBalanceBackward;
+import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
 
-public class DriveCode extends GenericTeleop{
+public class DriveCode extends GenericTeleop {
 
     boolean resetting = false;
     Joystick swerveStick = new Joystick(1);
@@ -24,6 +27,7 @@ public class DriveCode extends GenericTeleop{
     int autoSequenceStep;
     double currentpos;
     double initPos;
+    double autoStepback;
     double startingPose;
     double desiredPitch = 9.0;
     double initpos;
@@ -43,6 +47,11 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+    boolean initialize = false;
+    boolean initialize1 = false;
+
+    genericCommand balance = new autoBalance();
+    genericCommand balanceBack = new autoBalanceBackward();
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -81,9 +90,9 @@ public class DriveCode extends GenericTeleop{
             currRoll = robot.getRoll();
 
             //TODO: Delete later, added to push code
-            SmartDashboard.putNumber("poseX",robotPose.getX());
-            SmartDashboard.putNumber("poseY",robotPose.getY());
-            SmartDashboard.putNumber("poseZ",robotPose.getRotation().getDegrees());
+            SmartDashboard.putNumber("poseX", robotPose.getX());
+            SmartDashboard.putNumber("poseY", robotPose.getY());
+            SmartDashboard.putNumber("poseZ", robotPose.getRotation().getDegrees());
             SmartDashboard.putNumber("bound1", boundPos1);
             SmartDashboard.putNumber("bound2", boundPos2);
             SmartDashboard.putNumber("bound3", boundPos3);
@@ -97,8 +106,7 @@ public class DriveCode extends GenericTeleop{
             SmartDashboard.putNumber("boundPos1", boundPos1);
             SmartDashboard.putNumber("boundPos2", boundPos2);
             SmartDashboard.putNumber("boundPos3", boundPos3);
-
-
+            SmartDashboard.putNumber("autoStepback", autoStepback);
 
 
             double base = 18.0;
@@ -117,199 +125,117 @@ public class DriveCode extends GenericTeleop{
             }
 
             curPosOnRamp = 0;
-            if(swerveStick.getRawButton(3)){
-                switch(autoSequenceStep){
+            if (swerveStick.getRawButton(3)) {
+
+
+                switch (autoSequenceStep) {
                     case 0:
                         startingPose = robotPose.getX();
-                        robot.setDrive(basePower,0,0);
+                        robot.setDrive(basePower, 0, 0);
                         autoSequenceStep++;
 
                         break;
                     case 1:
-                        if(robotPose.getX() >= startingPose+12){
-                            robot.setDrive(0,0,0);
+                        if (robotPose.getX() >= startingPose + 12) {
+                            robot.setDrive(0, 0, 0);
                             autoSequenceStep++;
                         }
                         break;
                     case 2:
                         startingPose = robotPose.getY();
-                        robot.setDrive(0,basePower, 0);
+                        robot.setDrive(0, basePower, 0);
                         autoSequenceStep++;
                         break;
                     case 3:
-                        if(robotPose.getY()<= startingPose-12){
-                            robot.setDrive(0,0,0);
+                        if (robotPose.getY() <= startingPose - 12) {
+                            robot.setDrive(0, 0, 0);
                             autoSequenceStep++;
                         }
                         break;
                     case 4:
                         startingPose = robotPose.getX();
-                        robot.setDrive(-basePower,0,0);
+                        robot.setDrive(-basePower, 0, 0);
                         autoSequenceStep++;
                         break;
                     case 5:
-                        if(robotPose.getX()<= startingPose-12){
-                            robot.setDrive(0,0,0);
+                        if (robotPose.getX() <= startingPose - 12) {
+                            robot.setDrive(0, 0, 0);
                             autoSequenceStep++;
                         }
                         break;
                     case 6:
                         startingPose = robotPose.getRotation().getDegrees();
-                        robot.setDrive(0,0,2.5);
+                        robot.setDrive(0, 0, 2.5);
                         autoSequenceStep++;
                         break;
                     case 7:
-                        if(robotPose.getRotation().getDegrees()<=startingPose-90){
-                            robot.setDrive(0,0,0);
+                        if (robotPose.getRotation().getDegrees() <= startingPose - 90) {
+                            robot.setDrive(0, 0, 0);
                             autoSequenceStep++;
                         }
                         break;
                     case 8:
                         startingPose = robotPose.getY();
-                        robot.setDrive(0,basePower,0);
+                        robot.setDrive(0, basePower, 0);
                         autoSequenceStep++;
                         break;
                     case 9:
-                        if(robotPose.getY()<= startingPose+12){
-                            robot.setDrive(0,0,0);
+                        if (robotPose.getY() <= startingPose + 12) {
+                            robot.setDrive(0, 0, 0);
                             autoSequenceStep++;
                         }
                         break;
                     case 10:
                         startingPose = robotPose.getRotation().getDegrees();
-                        robot.setDrive(0,0,-2.5);
+                        robot.setDrive(0, 0, -2.5);
                         autoSequenceStep++;
                         break;
                     case 11:
-                        if(robotPose.getRotation().getDegrees() <=90 && robotPose.getRotation().getDegrees() > 0){
-                            robot.setDrive(0,0,0);
+                        if (robotPose.getRotation().getDegrees() <= 90 && robotPose.getRotation().getDegrees() > 0) {
+                            robot.setDrive(0, 0, 0);
                             autoSequenceStep++;
                         }
                         break;
                 }
-            } else{
+            } else {
                 autoSequenceStep = 0;
             }
 
-            if(swerveStick.getRawButton(7)) {
-
-                switch (autoStep) {
-                    case 0:
-                        robot.setDrive(basePower,0,0);
-                        if (Math.abs(currPitch)> 5) {
-
-                            boundPos1 = robotPose.getX();//Add length of the robot from front encoder to end of back wheel.
-                            boundPos2 = boundPos1+29-(totalPathLength+56);
-                            boundPos3 = boundPos1+56-(totalPathLength-56);
-                            autoStep += 1;
-
-
-
-                        }
-                        break;
-                    case 1:
-//                        curPosOnRamp = base * Math.sin(currPitch) * (Math.cos(angleOfBoard) / Math.sin(angleOfBoard));
-//                        leftside = basePower*(base - curPosOnRamp)/base;
-//                        rightside = basePower*(base - curPosOnRamp)/base;
-                        robot.setDrive(basePower,0,0);
-                        if (Math.abs(currPitch) >11){
-                            autoStep += 1;
-                        }
-                        break;
-                    case 2:
-                        robot.setDrive(climbPower,0,0);
-                        if(Math.abs(currPitch) < 10){
-                            autoStep++;
-                        }
-                        break;
-                    case 3:
-                        //initPos = robotPose.getX() ;
-                        robot.setDrive(-correctionPower,0,0);
-                        //This is a future feature to stop and let others get on before autobalancing.
-                    /*if(Math.abs(curPitch)<15){
-                        leftside = 0;
-                        rightside = 0;
-                    }
-                    if(leftJoystick.getRawButtonPressed(9)) {
-                        autoStep++;
-                    }*/
-                        autoStep++;
-                        break;
-                /*case 4:
-                    currentpos = robotPose.getY() ;
-                    leftside = -climbPower;
-                    rightside = -climbPower;
-                    if(Math.abs(initPos - currentpos) > 1){
-                        leftside = 0;
-                        rightside = 0;
-                        autoStep++;
-                    }
-                    break;
-                case 5:
-                    leftside = 0;
-                    rightside = 0;
-                    if(Math.abs(currPitch) < 2){
-                        autoStep++;
-                    }
-                    break;*/
-                    case 4:
-                        currPosInAutoBalance = robotPose.getX() ;
-                        if(currPitch<-desiredPitch){
-                            if(currPosInAutoBalance > boundPos2){
-                                robot.setDrive(-correctionPower,0,0);
-                                initPos = robotPose.getX();
-                            }else{
-                                robot.setDrive(0, 0,0);
-                                initPos = robotPose.getX() ;
-                                autoStep++;
-                            }
-                        } else if(currPitch>desiredPitch){
-                            if(currPosInAutoBalance < boundPos3){
-                                robot.setDrive(correctionPower,0,0);
-                                initPos = robotPose.getX() ;
-                            } else{
-                                robot.setDrive(0, 0,0);
-                                initPos = robotPose.getX() ;
-                                autoStep++;
-                            }
-                        } else{
-                            robot.setDrive(0, 0,0);
-                            initPos = robotPose.getX() ;
-                            autoStep++;
-                        }
-                        break;
-                    case 5:
-                        if(Math.abs(currPitch) > desiredPitch){
-                            autoStep--;
-                        } else{
-                            robot.setDrive(0, 0,0);
-                        }
-                        break;
-                }
-            } else{
-                robot.setDrive(xspd, yspd, turnspd);
+            if (swerveStick.getRawButton(7)) {
+                balance.periodic(robot);
+            } else {
+                initialize = false;
                 autoStep = 0;
             }
-
-
-
-            if (swerveStick.getRawButton(1)) {
-                resetting = true;
-                robot.setOffsetLeftA();
-                robot.setOffsetLeftB();
-                robot.setOffsetRightA();
-                robot.setOffsetRightB();
-
-                robot.resetAttitude();
-                robot.resetPIDPivot();
-
-                robot.resetStartHeading();
-
-                robot.resetStartDists();
-
-                robot.resetStartPivots();
+            if (swerveStick.getRawButton(8)) {
+                balanceBack.periodic(robot);
+            } else {
+                initialize1 = false;
+                autoStepback = 0;
+            }
+            if(!swerveStick.getRawButton(7)&&!swerveStick.getRawButton(8)){
+                robot.setDrive(xspd,yspd,turnspd);
             }
         }
+
+
+        if (swerveStick.getRawButton(1)) {
+            resetting = true;
+            robot.setOffsetLeftA();
+            robot.setOffsetLeftB();
+            robot.setOffsetRightA();
+            robot.setOffsetRightB();
+
+            robot.resetAttitude();
+            robot.resetPIDPivot();
+
+            robot.resetStartHeading();
+
+            robot.resetStartDists();
+
+            robot.resetStartPivots();
+        }
+
         SmartDashboard.putBoolean("I am resetting", resetting);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
@@ -331,6 +257,4 @@ public class DriveCode extends GenericTeleop{
 
 
     }
-
-
 }
