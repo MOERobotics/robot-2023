@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.Drive5Feet;
 import frc.robot.autonomous.genericAutonomous;
-import frc.robot.autonomous.trajectoryAuto;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;

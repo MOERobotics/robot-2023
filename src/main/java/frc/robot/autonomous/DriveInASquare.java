@@ -1,21 +1,23 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.generic.GenericRobot;
 
 public class DriveInASquare extends genericAutonomous {
     int autonomousStep = 0;
+    double xPower = 0;
+    double yPower = 0;
+    double turnPower = 0; //in radians
 
     double startingPose;
-    double drive_distance = 12;
-    double turning_speed = 2.5;
-    double starting_pose = 0;
-    double basePower = 35;
-    double turnPower = 2.5;
-    double length = 12;
+    double length = 36; //in inches
+    double arclength = 90; //in degrees
+
+    double noPower = 0;
+    double defaultPower = 5; //in inches
+    double defaultTurnPower = 1; //in radians
+
+
     Pose2d robotPose;
 
     @Override
@@ -29,70 +31,63 @@ public class DriveInASquare extends genericAutonomous {
         switch(autonomousStep){
             case 0: //reset
                 robot.SwerveAutoReset();
+                robot.resetStartPivots();
+                robot.resetStartDists();
+                robot.resetStartHeading();
+
                 startingPose = robotPose.getX();
-                autonomousStep += 1;
+                xPower = defaultPower;
+                autonomousStep++;
                 break;
             case 1:
                 if(robotPose.getX() >= startingPose+length){
-                    robot.setDrive(0,0,0);
+                    xPower = noPower;
+                    startingPose = robotPose.getY();
+                    //TODO: might have to change to negative
+                    yPower = defaultPower;
                     autonomousStep++;
                 }
                 break;
             case 2:
-                startingPose = robotPose.getY();
-                robot.setDrive(0,basePower, 0);
-                autonomousStep++;
-                break;
-            case 3:
                 if(robotPose.getY()<= startingPose-length){
-                    robot.setDrive(0,0,0);
+                    yPower = noPower;
+                    startingPose = robotPose.getX();
+                    xPower = -defaultPower;
+                    autonomousStep++;
+                }
+                break;
+            case 3: //Travel to ___ and start turning 90 degrees to the left
+                if(robotPose.getX()<= startingPose-length){
+                    xPower = noPower;
+                    startingPose = robotPose.getRotation().getDegrees();
+                    turnPower = -defaultTurnPower;
                     autonomousStep++;
                 }
                 break;
             case 4:
-                startingPose = robotPose.getX();
-                robot.setDrive(-basePower,0,0);
-                autonomousStep++;
+                if(robotPose.getRotation().getDegrees()<=startingPose-arclength){
+                    turnPower = noPower;
+                    startingPose = robotPose.getY();
+                    yPower = defaultPower;
+                    autonomousStep++;
+                }
                 break;
             case 5:
-                if(robotPose.getX()<= startingPose-length){
-                    robot.setDrive(0,0,0);
+                if(robotPose.getY()<= startingPose+length){
+                    yPower = noPower;
+                    startingPose = robotPose.getRotation().getDegrees();
+                    turnPower = -defaultTurnPower;
                     autonomousStep++;
                 }
                 break;
             case 6:
-                startingPose = robotPose.getRotation().getDegrees();
-                robot.setDrive(0,0,turnPower);
-                autonomousStep++;
-                break;
-            case 7:
-                if(robotPose.getRotation().getDegrees()<=startingPose-90){
-                    robot.setDrive(0,0,0);
-                    autonomousStep++;
-                }
-                break;
-            case 8:
-                startingPose = robotPose.getY();
-                robot.setDrive(0,basePower,0);
-                autonomousStep++;
-                break;
-            case 9:
-                if(robotPose.getY()<= startingPose+12){
-                    robot.setDrive(0,0,0);
-                    autonomousStep++;
-                }
-                break;
-            case 10:
-                startingPose = robotPose.getRotation().getDegrees();
-                robot.setDrive(0,0,-turnPower);
-                autonomousStep++;
-                break;
-            case 11:
-                if(robotPose.getRotation().getDegrees() <=90 && robotPose.getRotation().getDegrees() > 0){
-                    robot.setDrive(0,0,0);
+                if(robotPose.getRotation().getDegrees() <= arclength && robotPose.getRotation().getDegrees() > 0){
+                    turnPower = noPower;
                     autonomousStep++;
                 }
                 break;
         }
+
+        robot.setDrive(xPower, yPower, turnPower);
     }
 }
