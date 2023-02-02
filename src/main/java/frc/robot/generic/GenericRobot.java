@@ -61,7 +61,9 @@ public abstract class GenericRobot {
             }
     }
     public void SwerveAutoReset(){}
-
+    public double getMaxInchesPerSecond() {
+        return 0.0;
+    }
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
                                                 PIDController yController, PIDController thetaController){}
 

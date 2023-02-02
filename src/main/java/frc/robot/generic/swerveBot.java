@@ -259,30 +259,6 @@ public class swerveBot extends GenericRobot{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////pigeon commmands
 
-    @Override
-    public double getPigeonYaw() {
-        return pigeon.getYaw();
-    }
-
-    @Override
-    public double getPigeonRoll() {
-        return pigeon.getRoll();
-    }
-
-    @Override
-    public double getPigeonPitch() {
-        return pigeon.getPitch();
-    }
-
-    @Override
-    public double getAbsoluteCompassHeadingPigeon() {
-        return pigeon.getAbsoluteCompassHeading();
-    }
-
-    @Override
-    public void resetPigeon() {
-        pigeon.reset();
-    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
 

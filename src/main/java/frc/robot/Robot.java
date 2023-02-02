@@ -26,7 +26,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-   robot.resetPigeon();
   }
 
 
@@ -44,10 +43,6 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("rightBpivotRaw", robot.rawEncoderRightB());
    SmartDashboard.putNumber("pitch", robot.getPitch());
    SmartDashboard.putNumber("roll", robot.getRoll());
-   SmartDashboard.putNumber("pigeonYaw", robot.getPigeonYaw());
-   SmartDashboard.putNumber("pigeonPitch", robot.getPigeonPitch());
-   SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
-   SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
    robot.getDriveDistanceInchesLeftA();
    robot.getDriveDistanceInchesLeftB();
