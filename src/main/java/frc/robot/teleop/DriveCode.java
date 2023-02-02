@@ -68,8 +68,8 @@ public class DriveCode extends GenericTeleop{
             Pose2d robotPose = robot.getPose();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
-            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxMeterPerSec() / 2;
-            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxMeterPerSec() / 2;
+            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
+            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
             double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
 
             currPitch = robot.getPitch(); //test switching roll and pitch
@@ -103,6 +103,7 @@ public class DriveCode extends GenericTeleop{
             if (swerveStick.getRawButton(6)) {
                 xspd *= 2;
                 yspd *= 2;
+                SmartDashboard.putNumber("xspd", xspd);
             }
 
             curPosOnRamp = 0;
@@ -227,6 +228,7 @@ public class DriveCode extends GenericTeleop{
             }
         }
         SmartDashboard.putBoolean("I am resetting", resetting);
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////start auto balance

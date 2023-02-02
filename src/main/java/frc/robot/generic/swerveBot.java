@@ -2,6 +2,7 @@ package frc.robot.generic;
 
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -22,8 +23,11 @@ import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 public class swerveBot extends GenericRobot{
     private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
+    WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
+
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
     CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(1);
     CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
     CANCoder RightApivotAbsEncoder = new WPI_CANCoder(2);
@@ -154,20 +158,20 @@ public class swerveBot extends GenericRobot{
     }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
     @Override
-    public double getMaxMeterPerSec() {
-        return 14.5; //TODO: verify this
+    public double getMaxInchesPerSecond() {
+        return 120; //TODO: verify this
     }
     @Override
     public double getMaxRadPerSec(){
-        return 18; //TODO: idk if this even matters
+        return 120/14; //TODO: idk if this even matters
     }
     @Override
     public SwerveDriveKinematics kinematics() {
         return new SwerveDriveKinematics(
-                new Translation2d(Units.inchesToMeters(14), Units.inchesToMeters(14)),
-                new Translation2d(Units.inchesToMeters(14), -Units.inchesToMeters(14)),
-                new Translation2d(-Units.inchesToMeters(14), Units.inchesToMeters(14)),
-                new Translation2d(-Units.inchesToMeters(14), -Units.inchesToMeters(14))
+                new Translation2d(14, 14),//everything is in inches
+                new Translation2d(14, -14),
+                new Translation2d(-14, 14),
+                new Translation2d(-14, -14)
         );
     }
 
@@ -252,6 +256,34 @@ public class swerveBot extends GenericRobot{
     public void resetAttitude() {
         navx.reset();
     }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////pigeon commmands
+
+    @Override
+    public double getPigeonYaw() {
+        return pigeon.getYaw();
+    }
+
+    @Override
+    public double getPigeonRoll() {
+        return pigeon.getRoll();
+    }
+
+    @Override
+    public double getPigeonPitch() {
+        return pigeon.getPitch();
+    }
+
+    @Override
+    public double getAbsoluteCompassHeadingPigeon() {
+        return pigeon.getAbsoluteCompassHeading();
+    }
+
+    @Override
+    public void resetPigeon() {
+        pigeon.reset();
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
 
 
@@ -259,41 +291,51 @@ public class swerveBot extends GenericRobot{
 //////////////////////////////////////////////////////////////////////////drive encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return 6.75*4*Math.PI/1.27/1.0625;
+        return 6.75/12.375*1.03;
     }
 
     @Override
     public double encoderLeftBDriveTicksPerInch() {
-        return 6.75/(4*Math.PI)/1.27/1.0625;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
     public double encoderRightADriveTicksPerInch() {
-        return 6.75/(4*Math.PI)/1.27/1.0625;
+        return encoderLeftADriveTicksPerInch();
+    }
+
+    @Override
+    public double convertInchpsToRPM() {
+        return 32.73*1.03;
     }
 
     @Override
     public double encoderRightBDriveTicksPerInch() {
-        return 6.75/(4*Math.PI)/1.27/1.0625;
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
     public double encoderTicksLeftDriveA() {
+        SmartDashboard.putNumber("encoderTicksLeftA", encoderLeftA.getPosition());
         return encoderLeftA.getPosition();
     }
 
     @Override
     public double encoderTicksLeftDriveB() {
+        SmartDashboard.putNumber("encoderTicksLeftB", encoderLeftB.getPosition());
         return encoderLeftB.getPosition();
     }
 
     @Override
     public double encoderTicksRightDriveA() {
+        SmartDashboard.putNumber("encoderTicksRightA", encoderRightA.getPosition());
+        SmartDashboard.putNumber("conversionFactor", encoderRightA.getPositionConversionFactor());
         return encoderRightA.getPosition();
     }
 
     @Override
     public double encoderTicksRightDriveB() {
+        SmartDashboard.putNumber("encoderTicksRightB", encoderRightB.getPosition());
         return encoderRightB.getPosition();
     }
 //////////////////////////////////////////////////////////////////////////////////////drive power
@@ -319,7 +361,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setLeftDriveARPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("leftMotorArpm", encoderLeftA.getVelocity());
         SmartDashboard.putNumber("leftAWantRPM", rpm);
         leftMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -327,7 +368,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setLeftDriveBRPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("leftMotorBrpm", encoderLeftB.getVelocity());
         SmartDashboard.putNumber("leftBWantRPM", rpm);
         leftMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -335,7 +375,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setRightDriveARPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("rightMotorArpm", encoderRightA.getVelocity());
         SmartDashboard.putNumber("rightAWantRPM", rpm);
         rightMotorARPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
@@ -343,7 +382,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setRightDriveBRPM(double rpm) {
-        rpm*= 5000/14.5;
         SmartDashboard.putNumber("rightMotorBrpm", encoderRightB.getVelocity());
         SmartDashboard.putNumber("rightBWantRPM", rpm);
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
