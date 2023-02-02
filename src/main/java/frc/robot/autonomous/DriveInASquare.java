@@ -86,6 +86,7 @@ public class DriveInASquare extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
+
         }
 
         robot.setDrive(xPower, yPower, turnPower);
