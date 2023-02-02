@@ -10,9 +10,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autonomous.createTrajectory;
-import frc.robot.autonomous.genericAutonomous;
-import frc.robot.autonomous.trajectoryAuto;
+import frc.robot.autonomous.*;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
@@ -25,7 +23,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new trajectoryAuto();
+  genericAutonomous autonomous = new baseAuto();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
@@ -34,7 +32,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-
+   robot.resetPigeon();
   }
 
 
@@ -50,6 +48,17 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("leftBpivotRaw", robot.rawEncoderLeftB());
    SmartDashboard.putNumber("rightApivotRaw", robot.rawEncoderRightA());
    SmartDashboard.putNumber("rightBpivotRaw", robot.rawEncoderRightB());
+   SmartDashboard.putNumber("pitch", robot.getPitch());
+   SmartDashboard.putNumber("roll", robot.getRoll());
+   SmartDashboard.putNumber("pigeonYaw", robot.getPigeonYaw());
+   SmartDashboard.putNumber("pigeonPitch", robot.getPigeonPitch());
+   SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
+   SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
+
+   robot.getDriveDistanceInchesLeftA();
+   robot.getDriveDistanceInchesLeftB();
+   robot.getDriveDistanceInchesRightB();
+   robot.getDriveDistanceInchesRightA();
   }
 
 
@@ -95,10 +104,12 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
    var pose = vision.getPose();
-   if (pose != null){
-    field.setRobotPose(pose.toPose2d());
+   if (vision.poseFound()){
+      field.setRobotPose(pose.toPose2d());
    }
    SmartDashboard.putData("Field", field);
+   SmartDashboard.putNumber("field x", field.getRobotPose().getX());
+   SmartDashboard.putNumber("field y", field.getRobotPose().getY());
    SmartDashboard.putNumber("x", pose.getX());
    SmartDashboard.putNumber("y", pose.getY());
    SmartDashboard.putNumber("z", pose.getZ());

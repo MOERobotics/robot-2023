@@ -5,14 +5,19 @@
 package frc.robot.vision;
 
 import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 public final class MoeNetVision {
 
     NetworkTableEntry poseEntry;
 
     double offset = 0;
+    Field2d field = new Field2d();
+
 
     public MoeNetVision(NetworkTableInstance nt){
         var sd = nt.getTable("SmartDashboard");
@@ -21,7 +26,7 @@ public final class MoeNetVision {
     public Pose3d getPose(){
         var pose = poseEntry.getDoubleArray(new double[0]);
         if (pose.length == 0){
-            return new Pose3d(5,5, 5, new Rotation3d(0, 0, offset++));
+            return null;
         }
 
 
@@ -39,5 +44,25 @@ public final class MoeNetVision {
         var rotation = new Rotation3d(quaternion);
         var pose3d = new Pose3d(x, y, z, rotation);
         return pose3d;
+    }
+
+    public Pose2d robotFieldPoseInches(){
+        if (poseFound()) {
+            var pose = getPose();
+            var Pos2d = pose.toPose2d();
+            Pose2d inches = new Pose2d(Units.metersToInches(Pos2d.getX()), Units.metersToInches(Pos2d.getY()),
+                                        Pos2d.getRotation());
+            field.setRobotPose(inches);
+            return field.getRobotPose();
+        }
+        return null;
+    }
+
+    public boolean poseFound(){
+        var pose = poseEntry.getDoubleArray(new double[0]);
+        if (pose.length == 0){
+            return false;
+        }
+        return true;
     }
 }
