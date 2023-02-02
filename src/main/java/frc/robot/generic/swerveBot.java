@@ -214,7 +214,7 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public Pose2d getPose() {
-        double currHeading = this.getYaw();
+        double currHeading = getYaw();
         Pose2d startPose = GenericRobot.defaultPose;
         SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
                 kinematics(), Rotation2d.fromDegrees(-startHeading),

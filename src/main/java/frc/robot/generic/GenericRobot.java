@@ -65,9 +65,6 @@ public abstract class GenericRobot {
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
                                                 PIDController yController, PIDController thetaController){}
 
-    public Pose2d getPose(double startHeading, double currHeading, double[] startDistances, double[] startPivots, Pose2d startPose){
-        return null;
-    }
 
     public double deadzone(double value, double zone){
         if (Math.abs(value) < zone){
