@@ -12,4 +12,8 @@ public abstract class genericAutonomous {
     public void autonomousPeriodic(GenericRobot robot){
 
     }
+
+    public abstract void autonomousInit();
+
+    public abstract void autonomousPeriodic();
 }

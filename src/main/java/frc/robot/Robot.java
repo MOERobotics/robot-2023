@@ -95,10 +95,12 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
    var pose = vision.getPose();
-   if (pose != null){
-    field.setRobotPose(pose.toPose2d());
+   if (vision.poseFound()){
+      field.setRobotPose(pose.toPose2d());
    }
    SmartDashboard.putData("Field", field);
+   SmartDashboard.putNumber("field x", field.getRobotPose().getX());
+   SmartDashboard.putNumber("field y", field.getRobotPose().getY());
   }
 
 
