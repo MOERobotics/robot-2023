@@ -58,38 +58,38 @@ public class autoBalance extends genericCommand {
             currRoll = robot.getRoll();
 
 
-                switch (autoStep) {
-                    case 0:
-                        robot.setDrive(basePower, 0, 0);
-                        if (Math.abs(currPitch) > 5) {
+            switch (autoStep) {
+                case 0:
+                    robot.setDrive(basePower, 0, 0);
+                    if (Math.abs(currPitch) > 5) {
 
-                            boundPos1 = robotPose.getX();//Add length of the robot from front encoder to end of back wheel.
-                            boundPos2 = boundPos1 + 29 - (totalPathLength + 56);
-                            boundPos3 = boundPos1 + 56 - (totalPathLength - 56);
-                            autoStep += 1;
+                        boundPos1 = robotPose.getX();//Add length of the robot from front encoder to end of back wheel.
+                        boundPos2 = boundPos1 + 29 - (totalPathLength + 56);
+                        boundPos3 = boundPos1 + 56 - (totalPathLength - 56);
+                        autoStep += 1;
 
 
-                        }
-                        break;
-                    case 1:
+                    }
+                    break;
+                case 1:
 //                        curPosOnRamp = base * Math.sin(currPitch) * (Math.cos(angleOfBoard) / Math.sin(angleOfBoard));
 //                        leftside = basePower*(base - curPosOnRamp)/base;
 //                        rightside = basePower*(base - curPosOnRamp)/base;
-                        robot.setDrive(basePower, 0, 0);
-                        if (Math.abs(currPitch) > 11) {
-                            autoStep += 1;
-                        }
-                        break;
-                    case 2:
-                        robot.setDrive(climbPower, 0, 0);
-                        if (Math.abs(currPitch) < 10) {
-                            autoStep++;
-                        }
-                        break;
-                    case 3:
-                        //initPos = robotPose.getX() ;
-                        robot.setDrive(-correctionPower, 0, 0);
-                        //This is a future feature to stop and let others get on before autobalancing.
+                    robot.setDrive(basePower, 0, 0);
+                    if (Math.abs(currPitch) > 11) {
+                        autoStep += 1;
+                    }
+                    break;
+                case 2:
+                    robot.setDrive(climbPower, 0, 0);
+                    if (Math.abs(currPitch) < 10) {
+                        autoStep++;
+                    }
+                    break;
+                case 3:
+                    //initPos = robotPose.getX() ;
+                    robot.setDrive(-correctionPower, 0, 0);
+                    //This is a future feature to stop and let others get on before autobalancing.
                     /*if(Math.abs(curPitch)<15){
                         leftside = 0;
                         rightside = 0;
@@ -97,8 +97,8 @@ public class autoBalance extends genericCommand {
                     if(leftJoystick.getRawButtonPressed(9)) {
                         autoStep++;
                     }*/
-                        autoStep++;
-                        break;
+                    autoStep++;
+                    break;
                 /*case 4:
                     currentpos = robotPose.getY() ;
                     leftside = -climbPower;
@@ -116,40 +116,40 @@ public class autoBalance extends genericCommand {
                         autoStep++;
                     }
                     break;*/
-                    case 4:
-                        currPosInAutoBalance = robotPose.getX();
-                        if (currPitch < -desiredPitch) {
-                            if (currPosInAutoBalance > boundPos2) {
-                                robot.setDrive(-correctionPower, 0, 0);
-                                initPos = robotPose.getX();
-                            } else {
-                                robot.setDrive(0, 0, 0);
-                                initPos = robotPose.getX();
-                                autoStep++;
-                            }
-                        } else if (currPitch > desiredPitch) {
-                            if (currPosInAutoBalance < boundPos3) {
-                                robot.setDrive(correctionPower, 0, 0);
-                                initPos = robotPose.getX();
-                            } else {
-                                robot.setDrive(0, 0, 0);
-                                initPos = robotPose.getX();
-                                autoStep++;
-                            }
+                case 4:
+                    currPosInAutoBalance = robotPose.getX();
+                    if (currPitch < -desiredPitch) {
+                        if (currPosInAutoBalance > boundPos2) {
+                            robot.setDrive(-correctionPower, 0, 0);
+                            initPos = robotPose.getX();
                         } else {
                             robot.setDrive(0, 0, 0);
                             initPos = robotPose.getX();
                             autoStep++;
                         }
-                        break;
-                    case 5:
-                        if (Math.abs(currPitch) > desiredPitch) {
-                            autoStep--;
+                    } else if (currPitch > desiredPitch) {
+                        if (currPosInAutoBalance < boundPos3) {
+                            robot.setDrive(correctionPower, 0, 0);
+                            initPos = robotPose.getX();
                         } else {
                             robot.setDrive(0, 0, 0);
+                            initPos = robotPose.getX();
+                            autoStep++;
                         }
-                        break;
-                }
+                    } else {
+                        robot.setDrive(0, 0, 0);
+                        initPos = robotPose.getX();
+                        autoStep++;
+                    }
+                    break;
+                case 5:
+                    if (Math.abs(currPitch) > desiredPitch) {
+                        autoStep--;
+                    } else {
+                        robot.setDrive(0, 0, 0);
+                    }
+                    break;
+            }
         }
     }
 }
