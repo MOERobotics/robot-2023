@@ -168,6 +168,7 @@ public class DriveCode extends GenericTeleop {
                         robot.setDrive(0, 0, 2.5);
                         autoSequenceStep++;
                         break;
+
                     case 7:
                         if (robotPose.getRotation().getDegrees() <= startingPose - 90) {
                             robot.setDrive(0, 0, 0);
