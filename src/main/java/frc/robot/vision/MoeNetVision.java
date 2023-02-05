@@ -4,12 +4,11 @@
 
 package frc.robot.vision;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 
 import java.util.List;
 
@@ -19,6 +18,9 @@ public final class MoeNetVision {
             new LimelightCamera(),
             new OakCamera()
     );
+    NetworkTableEntry poseEntry;
+    Field2d field = new Field2d();
+
 
     public MoeNetVision(NetworkTableInstance nt){
     }
@@ -34,5 +36,23 @@ public final class MoeNetVision {
         return pose;
     }
 
+    public Pose2d robotFieldPoseInches(){
+        if (poseFound()) {
+            var pose = getPose();
+            var Pos2d = pose.toPose2d();
+            Pose2d inches = new Pose2d(Units.metersToInches(Pos2d.getX()), Units.metersToInches(Pos2d.getY()),
+                                        Pos2d.getRotation());
+            field.setRobotPose(inches);
+            return field.getRobotPose();
+        }
+        return null;
+    }
 
+    public boolean poseFound(){
+        var pose = poseEntry.getDoubleArray(new double[0]);
+        if (pose.length == 0){
+            return false;
+        }
+        return true;
+    }
 }

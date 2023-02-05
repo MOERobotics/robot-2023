@@ -49,17 +49,18 @@ public class trajectoryAuto extends genericAutonomous{
         switch(autonomousStep){
             case 0:
                 robot.SwerveAutoReset();
+                robot.resetStartHeading();
+                robot.resetStartDists();
+                robot.resetStartPivots();
                 startYaw = robot.getYaw();
                 startDist = new double[] {robot.getDriveDistanceInchesLeftA(), robot.getDriveDistanceInchesRightA(),
                 robot.getDriveDistanceInchesLeftB(), robot.getDriveDistanceInchesRightB()};
                 startPivot = new double[] {robot.getPivotLeftMotorA(), robot.getPivotRightMotorA(),
                 robot.getDriveDistanceInchesLeftB(), robot.getDriveDistanceInchesRightB()};
-                startPose = robot.getPose(robot.getYaw(), robot.getYaw(), startDist, startPivot,
-                        new Pose2d(0,0, Rotation2d.fromDegrees(0)));
                 autonomousStep += 1;
                 break;
             case 1:
-                currPose = robot.getPose(startYaw, robot.getYaw(),startDist, startPivot, startPose);
+                currPose = robot.getPose();
                 robot.SwerveControllerCommand(myTrajectory, currPose, robot.kinematics(), xControl, yControl,
                         radControl);
                 /*if (currPose.getX() >= 48){
