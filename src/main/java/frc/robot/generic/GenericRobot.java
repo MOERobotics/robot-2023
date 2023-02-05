@@ -293,7 +293,7 @@ public abstract class GenericRobot {
     public void setBottomRollerRPM(double rpm){}
     public void setTopRollerRPM(double rpm){}
 
-    public void setTopRollerPosPower(double power){}
+    public void raiseTopRoller(boolean up){}
 
     public double getTopRollerPosition(){return 0;}
 
