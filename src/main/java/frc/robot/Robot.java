@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new baseAuto();
+  genericAutonomous autonomous = new overStationAndBalance();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
