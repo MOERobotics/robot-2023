@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
 
-  MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+  MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
   @Override
@@ -71,6 +71,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     autonomous.autonomousPeriodic(robot);
+    vision.genericPeriodic();
   }
 
 
@@ -83,6 +84,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveCode.teleopPeriodic(robot);
+   vision.genericPeriodic();
   }
 
 
@@ -91,7 +93,9 @@ public class Robot extends TimedRobot {
 
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+   vision.disabledPeriodic();
+  }
 
 
   @Override

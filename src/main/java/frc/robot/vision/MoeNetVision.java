@@ -7,13 +7,14 @@ package frc.robot.vision;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import frc.robot.generic.GenericRobot;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public final class MoeNetVision {
-
+    final double ROTATING_THRESHOLD = 1;
     List<NetworkCamera> cameras = List.of(
             new LimelightCamera(),
             new OakCamera()
@@ -21,11 +22,87 @@ public final class MoeNetVision {
     NetworkTableEntry poseEntry;
     Field2d field = new Field2d();
 
+    GenericRobot gr;
+    double currentYaw = 0;
+    LinkedList<Pose3d> staticPoses = new LinkedList<>();
 
-    public MoeNetVision(NetworkTableInstance nt){
+    Pose3d initialPose;
+    Transform3d autoToFieldSpace = new Transform3d();
+
+    public MoeNetVision(GenericRobot gr){
+        this.gr = gr;
     }
 
-    public Pose3d getPose(){
+    public void disabledPeriodic(){
+        double nextYaw = gr.getPigeonYaw();
+        if(Math.abs(nextYaw-currentYaw)>ROTATING_THRESHOLD){
+            staticPoses.clear();
+        }else{
+            Pose3d currentPose = getVisionPose();
+            if(currentPose != null){
+                staticPoses.addLast(currentPose);
+            }
+
+            if(staticPoses.size() > 100){
+                staticPoses.removeFirst();
+            }
+        }
+
+        currentYaw = nextYaw;
+        initialPose = getPoseAverage();
+
+        if(initialPose != null){
+            autoToFieldSpace = new Transform3d(
+                    new Pose3d(),
+                    initialPose
+            );
+        }
+    }
+
+    private Pose3d getPoseAverage() {
+        double sumX = 0;
+        double sumY = 0;
+        double sumZ = 0;
+
+        double sumRotX = 0;
+        double sumRotY = 0;
+        double sumRotZ = 0;
+
+        if(staticPoses.size() !=0) {
+            return null;
+        }
+
+        for (Pose3d pose: staticPoses) {
+            sumX += pose.getX();
+            sumY += pose.getY();
+            sumZ += pose.getZ();
+            sumRotX += pose.getRotation().getX();
+            sumRotY += pose.getRotation().getY();
+            sumRotZ += pose.getRotation().getZ();
+        }
+
+        Translation3d averageTranslation = new Translation3d(sumX/staticPoses.size(), sumY/staticPoses.size(), sumZ/staticPoses.size());
+        //TODO were pretending this works
+        Rotation3d averageRotation = staticPoses.getFirst().getRotation();
+
+        Pose3d newPose = new Pose3d(averageTranslation, averageRotation);
+
+        return newPose;
+    }
+
+    public void genericPeriodic() {
+        Pose3d odometryPose = new Pose3d(gr.getPose());
+        Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
+
+        if(getVisionPose() != null) {
+            autoToFieldSpace = new Transform3d(
+                    odometryPose,
+                    odometryPoseFS.interpolate(getVisionPose(), .04)
+            );
+        }
+    }
+
+    private Pose3d getVisionPose(){
         Pose3d pose = null;
         for(NetworkCamera camera : cameras){
             if(camera.getPose() != null){
@@ -34,6 +111,10 @@ public final class MoeNetVision {
             }
         }
         return pose;
+    }
+
+    public Pose3d getPose(){
+        return initialPose; //TODO fixme
     }
 
     public Pose2d robotFieldPoseInches(){
