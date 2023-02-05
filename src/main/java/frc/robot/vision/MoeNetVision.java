@@ -11,31 +11,28 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.util.List;
+
 public final class MoeNetVision {
 
-    NetworkTableEntry poseEntry;
-
-
+    List<NetworkCamera> cameras = List.of(
+            new LimelightCamera(),
+            new OakCamera()
+    );
 
     public MoeNetVision(NetworkTableInstance nt){
-        var sd = nt.getTable("SmartDashboard");
-        poseEntry = sd.getEntry("pose");
     }
+
     public Pose3d getPose(){
-        var pose = poseEntry.getDoubleArray(new double[0]);
-        if (pose.length == 0){
-            return null;
+        Pose3d pose = null;
+        for(NetworkCamera camera : cameras){
+            if(camera.getPose() != null){
+                pose = camera.getPose();
+                break;
+            }
         }
-
-        double x = pose[0];
-        double y = pose[1];
-        double z = pose[2];
-        double pitch = pose[3];
-        double roll = pose[4];
-        double yaw = pose[5];
-
-        var rotation = new Rotation3d(roll, pitch, yaw);
-        var pose3d = new Pose3d(x, y, z, rotation);
-        return pose3d;
+        return pose;
     }
+
+
 }
