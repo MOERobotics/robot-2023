@@ -31,6 +31,9 @@ public abstract class genericAutonomous {
     public double velocityFunctionTheta(double s){
         return 0;
     }
+    public double vFX(double s, int autoStep) { return 0; }
+    public double vFY(double s, int autoStep) { return 0; }
+
     public double getS(double time){
         return time;
     }
