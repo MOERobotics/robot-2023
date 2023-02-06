@@ -9,7 +9,15 @@ public class ArmCode extends GenericTeleop{
     double collectorRPM = 0;
     double armPower = 0;
     boolean liftTopRoller = false;
+    double topNodeConeHeight = 46;
+    double midNodeConeHeight = 34;
+    double topCubeHeight = 35.5;
+    double midCubeHeight = 23.5;
+    double xVal = 53.64+14;
+    double fieldLength = 325.25*2;
+    double[] nodeYPositions = {19.5,45.1, 66.4, 89.3, 111.54, 133.43, 156.26, 176.91, 201.02};
 
+    //////////////////////////////////////Ideally have a button box and press where you want a cube/cone depoed.
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -36,6 +44,9 @@ public class ArmCode extends GenericTeleop{
         }
 
         armPower = xbox.getRawAxis(1);
+        if (robot.getArmPosition() > topNodeConeHeight || robot.getArmPosition() < 0){
+            armPower = 0;
+        }
 
         ///////////////////////////////////////////////////////////////////////////Power setters
         robot.collect(collectorRPM);
