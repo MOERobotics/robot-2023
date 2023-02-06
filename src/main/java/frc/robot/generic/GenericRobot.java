@@ -267,6 +267,7 @@ public abstract class GenericRobot {
         return defaultPose;
     }
 
+    public void setPose(Pose2d startPose){}
     public void setPose(){}
 
 
