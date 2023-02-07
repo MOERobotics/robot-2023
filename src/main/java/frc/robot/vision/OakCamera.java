@@ -28,7 +28,7 @@ public class OakCamera implements NetworkCamera{
         double w = pose[3];
         double i = pose[4];
         double j = pose[5];
-        double k = pose[5];
+        double k = pose[6];
 
         var rotation = new Rotation3d(new Quaternion(w,i,j,k));
         var pose3d = new Pose3d(x, y, z, rotation);

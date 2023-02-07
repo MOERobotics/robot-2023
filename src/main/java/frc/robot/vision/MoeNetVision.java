@@ -7,7 +7,9 @@ package frc.robot.vision;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
 import java.util.LinkedList;
@@ -67,8 +69,14 @@ public final class MoeNetVision {
         currentYaw = nextYaw;
         initialPose = getPoseAverage();
 
+
+        SmartDashboard.putNumber("staticPosesSize", staticPoses.size());
+
         //We start the transform mapping from the origin(0,0,0) to the initial pose
         if(initialPose != null){
+            double[] initialPoseXYZ = new double[] {initialPose.getX(), initialPose.getY(), initialPose.getZ()};
+
+            SmartDashboard.putNumberArray("initialPose", initialPoseXYZ);
             autoToFieldSpace = new Transform3d(
                     new Pose3d(),
                     initialPose

@@ -101,7 +101,7 @@ public class Robot extends TimedRobot {
   @Override
   public void testInit() {
    SmartDashboard.putData("Field", field);
-
+   robot.setPose();
   }
 
 
@@ -114,6 +114,8 @@ public class Robot extends TimedRobot {
    SmartDashboard.putData("Field", field);
    SmartDashboard.putNumber("field x", field.getRobotPose().getX());
    SmartDashboard.putNumber("field y", field.getRobotPose().getY());
+
+   vision.genericPeriodic();
   }
 
 
