@@ -71,6 +71,8 @@ public class swerveBot extends GenericRobot{
     PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
+    SwerveDriveOdometry m_odometry;
+
 
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////Further Motor Stuff
@@ -216,14 +218,26 @@ public class swerveBot extends GenericRobot{
     public Pose2d getPose() {
         double currHeading = getYaw();
         Pose2d startPose = GenericRobot.defaultPose;
-        SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-                kinematics(), Rotation2d.fromDegrees(-startHeading),
-                new SwerveModulePosition[] {
-                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(-startPivots[0])),
-                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(-startPivots[1])),
-                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(-startPivots[2])),
-                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
-                }, startPose);
+        SmartDashboard.putNumber("leftAStartPos", startDists[0]);
+        SmartDashboard.putNumber("rightAStartPos", startDists[1]);
+        SmartDashboard.putNumber("leftBStartPos", startDists[2]);
+        SmartDashboard.putNumber("rightBStartPos", startDists[3]);
+
+        SmartDashboard.putNumber("leftAStartPivot", startPivots[0]);
+        SmartDashboard.putNumber("rightAStartPivot", startPivots[1]);
+        SmartDashboard.putNumber("leftBStartPivot", startPivots[2]);
+        SmartDashboard.putNumber("rightBStartPivot", startPivots[3]);
+
+        SmartDashboard.putNumber("leftACurrPos", getDriveDistanceInchesLeftA());
+        SmartDashboard.putNumber("rightACurrPos",getDriveDistanceInchesRightA());
+        SmartDashboard.putNumber("leftBCurrPos", getDriveDistanceInchesLeftB());
+        SmartDashboard.putNumber("rightBCurrPos", getDriveDistanceInchesRightB());
+
+        SmartDashboard.putNumber("leftACurrPivot", getPivotLeftMotorA());
+        SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
+        SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
+        SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
+
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(-getPivotLeftMotorA())),
@@ -235,6 +249,22 @@ public class swerveBot extends GenericRobot{
         SmartDashboard.putNumber("yPose", myPose.getY());
         SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
         return myPose;
+    }
+
+    @Override
+    public void setPose(Pose2d startPose){
+        m_odometry = new SwerveDriveOdometry(
+                kinematics(), Rotation2d.fromDegrees(-startHeading),
+                new SwerveModulePosition[] {
+                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(-startPivots[0])),
+                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(-startPivots[1])),
+                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(-startPivots[2])),
+                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
+                }, startPose);
+    }
+    @Override
+    public void setPose(){
+        this.setPose(defaultPose);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////navx commands
@@ -556,5 +586,86 @@ public class swerveBot extends GenericRobot{
         pivotRightMotorB.set(pivotRightBPID.calculate(-Pivot + getPivotRightMotorB()));
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////////////Collector Code
 
+
+    @Override
+    public void setBottomRollerPower(double power) {
+        super.setBottomRollerPower(power);
+    }
+
+    @Override
+    public void setTopRollerPower(double power) {
+        super.setTopRollerPower(power);
+    }
+
+    @Override
+    public void collect(double rpm) {
+        setTopRollerRPM(rpm*.8);
+        setBottomRollerRPM(rpm);
+    }
+
+    @Override
+    public void setBottomRollerRPM(double rpm) {
+        super.setBottomRollerRPM(rpm);
+    }
+
+    @Override
+    public void setTopRollerRPM(double rpm) {
+        super.setTopRollerRPM(rpm);
+    }
+
+    @Override
+    public void setTopRollerPosPower(double power) {
+        super.setTopRollerPosPower(power);
+    }
+
+    @Override
+    public double getTopRollerPosition() {
+        return super.getTopRollerPosition();
+    }
+
+    @Override
+    public boolean cargoInCollector() {
+        return super.cargoInCollector();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////Arm Code
+
+    @Override
+    public void rightArmPower(double power) {
+        super.rightArmPower(power);
+    }
+
+    @Override
+    public void leftArmPower(double power) {
+        super.leftArmPower(power);
+    }
+
+    @Override
+    public void moveArm(double power) {
+        super.moveArm(power);
+    }
+
+    @Override
+    public double getArmPosition() {
+        return super.getArmPosition();
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////Gripper Code
+
+    @Override
+    public void openGripper() {
+        super.openGripper();
+    }
+
+    @Override
+    public void closeGripper() {
+        super.closeGripper();
+    }
+
+    @Override
+    public boolean gripperIsOpen() {
+        return super.gripperIsOpen();
+    }
 }

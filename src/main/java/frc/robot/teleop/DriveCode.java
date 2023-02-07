@@ -58,13 +58,17 @@ public class DriveCode extends GenericTeleop{
         robot.resetStartDists();
 
         robot.resetStartPivots();
+        robot.setPose();
     }
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
 
 
-        if (resetting) robot.resetAttitude();
+        if (resetting){
+            robot.resetAttitude();
+            robot.setPose();
+        }
         if (!resetting || (resetting && Math.abs(robot.getYaw()) < 1)) {
             resetting = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
