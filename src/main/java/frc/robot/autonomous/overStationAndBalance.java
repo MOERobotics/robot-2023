@@ -12,6 +12,7 @@ public class overStationAndBalance extends genericAutonomous{
     double secondDist = 60;
     double radius = 30;
     double desiredTheta = 5*Math.PI/2;
+    double distance =0;
     double desiredInchesPerSecond = 12;
     double ds = desiredInchesPerSecond;
     double xspd, yspd, turnspd;
@@ -75,24 +76,32 @@ public class overStationAndBalance extends genericAutonomous{
                 break;
             case 1:
                 t = m_timer.get();
-                xspd = baseSpd;
-                yspd = 0;
-                autonomousStep++;
+                xspd = positionFunctionX(0);
+                yspd = positionFunctionY(0);
+                Pose2d offTheStation = new Pose2d(151.9,55.3,);
+                if(robot.getPitch() <=2) {
+                    robot.setPose(offTheStation);
+                    autonomousStep++;
+                }
                 break;
             case 2:
-                t1 = m_timer.get();
-                if(t1-t >= 7.5){
-                    xspd = yspd = turnspd = 0;
+                xspd = positionFunctionX(0);
+                yspd = positionFunctionY(0);
+                if(distance >=221.0) {
                     autonomousStep++;
                 }
                 break;
             case 3:
+                xspd = yspd = turnspd = 0;
+                autonomousStep++;
+                break;
+            case 4:
                 xspd = basePower;
                 if (Math.abs(currPitch) > 5) {
                     autonomousStep++;
                 }
                 break;
-            case 4:
+            case 5:
 //                        curPosOnRamp = base * Math.sin(currPitch) * (Math.cos(angleOfBoard) / Math.sin(angleOfBoard));
 //                        leftside = basePower*(base - curPosOnRamp)/base;
 //                        rightside = basePower*(base - curPosOnRamp)/base;
@@ -101,13 +110,13 @@ public class overStationAndBalance extends genericAutonomous{
                     autonomousStep += 1;
                 }
                 break;
-            case 5:
+            case 6:
                 xspd = climbPower;
                 if (Math.abs(currPitch) < 10) {
                     autonomousStep++;
                 }
                 break;
-            case 6:
+            case 7:
                 //initPos = robotPose.getX() ;
                 xspd = -correctionPower;
                 //This is a future feature to stop and let others get on before autobalancing.
@@ -137,7 +146,7 @@ public class overStationAndBalance extends genericAutonomous{
                         autoStep++;
                     }
                     break;*/
-            case 7:
+            case 8:
                 if (currPitch < -desiredPitch) {
                     xspd = -correctionPower;
                 } else if (currPitch > desiredPitch) {
@@ -147,7 +156,7 @@ public class overStationAndBalance extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 8:
+            case 9:
                 if (Math.abs(currPitch) > desiredPitch) {
                     autonomousStep--;
                 } else {
@@ -161,28 +170,48 @@ public class overStationAndBalance extends genericAutonomous{
 
     @Override
     public double positionFunctionX(double s){
-        return 0;
+        if(autonomousStep == 1) {
+            distance = 151.9;
+            double x2 = 207.7;
+            double x1 = 55.8;
+            return velocityFunctionX(x1, x2, distance);
+        } else if( autonomousStep == 2){
+            distance = 33.1;
+            double x1 = 207.7;
+            double x2 = 221.0;
+            return velocityFunctionX(x1, x2, distance);
+        }
+        else{
+            return 0;
+        }
+
     }
 
     @Override
     public double positionFunctionY(double s){
-        return 0;
+        if(autonomousStep == 1 || autonomousStep == 2){
+            distance = 221.0;
+            double y1 = 55.8;
+            double y2 = 276.8;
+            return velocityFunctionY(y1,y2,distance);
+        }else{
+            return 0;
+        }
+
     }
     @Override
     public double positionFunctionTheta(double s){
         return 0;
     }
     @Override
-    public double velocityFunctionX(double s){
-        if(s<=firstDist){
-            return 1*ds;
-        } else{
-            return 0;
-        }
+    public double velocityFunctionX(double x1, double x2, double distance){
+        double dx = (x2-x1)/distance;
+        return dx;
     }
     @Override
-    public double velocityFunctionY(double s){
-        return 0;
+    public double velocityFunctionY(double y1, double y2, double distance){
+        double dy = (y2-y1)/distance;
+        return dy;
     }
     @Override
     public double velocityFunctionTheta(double s){
