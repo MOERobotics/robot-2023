@@ -20,7 +20,7 @@ public class visionTestPose extends genericAutonomous {
     public void autonomousInit(GenericRobot robot) {
         vision = new MoeNetVision(robot);
         if (vision.poseFound()){
-            currPose = vision.robotFieldPoseInches();
+            currPose = vision.robotFieldPoseInches().toPose2d();
             xPosStar = field.getRobotPose().getX();
             yPosStar = field.getRobotPose().getY();
         }
@@ -32,7 +32,7 @@ public class visionTestPose extends genericAutonomous {
         ///////////////////////////////////////////////////find robot pose on field
 
         if (vision.poseFound()){
-            currPose = vision.robotFieldPoseInches();
+            currPose = vision.robotFieldPoseInches().toPose2d();
         }
         double xPos = currPose.getX();
         double yPos = currPose.getY();
