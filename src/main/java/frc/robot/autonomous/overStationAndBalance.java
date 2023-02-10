@@ -1,6 +1,7 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
@@ -16,9 +17,12 @@ public class overStationAndBalance extends genericAutonomous{
     double desiredInchesPerSecond = 12;
     double ds = desiredInchesPerSecond;
     double xspd, yspd, turnspd;
+    double currDistance;
     double t;
     double velCalcT;
     double t1;
+    boolean passedFulcrum;
+    boolean resetPose;
 
     double baseSpd;
     double s_0;
@@ -55,7 +59,7 @@ public class overStationAndBalance extends genericAutonomous{
     }
     @Override
     public void autonomousPeriodic(GenericRobot robot){
-        baseSpd = 30.0;
+        baseSpd = 25.0;
         double correctionPower = -14.0;
         double climbPower = -30.0;
         double basePower = -35.0;
@@ -72,22 +76,41 @@ public class overStationAndBalance extends genericAutonomous{
                 robot.resetStartPivots();
                 robot.resetStartHeading();
                 xspd = yspd = turnspd = 0;
-                autonomousStep ++;
+                autonomousStep++;
                 break;
             case 1:
                 t = m_timer.get();
-                xspd = positionFunctionX(0);
-                yspd = positionFunctionY(0);
-                Pose2d offTheStation = new Pose2d(151.9,55.3,);
-                if(robot.getPitch() <=2) {
+                distance = 151.9;
+                double x2 = 207.7;
+                double x1 = 55.8;
+                double y1 = 55.8;
+                double y2 = 276.8;
+                xspd = velocityFunctionX(0);
+                yspd = velocityFunctionY(0);
+                if(Math.abs(robot.getPitch())<=2){
+                    passedFulcrum = true;
+                }
+                if(passedFulcrum && Math.abs(robot.getPitch())>2){
+                    resetPose = true;
+                }
+                Pose2d offTheStation = new Pose2d(151.9,55.3, Rotation2d.fromDegrees(0));
+                if(robot.getPitch() <=2&&resetPose){
                     robot.setPose(offTheStation);
+                    passedFulcrum = false;
+                    resetPose = false;
                     autonomousStep++;
                 }
                 break;
             case 2:
-                xspd = positionFunctionX(0);
-                yspd = positionFunctionY(0);
-                if(distance >=221.0) {
+                distance = 33.1;
+                x1 = 207.7;
+                x2 = 221.0;
+                y1 = 55.8;
+                y2 = 276.8;
+                currDistance = Math.sqrt((x1-robot.getPose().getX())*(x1-robot.getPose().getX()) + (y1-robot.getPose().getY())*(y1-robot.getPose().getY()));
+                xspd = velocityFunctionX(0);
+                yspd = velocityFunctionY(0);
+                if(distance <=currDistance) {
                     autonomousStep++;
                 }
                 break;
@@ -174,12 +197,12 @@ public class overStationAndBalance extends genericAutonomous{
             distance = 151.9;
             double x2 = 207.7;
             double x1 = 55.8;
-            return velocityFunctionX(x1, x2, distance);
+            return 0;
         } else if( autonomousStep == 2){
             distance = 33.1;
             double x1 = 207.7;
             double x2 = 221.0;
-            return velocityFunctionX(x1, x2, distance);
+            return 0;
         }
         else{
             return 0;
@@ -193,7 +216,7 @@ public class overStationAndBalance extends genericAutonomous{
             distance = 221.0;
             double y1 = 55.8;
             double y2 = 276.8;
-            return velocityFunctionY(y1,y2,distance);
+            return velocityFunctionY(distance);
         }else{
             return 0;
         }
@@ -204,14 +227,24 @@ public class overStationAndBalance extends genericAutonomous{
         return 0;
     }
     @Override
-    public double velocityFunctionX(double x1, double x2, double distance){
-        double dx = (x2-x1)/distance;
-        return dx;
+    public double velocityFunctionX(double s){
+        if(autonomousStep == 1){
+          return baseSpd;
+        }else if(autonomousStep == 2){
+            return baseSpd;
+        } else{
+            return 0;
+        }
     }
     @Override
-    public double velocityFunctionY(double y1, double y2, double distance){
-        double dy = (y2-y1)/distance;
-        return dy;
+    public double velocityFunctionY(double s){
+        if(autonomousStep == 1){
+            return 0;
+        } else if(autonomousStep ==2){
+            return 0;
+        } else{
+            return 0;
+        }
     }
     @Override
     public double velocityFunctionTheta(double s){
