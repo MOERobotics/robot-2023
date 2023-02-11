@@ -44,10 +44,10 @@ public class TherMOEDynamic extends GenericRobot{
     RelativeEncoder encoderPivotRightB = pivotRightMotorB.getEncoder();
     RelativeEncoder encoderPivotLeftB = pivotLeftMotorB.getEncoder();
 
-    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(6);
-    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(5);
-    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(4);
-    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
+    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(31);
+    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(32);
+    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(34);
+    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(33);
 
 //////////////////////////////////////////////////////////////////////////////////////Arm Motors
 
