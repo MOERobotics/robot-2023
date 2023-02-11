@@ -18,13 +18,17 @@ public class ArmCode extends GenericTeleop{
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
+        // Bumpers left 5, right 6
+        /*
         if (xbox.getRawButton(5)){ //move roller up and down
             liftTopRoller = true;
         }
         else if (xbox.getRawButton(6)){
             liftTopRoller = false;
         }
-
+*/
+        // 2 is b, 3 is x
+        /*
         if (xbox.getRawButton(3)){ //collect in and out
             collectorRPM = 1000;
         }
@@ -34,12 +38,12 @@ public class ArmCode extends GenericTeleop{
         else{
             collectorRPM = 0;
         }
-
+*/
         armPower = xbox.getRawAxis(1);
 
         ///////////////////////////////////////////////////////////////////////////Power setters
-        robot.collect(collectorRPM);
-        robot.raiseTopRoller(liftTopRoller);
+        //robot.collect(collectorRPM);
+        //robot.raiseTopRoller(liftTopRoller);
         robot.moveArm(armPower);
 
     }
