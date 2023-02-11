@@ -222,7 +222,7 @@ public class TherMOEDynamic extends GenericRobot{
     }
 
     @Override
-    public void setPose() {
+    public void setPose(Pose2d startPose) {
         m_odometry = new SwerveDriveOdometry(
                 kinematics(), Rotation2d.fromDegrees(-startHeading),
                 new SwerveModulePosition[] {
@@ -230,7 +230,12 @@ public class TherMOEDynamic extends GenericRobot{
                         new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(-startPivots[1])),
                         new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(-startPivots[2])),
                         new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
-                }, defaultPose);
+                }, startPose);
+    }
+
+    @Override
+    public void setPose() {
+        this.setPose(defaultPose);
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////yaw pitch and roll- navX and pigeon

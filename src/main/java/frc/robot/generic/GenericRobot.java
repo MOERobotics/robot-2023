@@ -313,5 +313,13 @@ public abstract class GenericRobot {
 
     public boolean gripperIsOpen(){return false;}
 
+    ///////////////////////////////////////////////////////////////////////////////////Tape Sensors
+
+    public boolean getLeftASensor(){return false;}
+    public boolean getLeftBSensor(){return false;}
+    public boolean getRightASensor(){return false;}
+    public boolean getRightBSensor(){return false;}
+
+
 
 }
