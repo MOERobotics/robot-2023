@@ -22,6 +22,8 @@ public abstract class GenericRobot {
     double[] startPivots;
     double startHeading;
 
+    boolean Red;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
                                SwerveModuleState backLeft, SwerveModuleState backRight){
@@ -320,6 +322,8 @@ public abstract class GenericRobot {
     public boolean getRightASensor(){return false;}
     public boolean getRightBSensor(){return false;}
 
+    public boolean getRed(){return Red;}
 
+    public void setRed(boolean redStatus){Red = redStatus;}
 
 }
