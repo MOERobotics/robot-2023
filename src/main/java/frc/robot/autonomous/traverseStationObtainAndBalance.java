@@ -62,12 +62,19 @@ public class traverseStationObtainAndBalance extends genericAutonomous{
     double boundPos1;
     double boundPos2;
     double boundPos3;
+    double lengthOfField = 450.1;
     @Override
     public void autonomousInit(GenericRobot robot){
         m_timer.reset();
         robot.resetStartDists();
         robot.resetStartPivots();
         robot.resetStartHeading();
+        if(robot.getRed()){
+            yspd = -yspd;
+            robot.setPose(new Pose2d(lengthOfField - startPosition.x, startPosition.y, new Rotation2d(0)));
+        } else{
+            robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
+        }
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
         autonomousStep = 0;
     }
