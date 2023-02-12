@@ -294,7 +294,7 @@ public abstract class GenericRobot {
     public void setBottomRollerRPM(double rpm){}
     public void setTopRollerRPM(double rpm){}
 
-    public void setTopRollerPosPower(double power){}
+    public void raiseTopRoller(boolean up){}
 
     public double getTopRollerPosition(){return 0;}
 
@@ -312,6 +312,14 @@ public abstract class GenericRobot {
     public void closeGripper(){}
 
     public boolean gripperIsOpen(){return false;}
+
+    ///////////////////////////////////////////////////////////////////////////////////Tape Sensors
+
+    public boolean getLeftASensor(){return false;}
+    public boolean getLeftBSensor(){return false;}
+    public boolean getRightASensor(){return false;}
+    public boolean getRightBSensor(){return false;}
+
 
 
 }
