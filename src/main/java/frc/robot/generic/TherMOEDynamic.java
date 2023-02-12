@@ -29,7 +29,7 @@ public class TherMOEDynamic extends GenericRobot{
     CANSparkMax pivotLeftMotorB   = new CANSparkMax(16, kBrushless);
 
     CANSparkMax rightMotorA       = new CANSparkMax(1, kBrushless);
-    CANSparkMax pivotRightMotorA   = new CANSparkMax(0, kBrushless);
+    CANSparkMax pivotRightMotorA   = new CANSparkMax(20, kBrushless);
 
     CANSparkMax rightMotorB       = new CANSparkMax(13, kBrushless);
     CANSparkMax pivotRightMotorB   = new CANSparkMax(12, kBrushless);
@@ -44,10 +44,10 @@ public class TherMOEDynamic extends GenericRobot{
     RelativeEncoder encoderPivotRightB = pivotRightMotorB.getEncoder();
     RelativeEncoder encoderPivotLeftB = pivotLeftMotorB.getEncoder();
 
-    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(6);
-    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(5);
-    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(4);
-    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
+    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(31);
+    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(32);
+    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(34);
+    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(33);
 
 //////////////////////////////////////////////////////////////////////////////////////Arm Motors
 
@@ -148,8 +148,7 @@ public class TherMOEDynamic extends GenericRobot{
         bottomCollectorRollerRPM.setOutputRange(-1,1);
 
         leftArmMotor.setInverted(false);
-        rightArmMotor.setInverted(false);
-        rightArmMotor.follow(leftArmMotor);
+        rightArmMotor.follow(leftArmMotor,true);
 
         topCollectorRoller.setInverted(false);
         bottomCollectorRoller.setInverted(false);
