@@ -267,6 +267,9 @@ public abstract class GenericRobot {
         return defaultPose;
     }
 
+    public void setPose(Pose2d startPose){}
+    public void setPose(){}
+
 
     public void resetStartHeading() {
         startHeading = getYaw();
@@ -281,4 +284,42 @@ public abstract class GenericRobot {
         startPivots = new double[] {getPivotLeftMotorA(), getPivotRightMotorA(),
                 getPivotLeftMotorB(), getPivotRightMotorB()};
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////Collector Code
+
+    public void setBottomRollerPower(double power){}
+    public void setTopRollerPower(double power){}
+
+    public void collect(double rpm){}
+    public void setBottomRollerRPM(double rpm){}
+    public void setTopRollerRPM(double rpm){}
+
+    public void raiseTopRoller(boolean up){}
+
+    public double getTopRollerPosition(){return 0;}
+
+    public boolean cargoInCollector(){return false;}
+
+    ////////////////////////////////////////////////////////////////////////////////////Arm Code
+
+    public void rightArmPower(double power){}
+    public void leftArmPower(double power){}
+    public void moveArm(double power){}
+    public double getArmPosition(){return 0;}
+
+    ///////////////////////////////////////////////////////////////////////////////////Gripper Code
+    public void openGripper(){}
+    public void closeGripper(){}
+
+    public boolean gripperIsOpen(){return false;}
+
+    ///////////////////////////////////////////////////////////////////////////////////Tape Sensors
+
+    public boolean getLeftASensor(){return false;}
+    public boolean getLeftBSensor(){return false;}
+    public boolean getRightASensor(){return false;}
+    public boolean getRightBSensor(){return false;}
+
+
+
 }
