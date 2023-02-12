@@ -420,13 +420,21 @@ public class swerveBot extends GenericRobot{
 ///////////////////////////////////////////////////////////////////////////drive motor
     @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
+        this.setDrive(xspd,yspd,turnspd,false);
+    }
+    @Override
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+        double m_yaw = getYaw();
+        if (auto){
+            m_yaw = getPigeonYaw();
+        }
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
-                yspd, turnspd, Rotation2d.fromDegrees(-getYaw()));
+                yspd, turnspd, Rotation2d.fromDegrees(-m_yaw));
         SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],
-                          frontRightState = moduleStates[1],
-                          backLeftState = moduleStates[2],
-                          backRightState = moduleStates[3];
+                frontRightState = moduleStates[1],
+                backLeftState = moduleStates[2],
+                backRightState = moduleStates[3];
 
         frontLeftState = optimizeSwervePivots(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
         frontRightState = optimizeSwervePivots(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));

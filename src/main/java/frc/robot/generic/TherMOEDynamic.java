@@ -524,13 +524,8 @@ public class TherMOEDynamic extends GenericRobot{
     }
 /////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
-    public void openGripper() {
-        super.openGripper();
-    }
-
-    @Override
-    public void closeGripper() {
-        super.closeGripper();
+    public void openGripper(boolean open) {
+        super.openGripper(open);
     }
 
     @Override
