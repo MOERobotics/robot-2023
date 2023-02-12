@@ -4,6 +4,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
+import org.opencv.core.Point;
+
 
 import static frc.robot.Robot.driveCode;
 
@@ -33,6 +35,14 @@ public class autoRoutine extends genericAutonomous{
     }
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
+
+        Point startingPos = new Point(55.88, 200.47);
+        Point secondPos = new Point(55.88, 200.47);
+        Point thirdPos = new Point(55.88, 200.47);
+        Point fourthPos = new Point(55.88, 200.47);
+
+
+
 
         SmartDashboard.putNumber("autostep", autoStep);
         Pose2d currPose = robot.getPose();
@@ -109,7 +119,7 @@ public class autoRoutine extends genericAutonomous{
         double x2 = 0;
         double y2 = 0;
         double m;
-        /*if (s <= firstDist){
+        if (s <= firstDist){
             x1 = 208.11;
             y1=55.88;
             x2 = 428.86;
@@ -140,12 +150,14 @@ public class autoRoutine extends genericAutonomous{
             m = (y2 - y1)/(x2-x1);
         }else if (s <= firstDist + secondDist+thirdDist+fourthDist+fifthDist){
             return .94;
-        } */
-        return 0;
+        } else{
+            return 0;
+        }
+
     }
     @Override
     public double velocityFunctionY(double s){
-     /*   if (s <= firstDist){
+        if (s <= firstDist){
 
             return -.08;
         }
@@ -158,7 +170,8 @@ public class autoRoutine extends genericAutonomous{
             return -1;
         }else if (s <= firstDist + secondDist+thirdDist+fourthDist+fifthDist){
             return .94;
-        } */
-        return 0;
+        } else {
+            return 0;
+        }
     }
 }
