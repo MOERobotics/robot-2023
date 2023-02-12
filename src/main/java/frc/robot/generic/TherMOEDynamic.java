@@ -12,38 +12,28 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
-public class swerveBot extends GenericRobot{
-    private final Timer m_timer = new Timer();
+public class TherMOEDynamic extends GenericRobot{
+
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
+///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
+    CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
+    CANSparkMax pivotLeftMotorA   = new CANSparkMax(18, kBrushless);
 
+    CANSparkMax leftMotorB        = new CANSparkMax( 17, kBrushless);
+    CANSparkMax pivotLeftMotorB   = new CANSparkMax(16, kBrushless);
 
+    CANSparkMax rightMotorA       = new CANSparkMax(1, kBrushless);
+    CANSparkMax pivotRightMotorA   = new CANSparkMax(0, kBrushless);
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////Motor definitions
-    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(1);
-    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
-    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(2);
-    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(4);
-
-    CANSparkMax leftMotorA        = new CANSparkMax(11, kBrushless);
-    CANSparkMax pivotLeftMotorA   = new CANSparkMax(10, kBrushless);
-
-    CANSparkMax leftMotorB        = new CANSparkMax( 19, kBrushless);
-    CANSparkMax pivotLeftMotorB   = new CANSparkMax(18, kBrushless);
-
-    CANSparkMax rightMotorA       = new CANSparkMax(9, kBrushless);
-    CANSparkMax pivotRightMotorA   = new CANSparkMax(8, kBrushless);
-
-    CANSparkMax rightMotorB       = new CANSparkMax(1, kBrushless);
-    CANSparkMax pivotRightMotorB   = new CANSparkMax(20, kBrushless);
-
+    CANSparkMax rightMotorB       = new CANSparkMax(13, kBrushless);
+    CANSparkMax pivotRightMotorB   = new CANSparkMax(12, kBrushless);
+//////////////////////////////////////////////////////////////////////////////////////swerve Motor encoders
     RelativeEncoder encoderRightA  = rightMotorA.getEncoder();
     RelativeEncoder encoderLeftA   = leftMotorA.getEncoder();
     RelativeEncoder encoderRightB = rightMotorB.getEncoder();
@@ -54,11 +44,26 @@ public class swerveBot extends GenericRobot{
     RelativeEncoder encoderPivotRightB = pivotRightMotorB.getEncoder();
     RelativeEncoder encoderPivotLeftB = pivotLeftMotorB.getEncoder();
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
-    SparkMaxPIDController PivotMotorPIDLeftA = pivotLeftMotorA.getPIDController();
-    SparkMaxPIDController PivotMotorPIDRightA = pivotRightMotorA.getPIDController();
-    SparkMaxPIDController PivotMotorPIDLeftB = pivotLeftMotorB.getPIDController();
-    SparkMaxPIDController PivotMotorPIDRightB = pivotRightMotorB.getPIDController();
+    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(6);
+    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(5);
+    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(4);
+    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
+
+//////////////////////////////////////////////////////////////////////////////////////Arm Motors
+
+    CANSparkMax leftArmMotor = new CANSparkMax(9, kBrushless);
+    CANSparkMax rightArmMotor = new CANSparkMax(8, kBrushless);
+
+
+//////////////////////////////////////////////////////////////////////////////////////Collector Motors
+
+    CANSparkMax topCollectorRoller = new CANSparkMax(2, kBrushless);
+    CANSparkMax bottomCollectorRoller = new CANSparkMax(15, kBrushless);
+
+    SparkMaxPIDController topCollectorRollerRPM = topCollectorRoller.getPIDController();
+    SparkMaxPIDController bottomCollectorRollerRPM = bottomCollectorRoller.getPIDController();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
 
     SparkMaxPIDController leftMotorARPM = leftMotorA.getPIDController();
     SparkMaxPIDController leftMotorBRPM = leftMotorB.getPIDController();
@@ -73,39 +78,11 @@ public class swerveBot extends GenericRobot{
     SwerveDriveOdometry m_odometry;
 
 
-
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////Further Motor Stuff
-    public swerveBot(){
-
+    public TherMOEDynamic(){
         pivotLeftAPID.enableContinuousInput(-180,180);
         pivotLeftBPID.enableContinuousInput(-180,180);
         pivotRightAPID.enableContinuousInput(-180,180);
         pivotRightBPID.enableContinuousInput(-180,180);
-
-        PivotMotorPIDLeftA.setP(0.1);
-        PivotMotorPIDLeftB.setP(0.1);
-        PivotMotorPIDRightA.setP(0.1);
-        PivotMotorPIDRightB.setP(0.1);
-
-        PivotMotorPIDLeftA.setI(0);
-        PivotMotorPIDLeftB.setI(0);
-        PivotMotorPIDRightA.setI(0);
-        PivotMotorPIDRightB.setI(0);
-
-        PivotMotorPIDLeftA.setD(0);
-        PivotMotorPIDLeftB.setD(0);
-        PivotMotorPIDRightA.setD(0);
-        PivotMotorPIDRightB.setD(0);
-
-        PivotMotorPIDLeftA.setFF(0);
-        PivotMotorPIDLeftB.setFF(0);
-        PivotMotorPIDRightA.setFF(0);
-        PivotMotorPIDRightB.setFF(0);
-
-        PivotMotorPIDLeftA.setOutputRange(-1, 1);
-        PivotMotorPIDLeftB.setOutputRange(-1, 1);
-        PivotMotorPIDRightA.setOutputRange(-1, 1);
-        PivotMotorPIDRightB.setOutputRange(-1, 1);
 
         leftMotorA.setInverted(false);
         leftMotorB.setInverted(false);
@@ -156,16 +133,41 @@ public class swerveBot extends GenericRobot{
         rightMotorBRPM.setFF(1.76182e-4);
         rightMotorBRPM.setOutputRange(-1,1);
 
+        topCollectorRollerRPM.setP(0);//TODO: get electrical to tune
+        topCollectorRollerRPM.setI(0);
+        topCollectorRollerRPM.setIZone(0);
+        topCollectorRollerRPM.setD(0);
+        topCollectorRollerRPM.setFF(0);
+        topCollectorRollerRPM.setOutputRange(-1,1);
+
+        bottomCollectorRollerRPM.setP(0); //TODO: get electrical to tune
+        bottomCollectorRollerRPM.setI(0);
+        bottomCollectorRollerRPM.setIZone(0);
+        bottomCollectorRollerRPM.setD(0);
+        bottomCollectorRollerRPM.setFF(0);
+        bottomCollectorRollerRPM.setOutputRange(-1,1);
+
+        leftArmMotor.setInverted(false);
+        rightArmMotor.setInverted(false);
+        rightArmMotor.follow(leftArmMotor);
+
+        topCollectorRoller.setInverted(false);
+        bottomCollectorRoller.setInverted(false);
+
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////Helpful swerve commands
+
     @Override
     public double getMaxInchesPerSecond() {
-        return 120; //TODO: verify this
+        return 120;
     }
+
     @Override
-    public double getMaxRadPerSec(){
-        return 120/14; //TODO: idk if this even matters
+    public double getMaxRadPerSec() {
+        return 120/14;
     }
+
     @Override
     public SwerveDriveKinematics kinematics() {
         return new SwerveDriveKinematics(
@@ -177,73 +179,42 @@ public class swerveBot extends GenericRobot{
     }
 
     @Override
-    public void SwerveAutoReset() {
-        m_timer.reset();
-        m_timer.start();
-    }
-
-    @Override
-    public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
-                                        PIDController yController, PIDController thetaController) {
-
-        var desiredState = trajectory.sample(m_timer.get());
-        var desiredVel = desiredState.velocityMetersPerSecond;
-        var desiredPose = desiredState.poseMeters;
-        SmartDashboard.putNumber("poseX", desiredPose.getX());
-        SmartDashboard.putNumber("poseY", desiredPose.getY());
-        SmartDashboard.putNumber("posrotation", desiredPose.getRotation().getDegrees());
-        var xVelocity = xController.calculate(pose.getX(), desiredPose.getX());
-        var yVelocity = yController.calculate(pose.getY(), desiredPose.getY());
-        var angularVel = thetaController.calculate(pose.getRotation().getDegrees(), desiredPose.getRotation().getDegrees());
-
-        ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(xVelocity, yVelocity, angularVel);
-        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
+    public void setDrive(double xspd, double yspd, double turnspd) {
+        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
+                yspd, turnspd, Rotation2d.fromDegrees(-getYaw()));
+        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],
                 frontRightState = moduleStates[1],
                 backLeftState = moduleStates[2],
                 backRightState = moduleStates[3];
 
-        frontLeftState = SwerveModuleState.optimize(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
-        frontRightState = SwerveModuleState.optimize(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));
-        backLeftState = SwerveModuleState.optimize(backLeftState, Rotation2d.fromDegrees(getPivotLeftMotorB()));
-        backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
+        frontLeftState = optimizeSwervePivots(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
+        frontRightState = optimizeSwervePivots(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));
+        backLeftState = optimizeSwervePivots(backLeftState, Rotation2d.fromDegrees(getPivotLeftMotorB()));
+        backRightState = optimizeSwervePivots(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
 
-        swerve(frontLeftState, frontRightState, backLeftState, backRightState);
-
-
+        if (xspd == 0 && yspd == 0 && turnspd == 0) {
+            stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
+        } else {
+            swerve(frontLeftState, frontRightState, backLeftState, backRightState);
+            oldLeftA = frontLeftState.angle.getDegrees();
+            oldLeftB = backLeftState.angle.getDegrees();
+            oldRightA = frontRightState.angle.getDegrees();
+            oldRightB = backRightState.angle.getDegrees();
+        }
     }
 
     @Override
     public Pose2d getPose() {
         double currHeading = getYaw();
         Pose2d startPose = GenericRobot.defaultPose;
-        SmartDashboard.putNumber("leftAStartPos", startDists[0]);
-        SmartDashboard.putNumber("rightAStartPos", startDists[1]);
-        SmartDashboard.putNumber("leftBStartPos", startDists[2]);
-        SmartDashboard.putNumber("rightBStartPos", startDists[3]);
-
-        SmartDashboard.putNumber("leftAStartPivot", startPivots[0]);
-        SmartDashboard.putNumber("rightAStartPivot", startPivots[1]);
-        SmartDashboard.putNumber("leftBStartPivot", startPivots[2]);
-        SmartDashboard.putNumber("rightBStartPivot", startPivots[3]);
-
-        SmartDashboard.putNumber("leftACurrPos", getDriveDistanceInchesLeftA());
-        SmartDashboard.putNumber("rightACurrPos",getDriveDistanceInchesRightA());
-        SmartDashboard.putNumber("leftBCurrPos", getDriveDistanceInchesLeftB());
-        SmartDashboard.putNumber("rightBCurrPos", getDriveDistanceInchesRightB());
-
-        SmartDashboard.putNumber("leftACurrPivot", getPivotLeftMotorA());
-        SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
-        SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
-        SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
-
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(-getPivotLeftMotorA())),
                         new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(-getPivotRightMotorA())),
                         new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(-getPivotLeftMotorB())),
                         new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(-getPivotRightMotorB()))
-        });
+                });
         SmartDashboard.putNumber("xPose", myPose.getX());
         SmartDashboard.putNumber("yPose", myPose.getY());
         SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
@@ -251,7 +222,7 @@ public class swerveBot extends GenericRobot{
     }
 
     @Override
-    public void setPose(Pose2d startPose){
+    public void setPose(Pose2d startPose) {
         m_odometry = new SwerveDriveOdometry(
                 kinematics(), Rotation2d.fromDegrees(-startHeading),
                 new SwerveModulePosition[] {
@@ -261,12 +232,13 @@ public class swerveBot extends GenericRobot{
                         new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
                 }, startPose);
     }
+
     @Override
-    public void setPose(){
+    public void setPose() {
         this.setPose(defaultPose);
     }
 
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////navx commands
+//////////////////////////////////////////////////////////////////////////////////////////////////yaw pitch and roll- navX and pigeon
     @Override
     public double getYaw() {
         return navx.getYaw();
@@ -286,8 +258,6 @@ public class swerveBot extends GenericRobot{
     public void resetAttitude() {
         navx.reset();
     }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////pigeon commmands
 
     @Override
     public double getPigeonYaw() {
@@ -313,12 +283,7 @@ public class swerveBot extends GenericRobot{
     public void resetPigeon() {
         pigeon.reset();
     }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
-
-
-
-//////////////////////////////////////////////////////////////////////////drive encoders
+//////////////////////////////////////////////////////////////////////////////////////////drive motor encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
         return 6.75/12.375*1.03;
@@ -335,13 +300,13 @@ public class swerveBot extends GenericRobot{
     }
 
     @Override
-    public double convertInchpsToRPM() {
-        return 32.73*1.03;
+    public double encoderRightBDriveTicksPerInch() {
+        return encoderLeftADriveTicksPerInch();
     }
 
     @Override
-    public double encoderRightBDriveTicksPerInch() {
-        return encoderLeftADriveTicksPerInch();
+    public double convertInchpsToRPM() {
+        return 32.73*1.03;
     }
 
     @Override
@@ -359,7 +324,6 @@ public class swerveBot extends GenericRobot{
     @Override
     public double encoderTicksRightDriveA() {
         SmartDashboard.putNumber("encoderTicksRightA", encoderRightA.getPosition());
-        SmartDashboard.putNumber("conversionFactor", encoderRightA.getPositionConversionFactor());
         return encoderRightA.getPosition();
     }
 
@@ -368,12 +332,11 @@ public class swerveBot extends GenericRobot{
         SmartDashboard.putNumber("encoderTicksRightB", encoderRightB.getPosition());
         return encoderRightB.getPosition();
     }
-//////////////////////////////////////////////////////////////////////////////////////drive power
+////////////////////////////////////////////////////////////////////////////////////////////drive motor outputs
     @Override
     public void setLeftDriveAPowerPercentage(double power) {
         leftMotorA.set(power);
     }
-
     @Override
     public void setLeftDriveBPowerPercentage(double power) {
         leftMotorB.set(power);
@@ -417,95 +380,14 @@ public class swerveBot extends GenericRobot{
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
-///////////////////////////////////////////////////////////////////////////drive motor
-    @Override
-    public void setDrive(double xspd, double yspd, double turnspd) {
-        ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
-                yspd, turnspd, Rotation2d.fromDegrees(-getYaw()));
-        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);
-        SwerveModuleState frontLeftState = moduleStates[0],
-                          frontRightState = moduleStates[1],
-                          backLeftState = moduleStates[2],
-                          backRightState = moduleStates[3];
-
-        frontLeftState = optimizeSwervePivots(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
-        frontRightState = optimizeSwervePivots(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));
-        backLeftState = optimizeSwervePivots(backLeftState, Rotation2d.fromDegrees(getPivotLeftMotorB()));
-        backRightState = optimizeSwervePivots(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
-
-        if (xspd == 0 && yspd == 0 && turnspd == 0) {
-            stopSwerve(oldLeftA, oldRightA, oldLeftB, oldRightB);
-        } else {
-            swerve(frontLeftState, frontRightState, backLeftState, backRightState);
-            oldLeftA = frontLeftState.angle.getDegrees();
-            oldLeftB = backLeftState.angle.getDegrees();
-            oldRightA = frontRightState.angle.getDegrees();
-            oldRightB = backRightState.angle.getDegrees();
-        }
-    }
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////Pivot commands
+////////////////////////////////////////////////////////////////////////////////////////////Pivot motor encoder commands
     @Override
     public void resetPIDPivot() {
-        setOffsetLeftA();
-        setOffsetRightA();
-        setOffsetLeftB();
-        setOffsetRightB();
         pivotLeftAPID.reset();
         pivotLeftBPID.reset();
         pivotRightAPID.reset();
         pivotRightBPID.reset();
     }
-//////////////////////////////////////////////////////////////////////////////pivot encoders
-
-    @Override
-    public double rawEncoderLeftA() {
-        return encoderPivotLeftA.getPosition()/rotOverDeg;
-    }
-
-    @Override
-    public double rawEncoderLeftB() {
-        return encoderPivotLeftB.getPosition()/rotOverDeg;
-    }
-
-    @Override
-    public double rawEncoderRightA() {
-        return encoderPivotRightA.getPosition()/rotOverDeg;
-    }
-
-    @Override
-    public double rawEncoderRightB() {
-        return encoderPivotRightB.getPosition()/rotOverDeg;
-    }
-
-    @Override
-    public void setOffsetLeftA() {
-        offsetLeftA = encoderPivotLeftA.getPosition()/rotOverDeg - getPivotLeftMotorA();
-        SmartDashboard.putNumber("offsetLeftA", offsetLeftA);
-    }
-
-    @Override
-    public void setOffsetLeftB() {
-        offsetLeftB = encoderPivotLeftB.getPosition()/rotOverDeg - getPivotLeftMotorB();
-        SmartDashboard.putNumber("offsetLeftB", offsetLeftB);
-    }
-
-    @Override
-    public void setOffsetRightA() {
-        offsetRightA = encoderPivotRightA.getPosition()/rotOverDeg - getPivotRightMotorA();
-        SmartDashboard.putNumber("offsetRightA", offsetRightA);
-    }
-
-    @Override
-    public void setOffsetRightB() {
-        offsetRightB = encoderPivotRightB.getPosition()/rotOverDeg - getPivotRightMotorB();
-        SmartDashboard.putNumber("offsetRightB", offsetRightB);
-    }
-
-    @Override
-    public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight, SwerveModuleState backLeft, SwerveModuleState backRight) {
-        super.swerve(frontLeft, frontRight, backLeft, backRight);
-    }
-
     @Override
     public double getPivotLeftMotorA() {
         if (LeftApivotAbsEncoder.getAbsolutePosition()+45 < 0){
@@ -545,22 +427,17 @@ public class swerveBot extends GenericRobot{
             return (RightBpivotAbsEncoder.getAbsolutePosition() - 135 + 180)%360-180;
         }
     }
-///////////////////////////////////////////////////////////////////////////pivot motor power
-    double rotOverDeg = (150.0/7)/360;
+////////////////////////////////////////////////////////////////////////////////////////////////pivot motor outputs
     @Override
     public void setPivotLeftMotorA(double Pivot) {
-
-        //Pivot += offsetLeftA;
         SmartDashboard.putNumber("PivotLeftMotorADesiredPivot", Pivot);
         SmartDashboard.putBoolean("LeftAAligned", Math.abs(Pivot-getPivotLeftMotorA()) <= 4);
         //PivotMotorPIDLeftA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
         pivotLeftMotorA.set(pivotLeftAPID.calculate(-Pivot + getPivotLeftMotorA()));
-
     }
 
     @Override
     public void setPivotLeftMotorB(double Pivot) {
-        //Pivot += offsetLeftB;
         SmartDashboard.putNumber("PivotLeftMotorBDesiredPivot", Pivot);
         SmartDashboard.putBoolean("LeftBAligned", Math.abs(Pivot-getPivotLeftMotorB()) <= 4);
         //PivotMotorPIDLeftB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
@@ -569,7 +446,6 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setPivotRightMotorA(double Pivot) {
-       // Pivot += offsetRightA;
         SmartDashboard.putNumber("PivotRightMotorADesiredPivot", Pivot);
         SmartDashboard.putBoolean("RightAAligned", Math.abs(Pivot-getPivotRightMotorA()) <= 4);
         //PivotMotorPIDRightA.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
@@ -578,42 +454,44 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setPivotRightMotorB(double Pivot) {
-        //Pivot += offsetRightB;
         SmartDashboard.putNumber("PivotRightMotorBDesiredPivot", Pivot);
         SmartDashboard.putBoolean("RightBAligned", Math.abs(Pivot-getPivotRightMotorB()) <= 4);
         //PivotMotorPIDRightB.setReference(Pivot*rotOverDeg, CANSparkMax.ControlType.kPosition);
         pivotRightMotorB.set(pivotRightBPID.calculate(-Pivot + getPivotRightMotorB()));
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////////////Collector Code
-
+//////////////////////////////////////////////////////////////////////////////////////collector motor outputs
 
     @Override
     public void setBottomRollerPower(double power) {
-        super.setBottomRollerPower(power);
+        bottomCollectorRoller.set(power);
     }
 
     @Override
     public void setTopRollerPower(double power) {
-        super.setTopRollerPower(power);
+        topCollectorRoller.set(power);
     }
 
     @Override
     public void collect(double rpm) {
-        setTopRollerRPM(rpm*.8);
+        setTopRollerRPM(rpm);
         setBottomRollerRPM(rpm);
     }
 
     @Override
     public void setBottomRollerRPM(double rpm) {
-        super.setBottomRollerRPM(rpm);
+        bottomCollectorRollerRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
     @Override
     public void setTopRollerRPM(double rpm) {
-        super.setTopRollerRPM(rpm);
+        topCollectorRollerRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
+    @Override
+    public void raiseTopRoller(boolean up) {
+        super.raiseTopRoller(up);
+    }
 
     @Override
     public double getTopRollerPosition() {
@@ -624,31 +502,28 @@ public class swerveBot extends GenericRobot{
     public boolean cargoInCollector() {
         return super.cargoInCollector();
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////Arm Code
-
+////////////////////////////////////////////////////////////////////////////////////arm motor commands
     @Override
     public void rightArmPower(double power) {
-        super.rightArmPower(power);
+        rightArmMotor.set(power);
     }
 
     @Override
     public void leftArmPower(double power) {
-        super.leftArmPower(power);
+        leftArmMotor.set(power);
     }
 
     @Override
     public void moveArm(double power) {
-        super.moveArm(power);
+        leftArmMotor.set(power);
+        rightArmMotor.set(power);
     }
 
     @Override
     public double getArmPosition() {
         return super.getArmPosition();
     }
-
-    //////////////////////////////////////////////////////////////////////////////////////////Gripper Code
-
+/////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
     public void openGripper() {
         super.openGripper();
