@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 
 import static frc.robot.Robot.driveCode;
@@ -38,8 +39,18 @@ public class autoRoutine extends genericAutonomous {
 
     private final Timer m_timer = new Timer();
 
+    double lengthOfField = 450.1;
+
     public void autonomousInit(GenericRobot robot) {
         m_timer.reset();
+        autoStep = 0;
+        if(robot.getRed()){
+            yspd = -yspd;
+            robot.setPose(new Pose2d(lengthOfField - startPosition.x, startPosition.y, new Rotation2d(0)));
+        } else{
+            robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
+        }
+        robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
         autoStep = 0;
     }
 
@@ -110,7 +121,7 @@ public class autoRoutine extends genericAutonomous {
                     autoStep++;
                 }
                 break;
-            case 4://right chariging board
+            case 4://right of chariging board
                 s_0 = getS(m_timer.get());
                 xspd = velocityFunctionX(s_0) + xPidK * (positionFunctionX(s_0) - currPose.getX());
                 yspd = velocityFunctionY(s_0) + yPidK * (positionFunctionY(s_0) - currPose.getY());
@@ -144,35 +155,9 @@ public class autoRoutine extends genericAutonomous {
                 }
                 break;
             case 8:
-                //initPos = robotPose.getX() ;
                 xspd = -correctionPower;
-                //This is a future feature to stop and let others get on before autobalancing.
-                    /*if(Math.abs(curPitch)<15){
-                        leftside = 0;
-                        rightside = 0;
-                    }
-                    if(leftJoystick.getRawButtonPressed(9)) {
-                        autoStep++;
-                    }*/
                 autoStep++;
                 break;
-                /*case 4:
-                    currentpos = robotPose.getY() ;
-                    leftside = -climbPower;
-                    rightside = -climbPower;
-                    if(Math.abs(initPos - currentpos) > 1){
-                        leftside = 0;
-                        rightside = 0;
-                        autoStep++;
-                    }
-                    break;
-                case 5:
-                    leftside = 0;
-                    rightside = 0;
-                    if(Math.abs(currPitch) < 2){
-                        autoStep++;
-                    }
-                    break;*/
             case 9:
                 if (currPitch < -desiredPitch) {
                     xspd = -correctionPower;
@@ -192,11 +177,8 @@ public class autoRoutine extends genericAutonomous {
                 break;
 
 
-            //balance thing here
-
-
         }
-        robot.setDrive(xspd, -yspd, turnspd);
+        robot.setDrive(xspd, yspd, turnspd);
     }
 
     public double positionFunctionX(double s) {
