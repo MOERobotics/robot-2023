@@ -11,6 +11,7 @@ public class AutoConeCubeStack extends GenericTeleop{
 
     Joystick xbox = new Joystick(1); //TODO: change to a button box later on
     double[] nodeYPositions = {19.5,45.1, 66.4, 89.3, 111.54, 133.43, 156.26, 176.91, 201.02};
+    double xVal = 53.64+14;
     double topNodeConeHeight = 46;
     double midNodeConeHeight = 34;
     double topCubeHeight = 35.5;
@@ -44,7 +45,7 @@ public class AutoConeCubeStack extends GenericTeleop{
             nodeYPos = 2;
             nodeZPos = 2;
             openGripper = false;
-            desiredPoint = new Point(nodeYPositions[nodeYPos], armPositions[nodeZPos]);
+            desiredPoint = new Point(xVal, nodeYPositions[nodeYPos]);
             desiredPose = new Pose2d(desiredPoint.x, desiredPoint.y, new Rotation2d(0));
         }
 
