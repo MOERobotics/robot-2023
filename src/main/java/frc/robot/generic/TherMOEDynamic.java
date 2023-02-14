@@ -170,10 +170,10 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public SwerveDriveKinematics kinematics() {
         return new SwerveDriveKinematics(
-                new Translation2d(14, 14),//everything is in inches
-                new Translation2d(14, -14),
-                new Translation2d(-14, 14),
-                new Translation2d(-14, -14)
+                new Translation2d(14, 10.8125),//everything is in inches
+                new Translation2d(14, -10.8125),
+                new Translation2d(-14, 10.8125),
+                new Translation2d(-14, -10.8125)
         );
     }
 
