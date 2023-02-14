@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
@@ -152,6 +153,9 @@ public class TherMOEDynamic extends GenericRobot{
 
         topCollectorRoller.setInverted(false);
         bottomCollectorRoller.setInverted(false);
+
+        Solenoid retractor = new Solenoid(8);
+        Solenoid gripper = new Solenoid(10);
 
     }
 
