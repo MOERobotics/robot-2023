@@ -133,18 +133,18 @@ public class TherMOEDynamic extends GenericRobot{
         rightMotorBRPM.setFF(1.76182e-4);
         rightMotorBRPM.setOutputRange(-1,1);
 
-        topCollectorRollerRPM.setP(0);//TODO: get electrical to tune
+        topCollectorRollerRPM.setP(7.0e-5);//TODO: get electrical to tune
         topCollectorRollerRPM.setI(0);
         topCollectorRollerRPM.setIZone(0);
-        topCollectorRollerRPM.setD(0);
-        topCollectorRollerRPM.setFF(0);
+        topCollectorRollerRPM.setD(1.0e-4);
+        topCollectorRollerRPM.setFF(1.76182e-4);
         topCollectorRollerRPM.setOutputRange(-1,1);
 
-        bottomCollectorRollerRPM.setP(0); //TODO: get electrical to tune
+        bottomCollectorRollerRPM.setP(7.0e-5); //TODO: get electrical to tune
         bottomCollectorRollerRPM.setI(0);
         bottomCollectorRollerRPM.setIZone(0);
-        bottomCollectorRollerRPM.setD(0);
-        bottomCollectorRollerRPM.setFF(0);
+        bottomCollectorRollerRPM.setD(1.0e-4);
+        bottomCollectorRollerRPM.setFF(1.76182e-4);
         bottomCollectorRollerRPM.setOutputRange(-1,1);
 
         leftArmMotor.setInverted(false);
