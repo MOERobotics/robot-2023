@@ -20,6 +20,7 @@ public final class MoeNetVision {
     final double METERS_PER_INCH= 0.0254;
     final double INCHES_PER_METER = 39.3701;
 
+
     /**
      *
      * @param initial The intial Pose3d
@@ -56,9 +57,9 @@ public final class MoeNetVision {
         if(Math.abs(nextYaw-currentYaw)>ROTATING_THRESHOLD){
             staticPoses.clear();
         }else{
-            Pose3d currentPose = getVisionPose();
+            EstimatedRobotPose currentPose = getVisionPose();
             if(currentPose != null){
-                staticPoses.addLast(currentPose);
+                staticPoses.addLast(currentPose.estimatedPose);
             }
 
             if(staticPoses.size() > 100){
@@ -117,13 +118,13 @@ public final class MoeNetVision {
         if(getVisionPose() != null) {
             autoToFieldSpace = new Transform3d(
                     odometryPose,
-                    odometryPoseFS.interpolate(getVisionPose(), .04)
+                    odometryPoseFS.interpolate(getVisionPose().estimatedPose, .04)
             );
         }
     }
 
-    private Pose3d getVisionPose(){
-        Pose3d pose = null;
+    private EstimatedRobotPose getVisionPose(){
+        EstimatedRobotPose pose = null;
         for(NetworkCamera camera : cameras){
             if(camera.getPose() != null){
                 pose = camera.getPose();

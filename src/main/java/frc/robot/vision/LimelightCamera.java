@@ -14,7 +14,7 @@ public class LimelightCamera implements NetworkCamera{
         poseEntry = ll.getEntry("botpose_wpiblue");
     }
     @Override
-    public Pose3d getPose() {
+    public EstimatedRobotPose getPose() {
         var pose = poseEntry.getDoubleArray(new double[0]);
         if (pose.length == 0){
             return null;
@@ -29,6 +29,7 @@ public class LimelightCamera implements NetworkCamera{
 
         var rotation = new Rotation3d(roll*(Math.PI/180), pitch*(Math.PI/180), yaw*(Math.PI/180));
         var pose3d = new Pose3d(x, y, z, rotation);
-        return pose3d;
+        return new EstimatedRobotPose(pose3d, 0, 1);
+        // return pose3d;
     }
 }
