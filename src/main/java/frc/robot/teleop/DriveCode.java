@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
+
 public class DriveCode extends GenericTeleop{
 
     boolean resetting = false;
@@ -132,6 +133,21 @@ public class DriveCode extends GenericTeleop{
         }
         else{
             collectorRPM = 0;
+        }
+
+        //using Joystick buttons
+
+        if(xbox2.getRawButton(13)){
+            robot.openGripper();
+        }
+        else if (xbox2.getRawButton(12)) {
+            robot.closeGripper();
+        }
+        if(xbox2.getRawButton(14)){
+            robot.raiseTopRoller(true);
+        }
+        else if (xbox2.getRawButton(15)) {
+            robot.raiseTopRoller(false);
         }
 
         armPower = robot.deadzone(xbox2.getRawAxis(1), .2);

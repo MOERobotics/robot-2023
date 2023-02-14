@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.PneumaticHub;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
@@ -79,8 +80,16 @@ public class TherMOEDynamic extends GenericRobot{
 
     SwerveDriveOdometry m_odometry;
 
+    Solenoid gripper;
+    Solenoid retractor;
+
+    private static final int PH_CAN_ID = 1;
+    PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
 
     public TherMOEDynamic(){
+
+        m_ph.enableCompressorAnalog(100,120);
+
         pivotLeftAPID.enableContinuousInput(-180,180);
         pivotLeftBPID.enableContinuousInput(-180,180);
         pivotRightAPID.enableContinuousInput(-180,180);
@@ -155,8 +164,8 @@ public class TherMOEDynamic extends GenericRobot{
         topCollectorRoller.setInverted(false);
         bottomCollectorRoller.setInverted(false);
 
-        Solenoid retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
-        Solenoid gripper = new Solenoid(PneumaticsModuleType.REVPH,10);
+        retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
+        gripper   = new Solenoid(PneumaticsModuleType.REVPH,10);
 
     }
 
@@ -493,7 +502,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void raiseTopRoller(boolean up) {
-        super.raiseTopRoller(up);
+        retractor.set(up);
     }
 
     @Override
@@ -529,16 +538,16 @@ public class TherMOEDynamic extends GenericRobot{
 /////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
     public void openGripper() {
-        super.openGripper();
+        gripper.set(false);
     }
 
     @Override
     public void closeGripper() {
-        super.closeGripper();
+        gripper.set(true);
     }
 
     @Override
     public boolean gripperIsOpen() {
-        return super.gripperIsOpen();
+        return gripper.get();
     }
 }
