@@ -23,6 +23,8 @@ import frc.robot.vision.MoeNetVision;
 public class Robot extends TimedRobot {
   public static final GenericTeleop
           driveCode = new DriveCode();
+  public static final GenericTeleop
+          armCode = new ArmCode();
 
   //GenericRobot robot = new SwerveBot();
   genericAutonomous autonomous = new baseAuto();
