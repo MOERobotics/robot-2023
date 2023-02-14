@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
-public class swerveBot extends GenericRobot{
+public class    swerveBot extends GenericRobot{
     private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
@@ -128,14 +128,14 @@ public class swerveBot extends GenericRobot{
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
-        leftMotorARPM.setP(7.0e-5);
+        leftMotorARPM.setP(1.5e-4);
         leftMotorARPM.setI(0);
         leftMotorARPM.setIZone(0);
         leftMotorARPM.setD(1.0e-4);
         leftMotorARPM.setFF(1.76182e-4);
         leftMotorARPM.setOutputRange(-1,1);
 
-        leftMotorBRPM.setP(7.0e-5);
+        leftMotorBRPM.setP(1.5e-4);
         leftMotorBRPM.setI(0);
         leftMotorBRPM.setD(1.0e-4);
         leftMotorBRPM.setIZone(0);

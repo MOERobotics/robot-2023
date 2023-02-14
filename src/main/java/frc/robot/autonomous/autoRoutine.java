@@ -32,7 +32,7 @@ public class autoRoutine extends genericAutonomous {
     Point fourthPosition = new Point(55.8, 154.37);
     Point endPosition = new Point(115.17, 131.81);
 
-    double firstDist = AutoCodeLines.getDistance(startPosition,secondPosition);
+    double firstDist = AutoCodeLines.getDistance(startPosition,secondPosition)-10;
     double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
     double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
@@ -61,7 +61,7 @@ public class autoRoutine extends genericAutonomous {
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
         double currPitch = robot.getRoll();
-        double correctionPower = -14.0;
+        double correctionPower = 14.0;
         double climbPower = 30.0;
         double basePower = 35.0;
         double baseSpd = ds;
@@ -133,7 +133,7 @@ public class autoRoutine extends genericAutonomous {
                     autoStep++;
                 }
                 break;
-            case 5:
+            case 5: //balance
                 xspd = basePower;
                 if (Math.abs(currPitch) > 5) {
                     autoStep++;
