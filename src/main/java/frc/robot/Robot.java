@@ -12,20 +12,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
 import frc.robot.generic.GenericRobot;
+import frc.robot.generic.TherMOEDynamic;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
+import frc.robot.teleop.ArmCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
 
 
 public class Robot extends TimedRobot {
   public static final GenericTeleop
-          driveCode = new DriveCode();
+          driveCode = new ArmCode();
 
  // GenericRobot robot = new SwerveBot();
   genericAutonomous autonomous = new baseAuto();
   GenericTeleop teleop = driveCode;
-  GenericRobot robot = new swerveBot();
+  GenericRobot robot = new TherMOEDynamic();
 
   MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
   Field2d field = new Field2d();
