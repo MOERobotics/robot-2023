@@ -83,6 +83,10 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid gripper;
     Solenoid retractor;
 
+
+    // Robot chassic dimensions, shaft to shaft.
+    static final double w = 13.875;
+    static final double d = 10.375;
     private static final int PH_CAN_ID = 1;
     PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
 
@@ -183,11 +187,12 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public SwerveDriveKinematics kinematics() {
+
         return new SwerveDriveKinematics(
-                new Translation2d(14, 10.8125),//everything is in inches
-                new Translation2d(14, -10.8125),
-                new Translation2d(-14, 10.8125),
-                new Translation2d(-14, -10.8125)
+                new Translation2d(w, d),//everything is in inches
+                new Translation2d(w, -d),
+                new Translation2d(-w, d),
+                new Translation2d(-w, -d)
         );
     }
 
