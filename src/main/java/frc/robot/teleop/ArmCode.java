@@ -29,10 +29,10 @@ public class ArmCode extends GenericTeleop{
 
         // 2 is b, 3 is x
 
-        if (xbox.getRawButton(3)){ //collect in and out
+        if (xbox.getRawButton(3)){ //collect in
             collectorRPM = 10000;
         }
-        else if (xbox.getRawButton(2)){
+        else if (xbox.getRawButton(2)){ //collect out
             collectorRPM = -10000;
         }
         else{
