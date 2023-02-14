@@ -39,7 +39,7 @@ public class ArmCode extends GenericTeleop{
             collectorRPM = 0;
         }
 
-        armPower = xbox.getRawAxis(1);
+        armPower = robot.deadzone(xbox.getRawAxis(1), .2);
 
         ///////////////////////////////////////////////////////////////////////////Power setters
         robot.collect(collectorRPM);
