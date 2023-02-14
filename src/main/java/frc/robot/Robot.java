@@ -22,12 +22,12 @@ import frc.robot.vision.MoeNetVision;
 
 public class Robot extends TimedRobot {
   public static final GenericTeleop
-          driveCode = new ArmCode();
+          driveCode = new DriveCode();
 
- // GenericRobot robot = new SwerveBot();
+  //GenericRobot robot = new SwerveBot();
   genericAutonomous autonomous = new baseAuto();
   GenericTeleop teleop = driveCode;
-  GenericRobot robot = new TherMOEDynamic();
+  GenericRobot robot = new swerveBot();
 
   MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
   Field2d field = new Field2d();
