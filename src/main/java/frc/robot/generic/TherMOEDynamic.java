@@ -4,21 +4,18 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.*;
+import com.revrobotics.AnalogInput;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.PneumaticHub;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
+import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
 
 public class TherMOEDynamic extends GenericRobot{
 
@@ -82,6 +79,9 @@ public class TherMOEDynamic extends GenericRobot{
 
     Solenoid gripper;
     Solenoid retractor;
+
+    AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
+//    SparkMaxAnalogSensor shoulder = leftArmMotor.getAnalog(CANAnalog.AnalogMode.kAbsolute);
 
 
     // Robot chassic dimensions, shaft to shaft.
@@ -537,9 +537,7 @@ public class TherMOEDynamic extends GenericRobot{
     }
 
     @Override
-    public double getArmPosition() {
-        return super.getArmPosition();
-    }
+    public double getArmPosition() { return shoulder.getPosition(); }
 /////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
     public void openGripper() {
@@ -555,4 +553,5 @@ public class TherMOEDynamic extends GenericRobot{
     public boolean gripperIsOpen() {
         return gripper.get();
     }
+
 }

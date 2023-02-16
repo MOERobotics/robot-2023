@@ -137,16 +137,16 @@ public class DriveCode extends GenericTeleop{
 
         //using Joystick buttons
 
-        if(xbox2.getRawButton(13)){
+        if(xbox2.getRawButton(13)){ //open gripper?
             robot.openGripper();
         }
-        else if (xbox2.getRawButton(12)) {
-            robot.closeGripper();
+        else if (xbox2.getRawButton(12)) { //close gripper?
+             robot.closeGripper();
         }
-        if(xbox2.getRawButton(14)){
+        if(xbox2.getRawButton(14)){ //not quite sure what it does
             robot.raiseTopRoller(true);
         }
-        else if (xbox2.getRawButton(15)) {
+        else if (xbox2.getRawButton(15)) { //same as previous comment
             robot.raiseTopRoller(false);
         }
 
@@ -156,8 +156,6 @@ public class DriveCode extends GenericTeleop{
         robot.collect(collectorRPM);
         robot.raiseTopRoller(liftTopRoller);
         robot.moveArm(armPower);
-
-
     }
 
 

@@ -57,6 +57,8 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
+   SmartDashboard.putNumber("armPosition", robot.getArmPosition());
+
    robot.getDriveDistanceInchesLeftA();
    robot.getDriveDistanceInchesLeftB();
    robot.getDriveDistanceInchesRightB();
