@@ -3,6 +3,9 @@ package frc.robot.teleop;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.commands.autoBalance;
+import frc.robot.commands.autoBalanceBackward;
+import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
 
 
@@ -22,8 +25,11 @@ public class DriveCode extends GenericTeleop{
     double leftside;
     double rightside;
     int autoStep;
+    int autoSequenceStep;
     double currentpos;
     double initPos;
+    double autoStepback;
+    double startingPose;
     double desiredPitch = 9.0;
     double initpos;
     double boundPos1;
@@ -42,6 +48,11 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+    boolean initialize = false;
+    boolean initialize1 = false;
+
+    genericCommand balance = new autoBalance();
+    genericCommand balanceBack = new autoBalanceBackward();
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
     double collectorRPM = 0;
@@ -82,6 +93,31 @@ public class DriveCode extends GenericTeleop{
             Pose2d robotPose = robot.getPose();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
+            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
+            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
+            double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
+
+            currPitch = robot.getPitch(); //test switching roll and pitch
+            currRoll = robot.getRoll();
+
+            //TODO: Delete later, added to push code
+            SmartDashboard.putNumber("poseX", robotPose.getX());
+            SmartDashboard.putNumber("poseY", robotPose.getY());
+            SmartDashboard.putNumber("poseZ", robotPose.getRotation().getDegrees());
+            SmartDashboard.putNumber("bound1", boundPos1);
+            SmartDashboard.putNumber("bound2", boundPos2);
+            SmartDashboard.putNumber("bound3", boundPos3);
+            SmartDashboard.putNumber("Pitch", robot.getPitch());
+            SmartDashboard.putNumber("Roll", robot.getRoll());
+            SmartDashboard.putNumber("Yaw", robot.getYaw());
+            SmartDashboard.putNumber("xspd", xspd);
+            SmartDashboard.putNumber("yspd", yspd);
+            SmartDashboard.putNumber("turnspd", turnspd);
+            SmartDashboard.putNumber("autostep", autoStep);
+            SmartDashboard.putNumber("boundPos1", boundPos1);
+            SmartDashboard.putNumber("boundPos2", boundPos2);
+            SmartDashboard.putNumber("boundPos3", boundPos3);
+            SmartDashboard.putNumber("autoStepback", autoStepback);
             double xspd = robot.deadzone(-xbox.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
             double yspd = robot.deadzone(-xbox.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
             double turnspd = robot.deadzone(-xbox.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
@@ -104,16 +140,16 @@ public class DriveCode extends GenericTeleop{
                 robot.setOffsetRightA();
                 robot.setOffsetRightB();
 
-                robot.resetAttitude();
-                robot.resetPIDPivot();
+            robot.resetAttitude();
+            robot.resetPIDPivot();
 
-                robot.resetStartHeading();
+            robot.resetStartHeading();
 
-                robot.resetStartDists();
+            robot.resetStartDists();
 
-                robot.resetStartPivots();
-            }
+            robot.resetStartPivots();
         }
+
         SmartDashboard.putBoolean("I am resetting", resetting);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
@@ -158,6 +194,4 @@ public class DriveCode extends GenericTeleop{
         robot.moveArm(armPower);
         robot.openGripper(openGripper);
     }
-
-
 }
