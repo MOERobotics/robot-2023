@@ -39,10 +39,13 @@ public class autoRoutine extends genericAutonomous {
 
     private final Timer m_timer = new Timer();
 
-    double lengthOfField = 450.1;
+    double lengthOfField = 650.7;
 
     public void autonomousInit(GenericRobot robot) {
         m_timer.reset();
+        robot.resetStartDists();
+        robot.resetStartPivots();
+        robot.resetStartHeading();
         autoStep = 0;
         if(robot.getRed()){
             yspd = -yspd;
