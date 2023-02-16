@@ -143,6 +143,7 @@ public class autoRoutine extends genericAutonomous {
                     m_timer.start();
                     autoStep++;
                 }
+
                 break;
             case 5://right of chariging board
                 s_0 = getS(m_timer.get());
