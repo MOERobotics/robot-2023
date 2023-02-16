@@ -646,16 +646,6 @@ public class swerveBot extends GenericRobot{
     //////////////////////////////////////////////////////////////////////////////////////////Gripper Code
 
     @Override
-    public void openGripper() {
-        super.openGripper();
-    }
-
-    @Override
-    public void closeGripper() {
-        super.closeGripper();
-    }
-
-    @Override
     public boolean gripperIsOpen() {
         return super.gripperIsOpen();
     }

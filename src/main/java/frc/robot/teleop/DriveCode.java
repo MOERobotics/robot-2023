@@ -46,7 +46,8 @@ public class DriveCode extends GenericTeleop{
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
     double collectorRPM = 0;
     double armPower = 0;
-    boolean liftTopRoller = false;
+    boolean dropTopRoller = false;
+    boolean openGripper = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -118,11 +119,11 @@ public class DriveCode extends GenericTeleop{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
         // Bumpers left 5, right 6
 
-        if (xbox2.getRawButton(5)){ //move collector up?
-            liftTopRoller = true;
+        if (xbox2.getRawButton(5)){ //move collector up
+            dropTopRoller = false;
         }
-        else if (xbox2.getRawButton(6)){ //move collector down?
-            liftTopRoller = false;
+        else if (xbox2.getRawButton(6)){ //move collector down
+            dropTopRoller = true;
         }
 
         // 2 is b, 3 is x
@@ -143,24 +144,19 @@ public class DriveCode extends GenericTeleop{
 
         //gripper functions currently do not work.
         if(xbox2.getRawButton(13)){ //open gripper?
-            robot.openGripper();
+            openGripper = true;
         }
         else if (xbox2.getRawButton(12)) { //close gripper?
-             robot.closeGripper();
-        }
-        if(xbox2.getRawButton(14)){ //not quite sure what it does
-            robot.raiseTopRoller(true);
-        }
-        else if (xbox2.getRawButton(15)) { //same as previous comment
-            robot.raiseTopRoller(false);
+            openGripper = false;
         }
 
-        armPower = robot.deadzone(xbox2.getRawAxis(1), .2);
+        armPower = -robot.deadzone(xbox2.getRawAxis(1), .2);
 
         ///////////////////////////////////////////////////////////////////////////Power setters
         robot.collect(collectorRPM);
-        robot.raiseTopRoller(liftTopRoller);
+        robot.raiseTopRoller(dropTopRoller);
         robot.moveArm(armPower);
+        robot.openGripper(openGripper);
     }
 
 

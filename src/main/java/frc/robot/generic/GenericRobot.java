@@ -307,8 +307,7 @@ public abstract class GenericRobot {
     public double getArmPosition(){return 0;}
 
     ///////////////////////////////////////////////////////////////////////////////////Gripper Code
-    public void openGripper(){}
-    public void closeGripper(){}
+    public void openGripper(boolean open){}
 
     public boolean gripperIsOpen(){return false;}
 

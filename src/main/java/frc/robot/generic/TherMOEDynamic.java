@@ -118,6 +118,8 @@ public class TherMOEDynamic extends GenericRobot{
         pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        leftArmMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        rightArmMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
         leftMotorARPM.setP(7.0e-5);
@@ -169,7 +171,7 @@ public class TherMOEDynamic extends GenericRobot{
         bottomCollectorRoller.setInverted(false);
 
         retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
-        gripper   = new Solenoid(PneumaticsModuleType.REVPH,10);
+        gripper   = new Solenoid(PneumaticsModuleType.REVPH,12);
 
     }
 
@@ -540,14 +542,10 @@ public class TherMOEDynamic extends GenericRobot{
     public double getArmPosition() { return shoulder.getPosition(); }
 /////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
-    public void openGripper() {
-        gripper.set(false);
+    public void openGripper(boolean open) {
+        gripper.set(open);
     }
 
-    @Override
-    public void closeGripper() {
-        gripper.set(true);
-    }
 
     @Override
     public boolean gripperIsOpen() {
