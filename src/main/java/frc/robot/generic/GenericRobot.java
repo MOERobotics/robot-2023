@@ -121,6 +121,8 @@ public abstract class GenericRobot {
     public void resetPigeon(){
     }
 
+    public void setPigeonYaw(double startYaw){}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
     ////////////////////////////////////////////////////////// Encoders
@@ -264,6 +266,10 @@ public abstract class GenericRobot {
 
     }
 
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+
+    }
+
     static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
     public Pose2d getPose() {
         return defaultPose;
@@ -274,7 +280,7 @@ public abstract class GenericRobot {
 
 
     public void resetStartHeading() {
-        startHeading = getYaw();
+        startHeading = getPigeonYaw();
     }
 
     public void resetStartDists() {
@@ -309,9 +315,33 @@ public abstract class GenericRobot {
     public void moveArm(double power){}
     public double getArmPosition(){return 0;}
 
+    public void stackCargo(double zPos){
+        boolean openGrip = false;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- zPos) <= 3){
+            openGrip = true;
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + zPos);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
+    }
+
+    public void liftArm(){
+
+    }
+
+    public void dropArm(){}
     ///////////////////////////////////////////////////////////////////////////////////Gripper Code
-    public void openGripper(){}
-    public void closeGripper(){}
+    public void openGripper(boolean open){}
 
     public boolean gripperIsOpen(){return false;}
 
