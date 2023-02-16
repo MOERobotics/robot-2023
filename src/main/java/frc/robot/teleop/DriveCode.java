@@ -1,17 +1,18 @@
 package frc.robot.teleop;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
+
 public class DriveCode extends GenericTeleop{
 
     boolean resetting = false;
-    Joystick swerveStick = new Joystick(1);
+    Joystick xbox = new Joystick(1);
+
+    //currently this is the joystick
+    Joystick xbox2 = new Joystick(0);
 
     double currPitch;
     double currRoll;
@@ -41,6 +42,12 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
+    double collectorRPM = 0;
+    double armPower = 0;
+    boolean dropTopRoller = false;
+    boolean openGripper = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -75,14 +82,14 @@ public class DriveCode extends GenericTeleop{
             Pose2d robotPose = robot.getPose();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
-            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
-            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
-            double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
+            double xspd = robot.deadzone(-xbox.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
+            double yspd = robot.deadzone(-xbox.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
+            double turnspd = robot.deadzone(-xbox.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
 
-            if (swerveStick.getRawButton(5)) { // for varun
+            if (xbox.getRawButton(5)) { // for varun
                 turnspd *= 2;
             }
-            if (swerveStick.getRawButton(6)) {
+            if (xbox.getRawButton(6)) {
                 xspd *= 2;
                 yspd *= 2;
                 SmartDashboard.putNumber("xspd", xspd);
@@ -90,7 +97,7 @@ public class DriveCode extends GenericTeleop{
 
             robot.setDrive(xspd, yspd, turnspd);
 
-            if (swerveStick.getRawButton(1)) {
+            if (xbox.getRawButton(1)) {
                 resetting = true;
                 robot.setOffsetLeftA();
                 robot.setOffsetLeftB();
@@ -110,8 +117,46 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putBoolean("I am resetting", resetting);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
+        // Bumpers left 5, right 6
+
+        if (xbox2.getRawButton(5)){ //move collector up
+            dropTopRoller = false;
+        }
+        else if (xbox2.getRawButton(6)){ //move collector down
+            dropTopRoller = true;
+        }
+
+        // 2 is b, 3 is x
+
+        if (xbox2.getRawButton(3)){ //collect in
+            collectorRPM = 10000;
+        }
+        else if (xbox2.getRawButton(2)){ //collect out
+            collectorRPM = -10000;
+        }
+        else{ //no more collecting :(
+            collectorRPM = 0;
+        }
+        //TODO: change the getRawButton to triggers, left trigger barfs the piece out, right trigger
 
 
+        //currently using Joystick buttons
+
+        //gripper functions currently do not work.
+        if(xbox2.getRawButton(13)){ //open gripper?
+            openGripper = true;
+        }
+        else if (xbox2.getRawButton(12)) { //close gripper?
+            openGripper = false;
+        }
+
+        armPower = -robot.deadzone(xbox2.getRawAxis(1), .2);
+
+        ///////////////////////////////////////////////////////////////////////////Power setters
+        robot.collect(collectorRPM);
+        robot.raiseTopRoller(dropTopRoller);
+        robot.moveArm(armPower);
+        robot.openGripper(openGripper);
     }
 
 

@@ -12,8 +12,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
 import frc.robot.generic.GenericRobot;
+import frc.robot.generic.TherMOEDynamic;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
+import frc.robot.teleop.ArmCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,11 +25,11 @@ public class Robot extends TimedRobot {
   public static final GenericTeleop
           driveCode = new DriveCode();
 
- // GenericRobot robot = new SwerveBot();
+  //GenericRobot robot = new SwerveBot();
   genericAutonomous autonomous = new baseAuto();
   GenericTeleop teleop = driveCode;
-  GenericRobot robot = new swerveBot();
   DriverStation.Alliance OurAllianceColor;
+  GenericRobot robot = new TherMOEDynamic();
 
   MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
   Field2d field = new Field2d();
@@ -68,6 +70,8 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
    SmartDashboard.putBoolean("Red Robot", robot.getRed());
+
+   SmartDashboard.putNumber("armPosition", robot.getArmPosition());
 
    robot.getDriveDistanceInchesLeftA();
    robot.getDriveDistanceInchesLeftB();

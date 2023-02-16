@@ -4,18 +4,18 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.*;
+import com.revrobotics.AnalogInput;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
+import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
 
 public class TherMOEDynamic extends GenericRobot{
 
@@ -77,8 +77,23 @@ public class TherMOEDynamic extends GenericRobot{
 
     SwerveDriveOdometry m_odometry;
 
+    Solenoid gripper;
+    Solenoid retractor;
+
+    AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
+//    SparkMaxAnalogSensor shoulder = leftArmMotor.getAnalog(CANAnalog.AnalogMode.kAbsolute);
+
+
+    // Robot chassic dimensions, shaft to shaft.
+    static final double w = 13.875;
+    static final double d = 10.375;
+    private static final int PH_CAN_ID = 1;
+    PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
 
     public TherMOEDynamic(){
+
+        m_ph.enableCompressorAnalog(100,120);
+
         pivotLeftAPID.enableContinuousInput(-180,180);
         pivotLeftBPID.enableContinuousInput(-180,180);
         pivotRightAPID.enableContinuousInput(-180,180);
@@ -103,6 +118,8 @@ public class TherMOEDynamic extends GenericRobot{
         pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        leftArmMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        rightArmMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
         leftMotorARPM.setP(7.0e-5);
@@ -133,18 +150,18 @@ public class TherMOEDynamic extends GenericRobot{
         rightMotorBRPM.setFF(1.76182e-4);
         rightMotorBRPM.setOutputRange(-1,1);
 
-        topCollectorRollerRPM.setP(0);//TODO: get electrical to tune
+        topCollectorRollerRPM.setP(7.0e-5);//TODO: get electrical to tune
         topCollectorRollerRPM.setI(0);
         topCollectorRollerRPM.setIZone(0);
-        topCollectorRollerRPM.setD(0);
-        topCollectorRollerRPM.setFF(0);
+        topCollectorRollerRPM.setD(1.0e-4);
+        topCollectorRollerRPM.setFF(1.76182e-4);
         topCollectorRollerRPM.setOutputRange(-1,1);
 
-        bottomCollectorRollerRPM.setP(0); //TODO: get electrical to tune
+        bottomCollectorRollerRPM.setP(7.0e-5); //TODO: get electrical to tune
         bottomCollectorRollerRPM.setI(0);
         bottomCollectorRollerRPM.setIZone(0);
-        bottomCollectorRollerRPM.setD(0);
-        bottomCollectorRollerRPM.setFF(0);
+        bottomCollectorRollerRPM.setD(1.0e-4);
+        bottomCollectorRollerRPM.setFF(1.76182e-4);
         bottomCollectorRollerRPM.setOutputRange(-1,1);
 
         leftArmMotor.setInverted(false);
@@ -152,6 +169,9 @@ public class TherMOEDynamic extends GenericRobot{
 
         topCollectorRoller.setInverted(false);
         bottomCollectorRoller.setInverted(false);
+
+        retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
+        gripper   = new Solenoid(PneumaticsModuleType.REVPH,12);
 
     }
 
@@ -169,11 +189,12 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public SwerveDriveKinematics kinematics() {
+
         return new SwerveDriveKinematics(
-                new Translation2d(14, 14),//everything is in inches
-                new Translation2d(14, -14),
-                new Translation2d(-14, 14),
-                new Translation2d(-14, -14)
+                new Translation2d(w, d),//everything is in inches
+                new Translation2d(w, -d),
+                new Translation2d(-w, d),
+                new Translation2d(-w, -d)
         );
     }
 
@@ -220,7 +241,8 @@ public class TherMOEDynamic extends GenericRobot{
         return myPose;
     }
 
-    @Override
+
+
     public void setPose(Pose2d startPose) {
         m_odometry = new SwerveDriveOdometry(
                 kinematics(), Rotation2d.fromDegrees(-startHeading),
@@ -489,7 +511,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void raiseTopRoller(boolean up) {
-        super.raiseTopRoller(up);
+        retractor.set(up);
     }
 
     @Override
@@ -519,17 +541,17 @@ public class TherMOEDynamic extends GenericRobot{
     }
 
     @Override
-    public double getArmPosition() {
-        return super.getArmPosition();
-    }
+    public double getArmPosition() { return shoulder.getPosition(); }
 /////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
     public void openGripper(boolean open) {
-        super.openGripper(open);
+        gripper.set(open);
     }
+
 
     @Override
     public boolean gripperIsOpen() {
-        return super.gripperIsOpen();
+        return gripper.get();
     }
+
 }
