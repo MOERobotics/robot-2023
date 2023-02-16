@@ -1,5 +1,6 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -62,7 +63,9 @@ public class traverseStationObtainAndBalance extends genericAutonomous{
     double boundPos1;
     double boundPos2;
     double boundPos3;
+    double kP = 0.01;
     double lengthOfField = 450.1;
+    PIDController PID = new PIDController(kP,0,0);
     @Override
     public void autonomousInit(GenericRobot robot){
         m_timer.reset();
@@ -133,7 +136,7 @@ public class traverseStationObtainAndBalance extends genericAutonomous{
                 if (s >= distanceTwo){
                     m_timer.reset();
                     m_timer.start();
-                    autonomousStep ++;
+                    autonomousStep++;
                 }
                 //currDistance = Math.sqrt((x1-robot.getPose().getX())*(x1-robot.getPose().getX()) + (y1-robot.getPose().getY())*(y1-robot.getPose().getY()));
                 //xspd = velocityFunctionX(0);
@@ -237,7 +240,8 @@ public class traverseStationObtainAndBalance extends genericAutonomous{
                 }
                 break;
         }
-        robot.setDrive(xspd, yspd, turnspd);
+        turnspd = PID.calculate(-robot.getYaw());
+        robot.setDrive(xspd, -yspd, turnspd);
     }
 
 

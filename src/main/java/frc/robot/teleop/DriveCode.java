@@ -1,5 +1,6 @@
 package frc.robot.teleop;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,6 +22,7 @@ public class DriveCode extends GenericTeleop{
     double leftside;
     double rightside;
     int autoStep;
+    double desiredYaw = 0;
     double currentpos;
     double initPos;
     double desiredPitch = 9.0;
@@ -41,6 +43,9 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+    double kP = 0.1;
+
+    PIDController yawControl = new PIDController(kP,0,0);
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -63,11 +68,12 @@ public class DriveCode extends GenericTeleop{
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
-
+        yawControl.enableContinuousInput(-180,180);
 
         if (resetting){
             robot.resetAttitude();
             robot.setPose();
+            desiredYaw = robot.getYaw();
         }
         if (!resetting || (resetting && Math.abs(robot.getYaw()) < 1)) {
             resetting = false;
@@ -86,6 +92,11 @@ public class DriveCode extends GenericTeleop{
                 xspd *= 2;
                 yspd *= 2;
                 SmartDashboard.putNumber("xspd", xspd);
+            }
+            if(turnspd !=0){
+                desiredYaw = robot.getYaw();
+            }else{
+                turnspd = yawControl.calculate(desiredYaw-robot.getYaw());
             }
 
             robot.setDrive(xspd, yspd, turnspd);

@@ -22,7 +22,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new traverseStationObtainAndBalance();
+  genericAutonomous autonomous = new overStationAndBalance();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
   DriverStation.Alliance OurAllianceColor;

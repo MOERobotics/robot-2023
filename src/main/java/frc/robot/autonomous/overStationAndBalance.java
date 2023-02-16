@@ -2,6 +2,7 @@
 
 package frc.robot.autonomous;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +44,8 @@ public class overStationAndBalance extends genericAutonomous{
     double boundPos1;
     double boundPos2;
     double boundPos3;
+    double kP = 0.01;
+    PIDController PID = new PIDController(kP,0,0);
     @Override
     public void autonomousInit(GenericRobot robot){
         m_timer.reset();
@@ -52,11 +55,11 @@ public class overStationAndBalance extends genericAutonomous{
         robot.resetStartHeading();
         robot.resetStartDists();
         robot.resetStartPivots();
-
+        PID.enableContinuousInput(-180,180);
     }
     @Override
     public void autonomousPeriodic(GenericRobot robot){
-        baseSpd = 30.0;
+        baseSpd = 40.0;
         double correctionPower = -14.0;
         double climbPower = -30.0;
         double basePower = -35.0;
@@ -157,6 +160,7 @@ public class overStationAndBalance extends genericAutonomous{
                 }
                 break;
         }
+        turnspd = PID.calculate(-robot.getYaw());
         robot.setDrive(xspd, yspd, turnspd);
     }
 
