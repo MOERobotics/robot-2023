@@ -10,6 +10,8 @@ public class DriveCode extends GenericTeleop{
 
     boolean resetting = false;
     Joystick xbox = new Joystick(1);
+
+    //currently this is the joystick
     Joystick xbox2 = new Joystick(0);
 
     double currPitch;
@@ -116,10 +118,10 @@ public class DriveCode extends GenericTeleop{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
         // Bumpers left 5, right 6
 
-        if (xbox2.getRawButton(5)){ //move roller up and down
+        if (xbox2.getRawButton(5)){ //move collector up?
             liftTopRoller = true;
         }
-        else if (xbox2.getRawButton(6)){
+        else if (xbox2.getRawButton(6)){ //move collector down?
             liftTopRoller = false;
         }
 
@@ -131,12 +133,15 @@ public class DriveCode extends GenericTeleop{
         else if (xbox2.getRawButton(2)){ //collect out
             collectorRPM = -10000;
         }
-        else{
+        else{ //no more collecting :(
             collectorRPM = 0;
         }
+        //TODO: change the getRawButton to triggers, left trigger barfs the piece out, right trigger
 
-        //using Joystick buttons
 
+        //currently using Joystick buttons
+
+        //gripper functions currently do not work.
         if(xbox2.getRawButton(13)){ //open gripper?
             robot.openGripper();
         }
