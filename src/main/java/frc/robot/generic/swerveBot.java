@@ -182,41 +182,10 @@ public class swerveBot extends GenericRobot{
         m_timer.start();
     }
 
-    @Override
-    public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
-                                        PIDController yController, PIDController thetaController) {
-
-        var desiredState = trajectory.sample(m_timer.get());
-        var desiredVel = desiredState.velocityMetersPerSecond;
-        var desiredPose = desiredState.poseMeters;
-        SmartDashboard.putNumber("poseX", desiredPose.getX());
-        SmartDashboard.putNumber("poseY", desiredPose.getY());
-        SmartDashboard.putNumber("posrotation", desiredPose.getRotation().getDegrees());
-        var xVelocity = xController.calculate(pose.getX(), desiredPose.getX());
-        var yVelocity = yController.calculate(pose.getY(), desiredPose.getY());
-        var angularVel = thetaController.calculate(pose.getRotation().getDegrees(), desiredPose.getRotation().getDegrees());
-
-        ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds(xVelocity, yVelocity, angularVel);
-        SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(targetChassisSpeeds);
-        SwerveModuleState frontLeftState = moduleStates[0],
-                frontRightState = moduleStates[1],
-                backLeftState = moduleStates[2],
-                backRightState = moduleStates[3];
-
-        frontLeftState = SwerveModuleState.optimize(frontLeftState, Rotation2d.fromDegrees(getPivotLeftMotorA()));
-        frontRightState = SwerveModuleState.optimize(frontRightState, Rotation2d.fromDegrees(getPivotRightMotorA()));
-        backLeftState = SwerveModuleState.optimize(backLeftState, Rotation2d.fromDegrees(getPivotLeftMotorB()));
-        backRightState = SwerveModuleState.optimize(backRightState, Rotation2d.fromDegrees(getPivotRightMotorB()));
-
-        swerve(frontLeftState, frontRightState, backLeftState, backRightState);
-
-
-    }
 
     @Override
     public Pose2d getPose() {
-        double currHeading = getYaw();
-        Pose2d startPose = GenericRobot.defaultPose;
+        double currHeading = getPigeonYaw();
         SmartDashboard.putNumber("leftAStartPos", startDists[0]);
         SmartDashboard.putNumber("rightAStartPos", startDists[1]);
         SmartDashboard.putNumber("leftBStartPos", startDists[2]);
@@ -314,7 +283,12 @@ public class swerveBot extends GenericRobot{
         pigeon.reset();
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
+    @Override
+    public void setPigeonYaw(double startYaw) {
+        pigeon.setYaw(startYaw);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////drive motors
 
 
 

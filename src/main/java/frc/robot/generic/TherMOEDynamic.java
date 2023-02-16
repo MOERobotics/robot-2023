@@ -20,6 +20,8 @@ import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
 public class TherMOEDynamic extends GenericRobot{
 
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
+    public final double MAX_ARM_HEIGHT = 50;
+    public final double MIN_ARM_HEIGHT = 0;
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
     CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
@@ -200,8 +202,16 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
+        this.setDrive(xspd,yspd,turnspd,false);
+    }
+    @Override
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+        double m_yaw = getYaw();
+        if (auto){
+            m_yaw = getPigeonYaw();
+        }
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
-                yspd, turnspd, Rotation2d.fromDegrees(-getYaw()));
+                yspd, turnspd, Rotation2d.fromDegrees(-m_yaw));
         SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],
                 frontRightState = moduleStates[1],
@@ -227,7 +237,6 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public Pose2d getPose() {
         double currHeading = getYaw();
-        Pose2d startPose = GenericRobot.defaultPose;
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(-getPivotLeftMotorA())),
@@ -303,6 +312,11 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void resetPigeon() {
         pigeon.reset();
+    }
+
+    @Override
+    public void setPigeonYaw(double startYaw){
+        pigeon.setYaw(startYaw);
     }
 //////////////////////////////////////////////////////////////////////////////////////////drive motor encoders
     @Override
@@ -495,6 +509,9 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void collect(double rpm) {
+        if (cargoInCollector()){
+            rpm = 0;
+        }
         setTopRollerRPM(rpm);
         setBottomRollerRPM(rpm);
     }
@@ -536,8 +553,53 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void moveArm(double power) {
+        if (getArmPosition() <= MIN_ARM_HEIGHT && power < 0){
+            power = 0;
+        }
+        if (getArmPosition() >= MAX_ARM_HEIGHT && power > 0){
+            power = 0;
+        }
         leftArmMotor.set(power);
         rightArmMotor.set(power);
+    }
+    @Override
+    public void liftArm(){
+        boolean openGrip = false;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- MAX_ARM_HEIGHT) <= 3){
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + MAX_ARM_HEIGHT);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
+    }
+
+    @Override
+    public void dropArm(){
+        boolean openGrip = true;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- MIN_ARM_HEIGHT) <= 3){
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + MIN_ARM_HEIGHT);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
     }
 
     @Override

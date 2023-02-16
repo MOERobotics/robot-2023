@@ -47,6 +47,9 @@ public class Robot extends TimedRobot {
    else {
     robot.setRed(false);
    }
+   if (robot.getRed()){
+       robot.setPigeonYaw(180);
+   }
   }
 
 

@@ -1,13 +1,15 @@
-package frc.robot.teleop;
+package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.AutoCodeLines;
+import frc.robot.teleop.GenericTeleop;
 import org.opencv.core.Point;
 
-public class AutoConeCubeStack extends GenericTeleop{
+public class AutoConeCubeStack extends genericCommand {
 
     Joystick xbox = new Joystick(1); //TODO: change to a button box later on
     double[] nodeYPositions = {19.5,45.1, 66.4, 89.3, 111.54, 133.43, 156.26, 176.91, 201.02};
@@ -29,8 +31,9 @@ public class AutoConeCubeStack extends GenericTeleop{
     double xspd,yspd, turnspd, armPower;
     int nodeYPos, nodeZPos;
     boolean openGripper = false;
+    boolean readyToStack = false;
     @Override
-    public void teleopInit(GenericRobot robot) {
+    public void init(GenericRobot robot) {
         robot.resetStartDists();
         robot.resetStartPivots();
         robot.resetStartHeading();
@@ -39,9 +42,11 @@ public class AutoConeCubeStack extends GenericTeleop{
     }
 
     @Override
-    public void teleopPeriodic(GenericRobot robot) {
+    public void periodic(GenericRobot robot) {
+        SmartDashboard.putBoolean("ready to stack", readyToStack);
         Pose2d currPose = robot.getPose();
         if (xbox.getRawButtonPressed(2)){ //For testing purposes. This will be 3rd station, mid-Cone
+            readyToStack = false;
             nodeYPos = 2;
             nodeZPos = 2;
             openGripper = false;
@@ -79,18 +84,15 @@ public class AutoConeCubeStack extends GenericTeleop{
                 xspd = 0;
             }
         }
-
         if (Math.abs(currPose.getX() - desiredPose.getX()) < 3 && Math.abs(currPose.getY() - desiredPose.getY()) < 3){
-            xspd = yspd = turnspd = 0;
-            armPower = .2;
-            if (Math.abs(robot.getArmPosition() - armPositions[nodeZPos]) <= 3){
-                armPower = 0;
-                openGripper = true;
-            }
+            readyToStack = true;
+        }
+
+        if (xbox.getRawButtonPressed(2)){
+            robot.stackCargo(armPositions[nodeZPos]);
         }
 
         robot.setDrive(xspd,yspd,turnspd,true);
-        robot.moveArm(armPower);
         robot.openGripper(openGripper);
 
     }
