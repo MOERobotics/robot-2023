@@ -1,5 +1,6 @@
 package frc.robot.teleop;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -12,6 +13,8 @@ public class DriveCode extends GenericTeleop{
 
     boolean resetting = false;
     Joystick swerveStick = new Joystick(1);
+
+    double yawDelta = 0;
 
     double currPitch;
     double currRoll;
@@ -41,9 +44,14 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+    double kP = 0.5e-1;
+    double desiredYaw = 0;
+    PIDController yawControl = new PIDController(kP, 0,0);
 
     @Override
     public void teleopInit(GenericRobot robot) {
+        yawControl.enableContinuousInput(-180,180);
+
         resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
@@ -68,6 +76,7 @@ public class DriveCode extends GenericTeleop{
         if (resetting){
             robot.resetAttitude();
             robot.setPose();
+            desiredYaw = robot.getYaw();
         }
         if (!resetting || (resetting && Math.abs(robot.getYaw()) < 1)) {
             resetting = false;
@@ -86,6 +95,12 @@ public class DriveCode extends GenericTeleop{
                 xspd *= 2;
                 yspd *= 2;
                 SmartDashboard.putNumber("xspd", xspd);
+            }
+            if (turnspd != 0){
+                desiredYaw = robot.getYaw();
+            }
+            else {
+                turnspd = yawControl.calculate(desiredYaw-robot.getYaw());
             }
 
             robot.setDrive(xspd, yspd, turnspd);
