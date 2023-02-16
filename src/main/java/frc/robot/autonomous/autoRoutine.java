@@ -26,6 +26,7 @@ public class autoRoutine extends genericAutonomous {
     double fifthDist = 63.43;*/
     double baseSpd = 25.0;
     double xPidK =0;
+
     double yPidK = 0; //1.0e-3;
     Point startPosition = new Point(55.88, 200.47);
     Point secondPosition = new Point(275.88,200.47);

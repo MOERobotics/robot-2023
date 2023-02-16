@@ -51,6 +51,7 @@ public class DriveCode extends GenericTeleop{
     @Override
     public void teleopInit(GenericRobot robot) {
         yawControl.enableContinuousInput(-180,180);
+
         resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
