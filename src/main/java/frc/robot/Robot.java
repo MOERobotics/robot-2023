@@ -5,31 +5,25 @@
 package frc.robot;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autonomous.*;
+import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
-import frc.robot.generic.TherMOEDynamic;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
-import frc.robot.teleop.ArmCode;
 import frc.robot.teleop.GenericTeleop;
+import frc.robot.autonomous.VisionScoring;
 import frc.robot.vision.MoeNetVision;
 import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
- public static final GenericTeleop
-         driveCode = new DriveCode();
 
-  //GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new baseAuto();
-  GenericTeleop teleop = driveCode;
+  genericAutonomous autonomous = new VisionScoring();
+  GenericTeleop driveCode = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
-  GenericRobot robot = new TherMOEDynamic();
+  GenericRobot robot = new swerveBot();
 
   MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
   Field2d field = new Field2d();
