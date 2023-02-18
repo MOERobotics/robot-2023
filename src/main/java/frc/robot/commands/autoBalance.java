@@ -12,19 +12,11 @@ public class autoBalance extends genericCommand {
     boolean resetting = false;
     double currPitch;
     double currRoll;
-    double curPosOnRamp;
     double currPosInAutoBalance;
-
-    double leftside;
-    double rightside;
     int autoStep;
-    int autoSequenceStep;
-    double currentpos;
     double initPos;
-    double startingPose;
     double desiredPitch = 9.0;
     double totalPathLength = 0;
-    double initpos;
     double boundPos1;
     double boundPos2;
     double boundPos3;
@@ -50,10 +42,6 @@ public class autoBalance extends genericCommand {
             Pose2d robotPose = robot.getPose();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve code
-            double xspd = robot.deadzone(-swerveStick.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
-            double yspd = robot.deadzone(-swerveStick.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
-            double turnspd = robot.deadzone(-swerveStick.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
-
             currPitch = robot.getPitch(); //test switching roll and pitch
             currRoll = robot.getRoll();
 
