@@ -94,11 +94,6 @@ public class overStationAndBalance extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
- /*         case 7:
-                xspd = -correctionPower; //correcting for overshoot
-                autonomousStep++;
-                break;
-*/
             case 7:
                 if (currPitch < -desiredPitch) { //correcting begins
                     xspd = correctionPower; //backward
