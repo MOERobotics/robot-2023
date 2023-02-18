@@ -71,6 +71,7 @@ public class autoRoutine extends genericAutonomous {
         SmartDashboard.putNumber("turn speed", turnspd);
         SmartDashboard.putNumber("first distance", firstDist);
         Pose2d currPose = robot.getPose();
+
         switch (autoStep) {
             case 0: //resets everything
                 m_timer.reset();
@@ -132,9 +133,28 @@ public class autoRoutine extends genericAutonomous {
                     m_timer.start();
                     autoStep++;
                 }
-
                 break;
-
+            case 5:
+                xspd = basePower;
+                if (Math.abs(currPitch) > 11) { // driving up charge station
+                    autonomousStep ++;
+                }
+                break;
+            case 6:
+                xspd = climbPower;
+                if (Math.abs(currPitch) < 10) { //flattened out
+                    autonomousStep++;
+                }
+                break;
+            case 7:
+                if (currPitch < -desiredPitch) { //correcting begins
+                    xspd = -correctionPower; //backward
+                } else if (currPitch > desiredPitch) {
+                    xspd = correctionPower; //forward
+                } else {
+                    xspd = 0;
+                }
+                break;
 
 
         }
