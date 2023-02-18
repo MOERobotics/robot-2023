@@ -48,6 +48,10 @@ public class AbsolutePosition extends genericAutonomous {
                 xspd = 0;
                 double error = Math.abs(currPose.getY() - target.getY());
                 yspd = yPID.calculate(error);
+
+                if(yspd>8)yspd=8;
+                if(yspd<-8)yspd=-8;
+
                 if (error < .04) {
                     autonomousStep++;
                 }

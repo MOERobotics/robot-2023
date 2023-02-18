@@ -23,12 +23,12 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new baseAuto();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
-
   MoeNetVision vision = new MoeNetVision(robot);
-  Field2d field = new Field2d();
+  genericAutonomous autonomous = new AbsolutePosition(vision);
+
+ Field2d field = new Field2d();
 
   @Override
   public void robotInit() {
