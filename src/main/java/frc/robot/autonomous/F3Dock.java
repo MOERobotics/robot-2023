@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
-public class overStationAndBalance extends genericAutonomous{
+public class F3Dock extends genericAutonomous{
 
     private final Timer m_timer = new Timer();
     double desiredInchesPerSecond = 12;
@@ -77,7 +77,7 @@ public class overStationAndBalance extends genericAutonomous{
                 break;
             case 4:
                 xspd = baseSpd;
-                if (currPose.getX() - xPose >= 2) {// make sure you fully exit community
+                if (currPose.getX() - xPose >= 20) {// make sure you fully exit community
                     xspd = 0;
                     autonomousStep++;
                 }

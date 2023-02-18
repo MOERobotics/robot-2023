@@ -1,5 +1,6 @@
 package frc.robot.generic;
 
+import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -116,6 +117,11 @@ public class swerveBot extends GenericRobot{
         pivotLeftMotorB.setInverted(true);
         pivotRightMotorA.setInverted(true);
         pivotRightMotorB.setInverted(true);
+
+        pivotLeftMotorA.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
+        pivotLeftMotorB.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
+        pivotRightMotorA.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
+        pivotRightMotorB.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
 
         leftMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         leftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);

@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.ExitAndEngage;
 import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Robot extends TimedRobot {
 
-  genericAutonomous autonomous = new VisionScoring();
+  genericAutonomous autonomous = new ExitAndEngage();
   GenericTeleop driveCode = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new swerveBot();

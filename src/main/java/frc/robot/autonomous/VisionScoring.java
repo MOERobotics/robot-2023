@@ -3,22 +3,26 @@ package frc.robot.autonomous;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.AutoCodeLines;
+import frc.robot.vision.MoeNetVision;
 import org.opencv.core.Point;
 
 public class VisionScoring extends genericAutonomous{
 
-    Point startPosition = new Point(610.74,0 );
-    Point endPosition = new Point(610.74, 36);
-
-    double distanceOne = AutoCodeLines.getDistance(startPosition,endPosition);
     double desiredInPerSec = 25;
     double ds = desiredInPerSec;
     double xspd,yspd,turnspd, s;
+    double distanceOne;
+    Point startPosition;
+    Point endPosition;
+    Pose2d visionPose;
 
     double xPidK = 1.0e-3;
+
     double yPidK = 1.0e-3;
     private final Timer m_timer = new Timer();
     PIDController yawControl = new PIDController(.5, 0,0);
@@ -31,6 +35,16 @@ public class VisionScoring extends genericAutonomous{
         robot.resetStartDists();
         robot.resetStartPivots();
         robot.resetStartHeading();
+
+
+        MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+        visionPose = vision.robotFieldPoseInches();
+        if (visionPose == null) return;
+        startPosition = new Point(visionPose.getX(), visionPose.getY() );
+        endPosition = new Point(visionPose.getX(), 192.9);
+
+        distanceOne = AutoCodeLines.getDistance(startPosition,endPosition);
+
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
         autonomousStep = 0;
     }
@@ -38,6 +52,12 @@ public class VisionScoring extends genericAutonomous{
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
         Pose2d currPose = robot.getPose();
+        if (visionPose == null) {
+            SmartDashboard.putBoolean("visionScoring.state", false);
+            return;
+        }
+
+        SmartDashboard.putBoolean("visionScoring.state", true);
         switch(autonomousStep){
             case 0:
                 m_timer.start();
@@ -61,9 +81,8 @@ public class VisionScoring extends genericAutonomous{
             case 2:
                 m_timer.reset();
                 xspd = yspd = turnspd = 0;
-                break;
-        }
-        turnspd = yawControl.calculate(-robot.getYaw());
+                break;        }
+        //turnspd = yawControl.calculate(-robot.getYaw());
         robot.setDrive(xspd,yspd,turnspd);
     }
 
