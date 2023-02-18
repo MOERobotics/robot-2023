@@ -10,7 +10,7 @@ import frc.robot.vision.MoeNetVision;
 
 public class visionTestPose extends genericAutonomous {
 
-    MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+    MoeNetVision vision;
     Field2d field = new Field2d();
     double xPosStar, yPosStar, xspd, yspd, turnspd;
     double defaultSpeed = 10;
@@ -18,9 +18,9 @@ public class visionTestPose extends genericAutonomous {
     Pose2d desiredPose;
     @Override
     public void autonomousInit(GenericRobot robot) {
-
+        vision = new MoeNetVision(robot);
         if (vision.poseFound()){
-            currPose = vision.robotFieldPoseInches();
+            currPose = vision.robotFieldPoseInches().toPose2d();
             xPosStar = field.getRobotPose().getX();
             yPosStar = field.getRobotPose().getY();
         }
@@ -32,7 +32,7 @@ public class visionTestPose extends genericAutonomous {
         ///////////////////////////////////////////////////find robot pose on field
 
         if (vision.poseFound()){
-            currPose = vision.robotFieldPoseInches();
+            currPose = vision.robotFieldPoseInches().toPose2d();
         }
         double xPos = currPose.getX();
         double yPos = currPose.getY();
