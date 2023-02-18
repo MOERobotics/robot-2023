@@ -1,4 +1,5 @@
 package frc.robot.generic;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -6,12 +7,17 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public abstract class GenericRobot {
+
     double oldLeftA = 0;
     double oldLeftB = 0;
     double oldRightA = 0;
     double oldRightB = 0;
+
+
     double offsetLeftA, offsetLeftB, offsetRightA, offsetRightB;
+
     double[] startDists;
     double[] startPivots;
     double startHeading;
@@ -23,36 +29,45 @@ public abstract class GenericRobot {
                        SwerveModuleState backLeft, SwerveModuleState backRight){
         setLeftDriveARPM(frontLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
+
         setRightDriveARPM(frontRight.speedMetersPerSecond*convertInchpsToRPM());
         setPivotRightMotorA(frontRight.angle.getDegrees());
+
         setLeftDriveBRPM(backLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorB(backLeft.angle.getDegrees());
+
         setRightDriveBRPM(backRight.speedMetersPerSecond*convertInchpsToRPM());
         setPivotRightMotorB(backRight.angle.getDegrees());
     }
+
     public void stopSwerve(double oldLA, double oldRA, double oldLB, double oldRB){
         setLeftDriveARPM(0);
         setRightDriveARPM(0);
         setLeftDriveBRPM(0);
         setRightDriveBRPM(0);
+
         setPivotLeftMotorA(oldLA);
         setPivotLeftMotorB(oldLB);
         setPivotRightMotorA(oldRA);
         setPivotRightMotorB(oldRB);
     }
+
     public SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
-        var delta = desiredState.angle.minus(currentAngle);
-        if (Math.abs(delta.getDegrees()) > 150.0) {
-            return new SwerveModuleState(
-                    -desiredState.speedMetersPerSecond,
-                    desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
-        } else {
-            return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
-        }
+            var delta = desiredState.angle.minus(currentAngle);
+            if (Math.abs(delta.getDegrees()) > 150.0) {
+                return new SwerveModuleState(
+                        -desiredState.speedMetersPerSecond,
+                        desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
+            } else {
+                return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
+            }
     }
     public void SwerveAutoReset(){}
+
     public void SwerveControllerCommand(Trajectory trajectory, Pose2d pose, SwerveDriveKinematics kinematics, PIDController xController,
-                                        PIDController yController, PIDController thetaController){}
+                                                PIDController yController, PIDController thetaController){}
+
+
     public double deadzone(double value, double zone){
         if (Math.abs(value) < zone){
             value = 0;
@@ -83,24 +98,36 @@ public abstract class GenericRobot {
         return 0;
     }
     public void resetAttitude(){
+
     }
-    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pigeon Commands
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pigeon Commands
+
     public double getPigeonYaw(){
         return 0;
     }
+
     public double getPigeonRoll(){
         return 0;
     }
+
     public double getPigeonPitch(){
         return 0;
     }
+
     public double getAbsoluteCompassHeadingPigeon(){
         return 0;
     }
+
     public void resetPigeon(){
     }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
+
+    public void setPigeonYaw(double startYaw){}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
+
     ////////////////////////////////////////////////////////// Encoders
+
+
     public double encoderLeftADriveTicksPerInch() {
         return 1.0;
     }
@@ -125,13 +152,16 @@ public abstract class GenericRobot {
     public double encoderTicksRightDriveB() {
         return 0.0;
     }
+
     public double convertInchpsToRPM(){
         return 0.0;
     }
+
     public double getDriveDistanceInchesLeftA() {
         double val = encoderTicksLeftDriveA()/encoderLeftADriveTicksPerInch();
         SmartDashboard.putNumber("DriveInchesLeftA", val);
         return val;
+
     }
     public double getDriveDistanceInchesLeftB() {
         double val = encoderTicksLeftDriveB()/encoderLeftBDriveTicksPerInch();
@@ -148,32 +178,49 @@ public abstract class GenericRobot {
         SmartDashboard.putNumber("DriveInchesRightB", val);
         return val;
     }
+
     ////////////////////////////////////////////////////////// Motor Velocity
     public void setLeftDriveAPowerPercentage(double power) {
+
     }
     public void setLeftDriveBPowerPercentage(double power) {
+
     }
     public void setRightDriveAPowerPercentage(double power) {
+
     }
     public void setRightDriveBPowerPercentage(double power) {
+
     }
     public void setLeftDriveARPM(double rpm) {
+
     }
     public void setLeftDriveBRPM(double rpm) {
+
     }
     public void setRightDriveARPM(double rpm) {
+
     }
     public void setRightDriveBRPM(double rpm) {
+
     }
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pivot Motor Commands
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pivot Motor Commands
+
     ///////////////////////////////////////////////////////////////////////////drive motor
+
     public void resetPIDPivot(){
+
     }
+
+
     ////////////////////////////////////////////////////////// Encoders
+
     public void setOffsetLeftA(){}
     public void setOffsetLeftB(){}
     public void setOffsetRightA(){}
     public void setOffsetRightB(){}
+
     public double rawEncoderLeftA(){
         return 0;
     }
@@ -186,6 +233,7 @@ public abstract class GenericRobot {
     public double rawEncoderRightB(){
         return 0;
     }
+
     public double getPivotLeftMotorA() {
         return 0.0;
     }
@@ -198,54 +246,107 @@ public abstract class GenericRobot {
     public double getPivotRightMotorB() {
         return 0.0;
     }
+
     ////////////////////////////////////////////////////////// Motor Velocity
+
     public void setPivotLeftMotorA(double Pivot) {
+
     }
     public void setPivotLeftMotorB(double Pivot) {
+
     }
     public void setPivotRightMotorA(double Pivot) {
+
     }
     public void setPivotRightMotorB(double Pivot) {
+
     }
     ////////////////////////////////////////////////////////////////////Drive function
     public void setDrive(double xspd, double yspd, double turnspd){
+
     }
+
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+
+    }
+
     static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
     public Pose2d getPose() {
         return defaultPose;
     }
+
     public void setPose(Pose2d startPose){}
     public void setPose(){}
+
+
     public void resetStartHeading() {
-        startHeading = getYaw();
+        startHeading = getPigeonYaw();
     }
+
     public void resetStartDists() {
         startDists = new double[] {getDriveDistanceInchesLeftA(), getDriveDistanceInchesRightA(),
                 getDriveDistanceInchesLeftB(),getDriveDistanceInchesRightB()};
     }
+
     public void resetStartPivots() {
         startPivots = new double[] {getPivotLeftMotorA(), getPivotRightMotorA(),
                 getPivotLeftMotorB(), getPivotRightMotorB()};
     }
+
     /////////////////////////////////////////////////////////////////////////////////////////Collector Code
+
     public void setBottomRollerPower(double power){}
     public void setTopRollerPower(double power){}
+
     public void collect(double rpm){}
     public void setBottomRollerRPM(double rpm){}
     public void setTopRollerRPM(double rpm){}
+
     public void raiseTopRoller(boolean up){}
+
     public double getTopRollerPosition(){return 0;}
+
     public boolean cargoInCollector(){return false;}
+
     ////////////////////////////////////////////////////////////////////////////////////Arm Code
+
     public void rightArmPower(double power){}
     public void leftArmPower(double power){}
     public void moveArm(double power){}
     public double getArmPosition(){return 0;}
+
+    public void stackCargo(double zPos){
+        boolean openGrip = false;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- zPos) <= 3){
+            openGrip = true;
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + zPos);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
+    }
+
+    public void liftArm(){
+
+    }
+
+    public void dropArm(){}
     ///////////////////////////////////////////////////////////////////////////////////Gripper Code
-    public void openGripper(){}
-    public void closeGripper(){}
+    public void openGripper(boolean open){}
+
     public boolean gripperIsOpen(){return false;}
+
     ///////////////////////////////////////////////////////////////////////////////////Tape Sensors
+
     public boolean getLeftASensor(){return false;}
     public boolean getLeftBSensor(){return false;}
     public boolean getRightASensor(){return false;}
