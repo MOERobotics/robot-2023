@@ -9,41 +9,28 @@ import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-
-import static frc.robot.Robot.driveCode;
-
 public class autoRoutine extends genericAutonomous {
     double xspd, yspd, turnspd;
-    double radius = 30;
-    double desiredTheta = 5 * Math.PI / 2;
     double desiredInchesPerSecond = 40;
     double ds = desiredInchesPerSecond;
     int autoStep;
-  /*  double firstDist = 208.11;
-    double secondDist = 220.08;
-    double thirdDist = 220.75;
-    double fourthDist = 221.76;
-    double fifthDist = 63.43;*/
-    double baseSpd = 25.0;
     double xPidK =1.0e-3;
 
     double yPidK = 1.0e-3; //1.0e-3;
     Point startPosition = new Point(55.88, 200.47);
-    Point secondPosition = new Point(275.88,200.47);
-    Point thirdPosition = new Point(275.88, 182.235);
-    Point fourthPosition = new Point(55.88, 200.47);
-    Point fifthPosition = new Point(55.8, 154.37);
+    //Point secondPosition = new Point(275.88,200.47);
+    Point secondPosition = new Point(275.88, 182.235);
+    Point thirdPosition = new Point(55.88, 200.47);
+    Point fourthPosition = new Point(55.8, 154.37);
     Point endPosition = new Point(115.17, 131.81);
     double kP = 0.5e-1;
-    double s_0 = 0;
+    double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
 
-    double firstDist = AutoCodeLines.getDistance(startPosition,secondPosition) - 15;
+    double firstDist = AutoCodeLines.getDistance(startPosition,secondPosition);
     double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
-    double fourthDist = AutoCodeLines.getDistance(fourthPosition, fifthPosition);
-
-    double fifthDist = AutoCodeLines.getDistance(fifthPosition, endPosition);
+    double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
 
     private final Timer m_timer = new Timer();
 
@@ -54,20 +41,19 @@ public class autoRoutine extends genericAutonomous {
         robot.resetStartDists();
         robot.resetStartPivots();
         robot.resetStartHeading();
+        Rotation2d startRot = new Rotation2d(0);
         autoStep = 0;
         if(robot.getRed()){
-            yspd = -yspd;
-            robot.setPose(new Pose2d(lengthOfField - startPosition.x, startPosition.y, new Rotation2d(0)));
-        } else{
-            robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
+            startPosition.x = lengthOfField - startPosition.x;
+            secondPosition.x = lengthOfField - secondPosition.x;
+            thirdPosition.x = lengthOfField - thirdPosition.x;
+            fourthPosition.x = lengthOfField - fourthPosition.x;
+            endPosition.x = lengthOfField - endPosition.x;
+            startRot = new Rotation2d(Math.PI);
         }
-        robot.setPose(new Pose2d(startPosition.x, startPosition.y, new Rotation2d(0)));
+        robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
         autoStep = 0;
         PID.enableContinuousInput(-180,180);
-    }
-
-    public void teleopPeriodic(GenericRobot robot) {
-        driveCode.teleopPeriodic(robot);
     }
 
     @Override
@@ -78,7 +64,7 @@ public class autoRoutine extends genericAutonomous {
         double basePower = 35.0;
         double desiredPitch = 9.0;
 
-        SmartDashboard.putNumber("s", s_0);
+        SmartDashboard.putNumber("s", s);
         SmartDashboard.putNumber("autostep", autoStep);
         SmartDashboard.putNumber("xpsd", xspd);
         SmartDashboard.putNumber("yspd", yspd);
@@ -86,7 +72,7 @@ public class autoRoutine extends genericAutonomous {
         SmartDashboard.putNumber("first distance", firstDist);
         Pose2d currPose = robot.getPose();
         switch (autoStep) {
-            case 0:
+            case 0: //resets everything
                 m_timer.reset();
                 m_timer.start();
                 robot.resetStartDists();
@@ -96,10 +82,10 @@ public class autoRoutine extends genericAutonomous {
                 autoStep++;
             case 1:
                 double t = m_timer.get();
-                s_0 = getS(t);
-                xspd = velocityFunctionX(s_0) + xPidK * (positionFunctionX(s_0) - currPose.getX());
-                yspd = velocityFunctionY(s_0) - yPidK * (positionFunctionY(s_0) - currPose.getY());
-                if (s_0 >= firstDist) {
+                s = getS(t);
+                xspd = velocityFunctionX(s) + xPidK * (positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (s >= firstDist) {
                     xspd = 0;
                     yspd = 0;
                     m_timer.reset();
@@ -108,11 +94,11 @@ public class autoRoutine extends genericAutonomous {
                 }
                 break;
             case 2:
-                s_0 = getS(m_timer.get());
-                xspd = velocityFunctionX(s_0)+ xPidK * (positionFunctionX(s_0) - currPose.getX());
-                yspd = velocityFunctionY(s_0);// - yPidK * (positionFunctionY(s_0) - currPose.getY());
+                s = getS(m_timer.get());
+                xspd = velocityFunctionX(s)+ xPidK * (positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s) + yPidK * (positionFunctionY(s) - currPose.getY());
 
-                if (s_0 >= secondDist) {
+                if (s >= secondDist) {
                     xspd = 0;
                     yspd = 0;
                     turnspd = 0;
@@ -122,10 +108,10 @@ public class autoRoutine extends genericAutonomous {
                 }
                 break;
             case 3:
-                s_0 = getS(m_timer.get());
-                xspd = velocityFunctionX(s_0) + xPidK * (positionFunctionX(s_0) - currPose.getX()) ;
-                yspd = velocityFunctionY(s_0);// - yPidK * (positionFunctionY(s_0) - currPose.getY());
-                if (s_0 >= thirdDist) {
+                s = getS(m_timer.get());
+                xspd = velocityFunctionX(s) + xPidK * (positionFunctionX(s) - currPose.getX()) ;
+                yspd = velocityFunctionY(s) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (s >= thirdDist) {
                     xspd = 0;
                     yspd = 0;
                     turnspd = 0;
@@ -135,10 +121,10 @@ public class autoRoutine extends genericAutonomous {
                 }
                 break;
             case 4:
-                s_0 = getS(m_timer.get());
-                xspd = velocityFunctionX(s_0) + xPidK * (positionFunctionX(s_0) - currPose.getX());
-                yspd = velocityFunctionY(s_0);// - yPidK * (positionFunctionY(s_0) - currPose.getY());
-                if (s_0 >= fourthDist) {
+                s = getS(m_timer.get());
+                xspd = velocityFunctionX(s) + xPidK * (positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (s >= fourthDist) {
                     xspd = 0;
                     yspd = 0;
                     turnspd = 0;
@@ -148,85 +134,29 @@ public class autoRoutine extends genericAutonomous {
                 }
 
                 break;
-            case 5://right of chariging board
-                s_0 = getS(m_timer.get());
-                xspd = velocityFunctionX(s_0) + xPidK * (positionFunctionX(s_0) - currPose.getX());
-                yspd = velocityFunctionY(s_0);// - yPidK * (positionFunctionY(s_0) - currPose.getY());
-                if (s_0 >= fifthDist) {
-                    xspd = 0;
-                    yspd = 0;
-                    turnspd = 0;
-                    m_timer.stop();
-                    autoStep++;
-                }
-                break;
-     /*       case 5: //balance
-                xspd = basePower;
-                if (Math.abs(currPitch) > 5) {
-                    autoStep++;
-                }
-                break;
-            case 6:
-//                        curPosOnRamp = base * Math.sin(currPitch) * (Math.cos(angleOfBoard) / Math.sin(angleOfBoard));
-//                        leftside = basePower*(base - curPosOnRamp)/base;
-//                        rightside = basePower*(base - curPosOnRamp)/base;
-                xspd = basePower;
-                if (Math.abs(currPitch) > 11) {
-                    autoStep += 1;
-                }
-                break;
-            case 7:
-                xspd = climbPower;
-                if (Math.abs(currPitch) < 10) {
-                    autoStep++;
-                }
-                break;
-            case 8:
-                xspd = -correctionPower;
-                autoStep++;
-                break;
-            case 9:
-                if (currPitch < -desiredPitch) {
-                    xspd = -correctionPower;
-                } else if (currPitch > desiredPitch) {
-                    xspd = correctionPower;
-                } else {
-                    xspd = 0;
-                    autoStep++;
-                }
-                break;
-            case 10:
-                if (Math.abs(currPitch) > desiredPitch) {
-                    autoStep--;
-                } else {
-                    xspd = yspd = turnspd = 0;
-                }
-                break; */
+
 
 
         }
         turnspd = PID.calculate(-robot.getYaw());
-        robot.setDrive(xspd, yspd, turnspd);
+        robot.setDrive(xspd, yspd, turnspd, true);
     }
 
     public double positionFunctionX(double s) {
         if (autoStep == 0) {
-            return startPosition.x * ds;
+            return startPosition.x;
         }
         if (autoStep == 1) {
-            return AutoCodeLines.getPositionX(startPosition, secondPosition, s)* ds;
+            return AutoCodeLines.getPositionX(startPosition, secondPosition, s);
         }
         if (autoStep == 2) {
-            return AutoCodeLines.getPositionX(secondPosition, thirdPosition, s)* ds;
+            return AutoCodeLines.getPositionX(secondPosition, thirdPosition, s);
         }
         if (autoStep == 3) {
-            return AutoCodeLines.getPositionX(thirdPosition, fourthPosition, s)* ds;
+            return AutoCodeLines.getPositionX(thirdPosition, fourthPosition, s);
         }
         if (autoStep == 4) {
-            return AutoCodeLines.getPositionX(fourthPosition, fifthPosition, s)* ds;
-        }
-        if (autoStep == 5) {
-            return AutoCodeLines.getPositionX(fifthPosition, endPosition, s)* ds;
+            return AutoCodeLines.getPositionX(fourthPosition, endPosition, s);
         }
         return endPosition.x;
     }
@@ -237,19 +167,16 @@ public class autoRoutine extends genericAutonomous {
             return startPosition.y;
         }
         if (autoStep == 1) {
-            return AutoCodeLines.getPositionY(startPosition, secondPosition, s)* ds;
+            return AutoCodeLines.getPositionY(startPosition, secondPosition, s);
         }
         if (autoStep == 2) {
-            return AutoCodeLines.getPositionY(secondPosition, thirdPosition, s)* ds;
+            return AutoCodeLines.getPositionY(secondPosition, thirdPosition, s);
         }
         if (autoStep == 3) {
-            return AutoCodeLines.getPositionY(thirdPosition, fourthPosition, s)* ds;
+            return AutoCodeLines.getPositionY(thirdPosition, fourthPosition, s);
         }
         if (autoStep == 4) {
-            return AutoCodeLines.getPositionY(fourthPosition, fifthPosition, s)* ds;
-        }
-        if (autoStep == 5) {
-            return AutoCodeLines.getPositionY(fifthPosition, endPosition, s)* ds;
+            return AutoCodeLines.getPositionY(fourthPosition, endPosition, s);
         }
         return endPosition.y;
     }
@@ -268,10 +195,7 @@ public class autoRoutine extends genericAutonomous {
             return AutoCodeLines.getVelocityX(thirdPosition, fourthPosition, s)* ds;
         }
         if (autoStep == 4){
-            return AutoCodeLines.getVelocityX(fourthPosition, fifthPosition, s)* ds;
-        }
-        if (autoStep == 5){
-            return AutoCodeLines.getVelocityX(fifthPosition, endPosition, s)* ds;
+            return AutoCodeLines.getVelocityX(fourthPosition, endPosition, s)* ds;
         }
         return 0;
     }
@@ -293,10 +217,7 @@ public class autoRoutine extends genericAutonomous {
             return AutoCodeLines.getVelocityY(thirdPosition, fourthPosition, s)* ds;
         }
         if (autoStep == 4){
-            return AutoCodeLines.getVelocityY(fourthPosition, fifthPosition, s)* ds;
-        }
-        if (autoStep == 5){
-            return AutoCodeLines.getVelocityY(fifthPosition, endPosition, s)* ds;
+            return AutoCodeLines.getVelocityY(fourthPosition, endPosition, s)* ds;
         }
         return 0;
     }

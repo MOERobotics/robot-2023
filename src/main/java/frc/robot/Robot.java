@@ -147,47 +147,4 @@ public class Robot extends TimedRobot {
 
  @Override
  public void simulationPeriodic() {}
-  robot.getDriveDistanceInchesLeftA();
-  robot.getDriveDistanceInchesLeftB();
-  robot.getDriveDistanceInchesRightB();
-  robot.getDriveDistanceInchesRightA();
- }
- @Override
- public void autonomousInit() {
-  autonomous.autonomousInit(robot);
- }
- @Override
- public void autonomousPeriodic() {
-  autonomous.autonomousPeriodic(robot);
- }
- @Override
- public void teleopInit() {
-  driveCode.teleopInit(robot);
- }
- @Override
- public void teleopPeriodic() {
-  driveCode.teleopPeriodic(robot);
- }
- @Override
- public void disabledInit() {}
- @Override
- public void disabledPeriodic() {}
- @Override
- public void testInit() {
-  SmartDashboard.putData("Field", field);
- }
- @Override
- public void testPeriodic() {
-  var pose = vision.getPose();
-  if (vision.poseFound()){
-   field.setRobotPose(pose.toPose2d());
-  }
-  SmartDashboard.putData("Field", field);
-  SmartDashboard.putNumber("field x", field.getRobotPose().getX());
-  SmartDashboard.putNumber("field y", field.getRobotPose().getY());
- }
- @Override
- public void simulationInit() {}
- @Override
- public void simulationPeriodic() {}
 }

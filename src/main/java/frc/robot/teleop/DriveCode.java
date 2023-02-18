@@ -43,9 +43,6 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
-    double kP = 0.5e-1;
-    double desiredYaw = 0;
-    PIDController yawControl = new PIDController(kP, 0,0);
 
     @Override
     public void teleopInit(GenericRobot robot) {
