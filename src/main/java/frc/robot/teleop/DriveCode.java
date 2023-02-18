@@ -1,5 +1,6 @@
 package frc.robot.teleop;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -33,9 +34,13 @@ public class DriveCode extends GenericTeleop{
     boolean balanceCommand = false;
     boolean init = false;
     boolean autoStackCommand = false;
+    
+    double desiredYaw = 0;
+    PIDController yawControl = new PIDController(.5e-1, 0,0);
 
     @Override
     public void teleopInit(GenericRobot robot) {
+        yawControl.enableContinuousInput(-180,180);
         resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
@@ -69,12 +74,22 @@ public class DriveCode extends GenericTeleop{
             autoStackCommand = false;
         }
 
+
         if (xbox.getRawButton(5)) { // speed boosters
             turnspd *= 2;
         }
         if (xbox.getRawButton(6)) {
             xspd *= 2;
             yspd *= 2;
+        }
+
+        if (turnspd != 0){
+            desiredYaw = robot.getYaw();
+        }
+        else {
+            if (xspd != 0 || yspd != 0) {
+                turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
+            }
         }
 
         if (xbox.getRawButton(1)) { //resetter
@@ -84,7 +99,8 @@ public class DriveCode extends GenericTeleop{
             robot.resetStartHeading();
             robot.resetStartDists();
             robot.resetStartPivots();
-            xspd = yspd = turnspd = 0;
+            yawControl.reset();
+            desiredYaw = 0;
         }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code

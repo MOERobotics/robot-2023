@@ -21,8 +21,8 @@ public class TherMOEDynamic extends GenericRobot{
 
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     public final double MAX_ARM_HEIGHT = 50;
-    public final double MIN_ARM_HEIGHT = 0;
-    WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
+    public final double MIN_ARM_HEIGHT = -50;
+    //WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
     CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
     CANSparkMax pivotLeftMotorA   = new CANSparkMax(18, kBrushless);
@@ -289,7 +289,7 @@ public class TherMOEDynamic extends GenericRobot{
         navx.reset();
     }
 
-    @Override
+    /*@Override
     public double getPigeonYaw() {
         return pigeon.getYaw();
     }
@@ -317,7 +317,7 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void setPigeonYaw(double startYaw){
         pigeon.setYaw(startYaw);
-    }
+    }*/
 //////////////////////////////////////////////////////////////////////////////////////////drive motor encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
