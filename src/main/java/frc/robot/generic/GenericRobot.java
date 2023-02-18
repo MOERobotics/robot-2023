@@ -316,23 +316,7 @@ public abstract class GenericRobot {
     public double getArmPosition(){return 0;}
 
     public void stackCargo(double zPos){
-        boolean openGrip = false;
-        double armPower = 0;
-        if (Math.abs(getArmPosition()- zPos) <= 3){
-            openGrip = true;
-            armPower = 0;
-        }
-        else{
-            armPower = .02*(-getArmPosition() + zPos);
-            if (armPower < 0){
-                armPower = Math.max(-.5, armPower);
-            }
-            else{
-                armPower = Math.min(.5, armPower);
-            }
-        }
-        moveArm(armPower);
-        openGripper(openGrip);
+
     }
 
     public void liftArm(){

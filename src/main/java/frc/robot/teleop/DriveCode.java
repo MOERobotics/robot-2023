@@ -94,11 +94,13 @@ public class DriveCode extends GenericTeleop{
 
         if (xbox.getRawButton(1)) { //resetter
             resetting = true;
+            Pose2d m_pose = robot.getPose();
             robot.resetAttitude();
             robot.resetPIDPivot();
             robot.resetStartHeading();
             robot.resetStartDists();
             robot.resetStartPivots();
+            robot.setPose(m_pose);
             yawControl.reset();
             desiredYaw = 0;
         }

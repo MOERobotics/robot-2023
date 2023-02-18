@@ -82,6 +82,14 @@ public class Robot extends TimedRobot {
 
    SmartDashboard.putNumber("armPosition", robot.getArmPosition());
 
+  var pose = vision.getPose();
+  if (vision.poseFound()){
+   field.setRobotPose(pose.toPose2d());
+  }
+  SmartDashboard.putData("Field", field);
+  SmartDashboard.putNumber("field x", vision.robotFieldPoseInches().getX());
+  SmartDashboard.putNumber("field y", vision.robotFieldPoseInches().getY());
+
 
   robot.getDriveDistanceInchesLeftA();
   robot.getDriveDistanceInchesLeftB();

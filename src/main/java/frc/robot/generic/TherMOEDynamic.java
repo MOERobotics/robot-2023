@@ -20,8 +20,10 @@ import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
 public class TherMOEDynamic extends GenericRobot{
 
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
-    public final double MAX_ARM_HEIGHT = 50;
-    public final double MIN_ARM_HEIGHT = -50;
+    public final double MAX_ARM_HEIGHT = 51.75;
+    public final double armRadius = 44;
+    public final double MIN_ARM_HEIGHT = MAX_ARM_HEIGHT-armRadius;
+    public final double shoulderCalib = 3.21;
     //WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
     CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
@@ -603,8 +605,33 @@ public class TherMOEDynamic extends GenericRobot{
     }
 
     @Override
-    public double getArmPosition() { return shoulder.getPosition(); }
-/////////////////////////////////////////////////////////////////////////////////////gripper commands
+    public double getArmPosition() {
+        double theta =  (Math.PI/2)*(shoulderCalib - shoulder.getPosition());
+        return MAX_ARM_HEIGHT - armRadius*Math.sin(theta);
+    }
+
+    @Override
+    public void stackCargo(double zPos) {
+        boolean openGrip = false;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- zPos) <= 3){ //6" (+/- 3)tolerance
+            openGrip = true;
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + zPos);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////gripper commands
     @Override
     public void openGripper(boolean open) {
         gripper.set(open);
