@@ -24,9 +24,9 @@ public abstract class GenericRobot {
 
     boolean Red;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
-                               SwerveModuleState backLeft, SwerveModuleState backRight){
+                       SwerveModuleState backLeft, SwerveModuleState backRight){
         setLeftDriveARPM(frontLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
@@ -87,7 +87,7 @@ public abstract class GenericRobot {
     public SwerveDriveKinematics kinematics(){
         return null;
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
     public double getYaw() {
         return 0;
     }

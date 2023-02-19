@@ -34,13 +34,20 @@ public class DriveCode extends GenericTeleop{
     boolean balanceCommand = false;
     boolean init = false;
     boolean autoStackCommand = false;
-    
+
     double desiredYaw = 0;
     PIDController yawControl = new PIDController(.5e-1, 0,0);
+    double startAngle;
+    boolean btnLeft = false;
+    boolean btnRight = false;
+    boolean autoBalance;
+    int count;
+    double totalPathLength = 0;
 
     @Override
     public void teleopInit(GenericRobot robot) {
         yawControl.enableContinuousInput(-180,180);
+
         resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
