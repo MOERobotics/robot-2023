@@ -11,22 +11,27 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class autoRoutine extends genericAutonomous {
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 65;
+    double desiredInchesPerSecond = 30;
     double ds = desiredInchesPerSecond;
     int autoStep;
     double xPidK = 2.0e-1;
 
-    //double widthRobot = 13/2;
+    double widthRobot = 34;
 
 
     double yPidK = 0.7; //1.0e-3;
-    Point startPosition = new Point(55.88, 200.47);
+    Point startPositionBlue = new Point(55.88, 200.47);
+    Point startPosition = startPositionBlue;
     //Point secondPosition = new Point(275.88,200.47);
-    Point secondPosition = new Point(275.88, 182.235); //269.3,180.8
-    Point thirdPosition = new Point(55.88, 200.47); //55.8,199.43
-    Point fourthPosition = new Point(55.8, 154.37); //54.5,154.89
-    Point endPosition = new Point(105.17, 120.81); //114.67,131.96
-    double kP = 0.5e-1;
+    Point secondPositionBlue = new Point(275.88-20, 182.235); //269.3,180.8
+    Point secondPosition = secondPositionBlue;
+    Point thirdPositionBlue = new Point(55.88, 200.47); //55.8,199.43
+    Point thirdPosition = thirdPositionBlue;
+    Point fourthPositionBlue = new Point(55.8, 154.37); //54.5,154.89
+    Point fourthPosition = fourthPositionBlue;
+    Point endPositionBlue = new Point(105.17, 120.81); //114.67,131.96
+    Point endPosition = endPositionBlue;
+    double kP = 0.75e-1; //.5e-1
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
 
@@ -39,31 +44,48 @@ public class autoRoutine extends genericAutonomous {
 
     double lengthOfField = 650.7;
 
-    double correctionPower = 14.0;
-    double climbPower = 30.0;
-    double basePower = 35.0;
+    double correctionPowerBlue = 16.0;
+    double climbPowerBlue = 30.0;
+    double basePowerBlue = 35.0;
+
+    double correctionPower = correctionPowerBlue;
+    double climbPower = climbPowerBlue;
+    double basePower = basePowerBlue;
 
     public void autonomousInit(GenericRobot robot) {
         m_timer.reset();
         robot.resetStartDists();
         robot.resetStartPivots();
-        robot.resetStartHeading();
+        robot.resetAttitude();
         Rotation2d startRot = new Rotation2d(0);
         autoStep = 0;
+        robot.setPigeonYaw(0);
         if(robot.getRed()){
-            startPosition.x = lengthOfField - startPosition.x;
-            secondPosition.x = lengthOfField - secondPosition.x;
-            thirdPosition.x = lengthOfField - thirdPosition.x;
-            fourthPosition.x = lengthOfField - fourthPosition.x;
-            endPosition.x = lengthOfField - endPosition.x;
+            startPosition.x = lengthOfField - startPositionBlue.x;
+            secondPosition.x = lengthOfField - secondPositionBlue.x;
+            thirdPosition.x = lengthOfField - thirdPositionBlue.x;
+            fourthPosition.x = lengthOfField - fourthPositionBlue.x;
+            endPosition.x = lengthOfField - endPositionBlue.x;
             startRot = new Rotation2d(Math.PI);
-            correctionPower = -correctionPower;
-            climbPower = -climbPower;
-            basePower = -basePower;
+            correctionPower = -correctionPowerBlue;
+            climbPower = -climbPowerBlue;
+            basePower = -basePowerBlue;
+            robot.setPigeonYaw(180);
+        }else{
+            startPosition = startPositionBlue;
+            secondPosition = secondPositionBlue;
+            thirdPosition = thirdPositionBlue;
+            fourthPosition = fourthPositionBlue;
+            endPosition = endPositionBlue;
+            correctionPower = correctionPowerBlue;
+            climbPower = climbPowerBlue;
+            basePower = basePowerBlue;
         }
+        robot.resetStartHeading();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
         autoStep = 0;
         PID.enableContinuousInput(-180,180);
+        xspd = yspd = 0;
     }
 
     @Override
@@ -88,7 +110,7 @@ public class autoRoutine extends genericAutonomous {
                 robot.resetStartPivots();
                 robot.resetStartHeading();
                 xspd = yspd = turnspd = 0;
-                autoStep++;
+                autoStep ++;
                 break;
             case 1:
                 double t = m_timer.get();
@@ -100,7 +122,7 @@ public class autoRoutine extends genericAutonomous {
                     yspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autoStep++;
+                    autoStep = 20;
                 }
                 break;
             case 2:
