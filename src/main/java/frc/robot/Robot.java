@@ -22,23 +22,26 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
- public static final GenericTeleop
-         driveCode = new DriveCode();
+  public static final GenericTeleop
+          driveCode = new DriveCode();
 
-  //GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new baseAuto();
+ // GenericRobot robot = new SwerveBot();
+  genericAutonomous autonomous = new autoRoutine();
   GenericTeleop teleop = driveCode;
+  GenericRobot robot = new swerveBot();
   DriverStation.Alliance OurAllianceColor;
-  GenericRobot robot = new TherMOEDynamic();
 
-  MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
-  Field2d field = new Field2d();
+ MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+ Field2d field = new Field2d();
 
-  @Override
-  public void robotInit() {
-   robot.resetPigeon();
+ public Robot(){
+  super(0.01);
+ }
+ @Override
+ public void robotInit() {
+  robot.resetPigeon();
 
-   OurAllianceColor = DriverStation.getAlliance();
+  OurAllianceColor = DriverStation.getAlliance();
 
    if (OurAllianceColor == DriverStation.Alliance.Red)
    {
@@ -78,7 +81,7 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
-   SmartDashboard.putBoolean("Red Robot", robot.getRed());
+  SmartDashboard.putBoolean("Red Robot", robot.getRed());
 
    SmartDashboard.putNumber("armPosition", robot.getArmPosition());
 
