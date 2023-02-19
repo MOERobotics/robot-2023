@@ -11,18 +11,21 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class autoRoutine extends genericAutonomous {
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 40;
+    double desiredInchesPerSecond = 65;
     double ds = desiredInchesPerSecond;
     int autoStep;
-    double xPidK =0;//1.0e-2;
+    double xPidK = 2.0e-1;
 
-    double yPidK = 0;//1.0e-2; //1.0e-3;
+    //double widthRobot = 13/2;
+
+
+    double yPidK = 0.7; //1.0e-3;
     Point startPosition = new Point(55.88, 200.47);
     //Point secondPosition = new Point(275.88,200.47);
-    Point secondPosition = new Point(275.88, 182.235);
-    Point thirdPosition = new Point(55.88, 200.47);
-    Point fourthPosition = new Point(55.8, 154.37);
-    Point endPosition = new Point(115.17, 131.81);
+    Point secondPosition = new Point(275.88, 182.235); //269.3,180.8
+    Point thirdPosition = new Point(55.88, 200.47); //55.8,199.43
+    Point fourthPosition = new Point(55.8, 154.37); //54.5,154.89
+    Point endPosition = new Point(105.17, 120.81); //114.67,131.96
     double kP = 0.5e-1;
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -35,6 +38,10 @@ public class autoRoutine extends genericAutonomous {
     private final Timer m_timer = new Timer();
 
     double lengthOfField = 650.7;
+
+    double correctionPower = 14.0;
+    double climbPower = 30.0;
+    double basePower = 35.0;
 
     public void autonomousInit(GenericRobot robot) {
         m_timer.reset();
@@ -50,6 +57,9 @@ public class autoRoutine extends genericAutonomous {
             fourthPosition.x = lengthOfField - fourthPosition.x;
             endPosition.x = lengthOfField - endPosition.x;
             startRot = new Rotation2d(Math.PI);
+            correctionPower = -correctionPower;
+            climbPower = -climbPower;
+            basePower = -basePower;
         }
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
         autoStep = 0;
@@ -58,10 +68,8 @@ public class autoRoutine extends genericAutonomous {
 
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
-        double currPitch = robot.getRoll();
-        double correctionPower = 14.0;
-        double climbPower = 30.0;
-        double basePower = 35.0;
+        double currPitch = robot.getPitch();
+
         double desiredPitch = 9.0;
 
         SmartDashboard.putNumber("s", s);
@@ -81,6 +89,7 @@ public class autoRoutine extends genericAutonomous {
                 robot.resetStartHeading();
                 xspd = yspd = turnspd = 0;
                 autoStep++;
+                break;
             case 1:
                 double t = m_timer.get();
                 s = getS(t);
@@ -134,16 +143,16 @@ public class autoRoutine extends genericAutonomous {
                     autoStep++;
                 }
                 break;
-            /*case 5:
+            case 5:
                 xspd = basePower;
                 if (Math.abs(currPitch) > 11) { // driving up charge station
-                    autonomousStep ++;
+                    autoStep ++;
                 }
                 break;
             case 6:
                 xspd = climbPower;
                 if (Math.abs(currPitch) < 10) { //flattened out
-                    autonomousStep++;
+                    autoStep++;
                 }
                 break;
             case 7:
@@ -155,7 +164,6 @@ public class autoRoutine extends genericAutonomous {
                     xspd = 0;
                 }
                 break;
-*/
 
         }
         if (autoStep > 0) turnspd = PID.calculate(-robot.getYaw());

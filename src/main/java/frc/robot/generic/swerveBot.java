@@ -246,12 +246,12 @@ public class    swerveBot extends GenericRobot{
 
     @Override
     public double getRoll() {
-        return navx.getRoll();
+        return navx.getPitch();
     }
 
     @Override
     public double getPitch() {
-        return navx.getPitch();
+        return -navx.getRoll();
     }
 
     @Override
