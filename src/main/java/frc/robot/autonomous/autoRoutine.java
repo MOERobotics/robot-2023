@@ -159,7 +159,7 @@ public class autoRoutine extends genericAutonomous {
 
         }
         if (autoStep > 0) turnspd = PID.calculate(-robot.getYaw());
-        robot.setDrive(xspd, yspd, turnspd);
+        robot.setDrive(xspd, yspd, turnspd, true);
     }
 
     public double positionFunctionX(double s) {
