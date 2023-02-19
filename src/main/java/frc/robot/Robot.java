@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new baseAuto();
+  genericAutonomous autonomous = new autoRoutine();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
   DriverStation.Alliance OurAllianceColor;
@@ -34,6 +34,9 @@ public class Robot extends TimedRobot {
  MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
  Field2d field = new Field2d();
 
+ public Robot(){
+  super(0.01);
+ }
  @Override
  public void robotInit() {
   robot.resetPigeon();

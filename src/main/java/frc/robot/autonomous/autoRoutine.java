@@ -14,9 +14,9 @@ public class autoRoutine extends genericAutonomous {
     double desiredInchesPerSecond = 40;
     double ds = desiredInchesPerSecond;
     int autoStep;
-    double xPidK =1.0e-3;
+    double xPidK =0;//1.0e-2;
 
-    double yPidK = 1.0e-3; //1.0e-3;
+    double yPidK = 0;//1.0e-2; //1.0e-3;
     Point startPosition = new Point(55.88, 200.47);
     //Point secondPosition = new Point(275.88,200.47);
     Point secondPosition = new Point(275.88, 182.235);
@@ -134,7 +134,7 @@ public class autoRoutine extends genericAutonomous {
                     autoStep++;
                 }
                 break;
-            case 5:
+            /*case 5:
                 xspd = basePower;
                 if (Math.abs(currPitch) > 11) { // driving up charge station
                     autonomousStep ++;
@@ -155,11 +155,11 @@ public class autoRoutine extends genericAutonomous {
                     xspd = 0;
                 }
                 break;
-
+*/
 
         }
-        turnspd = PID.calculate(-robot.getYaw());
-        robot.setDrive(xspd, yspd, turnspd, true);
+        if (autoStep > 0) turnspd = PID.calculate(-robot.getYaw());
+        robot.setDrive(xspd, yspd, turnspd);
     }
 
     public double positionFunctionX(double s) {
