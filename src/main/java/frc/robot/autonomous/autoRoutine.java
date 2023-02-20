@@ -21,16 +21,16 @@ public class autoRoutine extends genericAutonomous {
 
     double yPidK = 0.7; //1.0e-3;
     Point startPositionBlue = new Point(55.88, 200.47);
-    Point startPosition = startPositionBlue;
+    Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
     Point secondPositionBlue = new Point(275.88-20, 182.235); //269.3,180.8
-    Point secondPosition = secondPositionBlue;
+    Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88, 200.47); //55.8,199.43
-    Point thirdPosition = thirdPositionBlue;
+    Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
     Point fourthPositionBlue = new Point(55.8, 154.37); //54.5,154.89
-    Point fourthPosition = fourthPositionBlue;
+    Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
     Point endPositionBlue = new Point(105.17, 120.81); //114.67,131.96
-    Point endPosition = endPositionBlue;
+    Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
     double kP = 0.75e-1; //.5e-1
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -72,11 +72,11 @@ public class autoRoutine extends genericAutonomous {
             basePower = -basePowerBlue;
             robot.setPigeonYaw(180);
         }else{
-            startPosition = startPositionBlue;
-            secondPosition = secondPositionBlue;
-            thirdPosition = thirdPositionBlue;
-            fourthPosition = fourthPositionBlue;
-            endPosition = endPositionBlue;
+            startPosition.x = startPositionBlue.x;
+            secondPosition.x = secondPositionBlue.x;
+            thirdPosition.x = thirdPositionBlue.x;
+            fourthPosition.x = fourthPositionBlue.x;
+            endPosition.x = endPositionBlue.x;
             correctionPower = correctionPowerBlue;
             climbPower = climbPowerBlue;
             basePower = basePowerBlue;
@@ -100,6 +100,9 @@ public class autoRoutine extends genericAutonomous {
         SmartDashboard.putNumber("yspd", yspd);
         SmartDashboard.putNumber("turn speed", turnspd);
         SmartDashboard.putNumber("first distance", firstDist);
+        SmartDashboard.putBoolean("do I think im red?", robot.getRed());
+        SmartDashboard.putNumber("startPosition", startPosition.x);
+        SmartDashboard.putNumber("startBlue", startPositionBlue.x);
         Pose2d currPose = robot.getPose();
 
         switch (autoStep) {
