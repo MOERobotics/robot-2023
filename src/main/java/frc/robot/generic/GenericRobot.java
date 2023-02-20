@@ -54,7 +54,7 @@ public abstract class GenericRobot {
 
     public SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
             var delta = desiredState.angle.minus(currentAngle);
-            if (Math.abs(delta.getDegrees()) > 150.0) {
+            if (Math.abs(delta.getDegrees()) > 90.0) {
                 return new SwerveModuleState(
                         -desiredState.speedMetersPerSecond,
                         desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));

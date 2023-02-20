@@ -22,12 +22,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
-  public static final GenericTeleop
-          driveCode = new DriveCode();
+
 
  // GenericRobot robot = new SwerveBot();
   genericAutonomous autonomous = new baseAuto();
-  GenericTeleop teleop = driveCode;
+  GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();
 
@@ -62,6 +61,7 @@ public class Robot extends TimedRobot {
   SmartDashboard.putBoolean("Red Robot", robot.getRed());
 
    SmartDashboard.putNumber("armPosition", robot.getArmPosition());
+   SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
 
 
   robot.getDriveDistanceInchesLeftA();
@@ -86,13 +86,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    driveCode.teleopInit(robot);
+    teleop.teleopInit(robot);
   }
 
 
   @Override
   public void teleopPeriodic() {
-    driveCode.teleopPeriodic(robot);
+    teleop.teleopPeriodic(robot);
    vision.genericPeriodic();
   }
 

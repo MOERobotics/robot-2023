@@ -63,6 +63,7 @@ public class DriveCode extends GenericTeleop{
 
         robot.resetStartPivots();
         robot.setPose();
+        desiredYaw = 0;
     }
 
     @Override
@@ -125,10 +126,10 @@ public class DriveCode extends GenericTeleop{
         // 2 is b, 3 is x
 
         if (xbox2.getRawButton(3)){ //collect in
-            collectorRPM = 10000;
+            collectorRPM = 7500;
         }
         else if (xbox2.getRawButton(2)){ //collect out
-            collectorRPM = -10000;
+            collectorRPM = -7500;
         }
         else{ //no more collecting :(
             collectorRPM = 0;

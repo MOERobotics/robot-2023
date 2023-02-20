@@ -85,7 +85,11 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid retractor;
 
     AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
-//    SparkMaxAnalogSensor shoulder = leftArmMotor.getAnalog(CANAnalog.AnalogMode.kAbsolute);
+
+    SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch cargoFinderReverse = bottomCollectorRoller.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    //    SparkMaxAnalogSensor shoulder = leftArmMotor.getAnalog(CANAnalog.AnalogMode.kAbsolute);
 
 
     // Robot chassic dimensions, shaft to shaft.
@@ -97,6 +101,9 @@ public class TherMOEDynamic extends GenericRobot{
     PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
 
     public TherMOEDynamic(){
+
+        cargoFinderForward.enableLimitSwitch(false);
+        cargoFinderReverse.enableLimitSwitch(false);
 
         m_ph.enableCompressorAnalog(100,120);
 
@@ -563,7 +570,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public boolean cargoInCollector() {
-        return super.cargoInCollector();
+        return cargoFinderForward.isPressed();
     }
 ////////////////////////////////////////////////////////////////////////////////////arm motor commands
     @Override
