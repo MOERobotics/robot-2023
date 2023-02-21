@@ -45,11 +45,11 @@ public class circlePath extends genericAutonomous{
             case 1:
                 double t = m_timer.get();
                 double s_0 = getS(t);
-                xspd = velocityFunctionX(s_0);
+                xspd = velocityFunctionX(s_0, t);
                        // + xPidK*(positionFunctionX(s_0) - currPose.getX());
-                yspd = velocityFunctionY(s_0);
+                yspd = velocityFunctionY(s_0, t);
                       //  + yPidK*(positionFunctionY(s_0) - currPose.getY());
-                turnspd = velocityFunctionTheta(s_0);
+                turnspd = velocityFunctionTheta(s_0, t);
                 /*
                 if (s_0 >= 6*Math.PI*radius) { //1 full circle
                     xspd = 0;
@@ -88,17 +88,17 @@ public class circlePath extends genericAutonomous{
     }
 
     @Override
-    public double velocityFunctionX(double s){
+    public double velocityFunctionX(double s, double time){
         return -radius*Math.sin(s/radius)*ds/radius;
     }
 
     @Override
-    public double velocityFunctionY(double s){
+    public double velocityFunctionY(double s, double time){
         return radius*Math.cos(s/radius)*ds/radius;
     }
 
     @Override
-    public double velocityFunctionTheta(double s){
+    public double velocityFunctionTheta(double s, double time){
         return 0;
     }
 

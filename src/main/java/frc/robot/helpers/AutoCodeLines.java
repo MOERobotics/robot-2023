@@ -35,30 +35,29 @@ public class AutoCodeLines {
 
     public static double getdS(double distance, double timeToMax, double averageSpeed, double t){
         double time = distance/averageSpeed;
-        double maxSpeed = averageSpeed/(time-timeToMax);
+        double maxSpeed = averageSpeed*time/(time-timeToMax);
         if (t <= timeToMax){
-            return getPositionY(new Point(0,0), new Point(timeToMax, maxSpeed), t);
+            return maxSpeed/timeToMax*t;
         }
         else if (t <= time-timeToMax){
             return maxSpeed;
         }
         else{
-            return getPositionY(new Point(time-timeToMax, maxSpeed), new Point(time, 0), t-(time-timeToMax));
+            return -maxSpeed/timeToMax*(t-time);
         }
     }
 
     public static double getS(double distance, double timeToMax, double averageSpeed, double t){
         double time = distance/averageSpeed;
-        double maxSpeed = averageSpeed/(time-timeToMax);
+        double maxSpeed = averageSpeed*time/(time-timeToMax);
         if (t <= timeToMax){
-            return getPositionY(new Point(0,0), new Point(timeToMax, maxSpeed), t)*t/2;
+            return maxSpeed/timeToMax*t*t/2;
         }
         else if (t <= time-timeToMax){
             return timeToMax*maxSpeed/2 + maxSpeed*(t-timeToMax);
         }
         else{
-            return timeToMax*maxSpeed + maxSpeed * (time-2*timeToMax)
-                    - getPositionY(new Point(time-timeToMax, maxSpeed), new Point(time, 0), t-(time-timeToMax))*(time-t)/2;
+            return timeToMax*maxSpeed + maxSpeed*(t-2*timeToMax) - maxSpeed/timeToMax*(t-time)*(t-time)/2;
         }
     }
 }
