@@ -77,6 +77,17 @@ public class Robot extends TimedRobot {
   robot.getDriveDistanceInchesLeftB();
   robot.getDriveDistanceInchesRightB();
   robot.getDriveDistanceInchesRightA();
+
+  OurAllianceColor = DriverStation.getAlliance();
+
+  if (OurAllianceColor == DriverStation.Alliance.Red)
+  {
+   robot.setRed(true);
+  }
+  else {
+   robot.setRed(false);
+  }
+
  }
 
 
