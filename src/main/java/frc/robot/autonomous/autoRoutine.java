@@ -32,6 +32,7 @@ public class autoRoutine extends genericAutonomous {
     Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
     double kP = 0.5e-1; //.5e-1
+
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
 

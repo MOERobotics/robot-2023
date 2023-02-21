@@ -47,6 +47,7 @@ public class AutoCodeLines {
         }
     }
 
+
     public static double getS(double distance, double timeToMax, double averageSpeed, double t){
         double time = distance/averageSpeed;
         double maxSpeed = averageSpeed*time/(time-timeToMax);
