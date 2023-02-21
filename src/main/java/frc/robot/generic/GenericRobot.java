@@ -24,9 +24,9 @@ public abstract class GenericRobot {
 
     boolean Red;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
-                               SwerveModuleState backLeft, SwerveModuleState backRight){
+                       SwerveModuleState backLeft, SwerveModuleState backRight){
         setLeftDriveARPM(frontLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
@@ -54,7 +54,7 @@ public abstract class GenericRobot {
 
     public SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
             var delta = desiredState.angle.minus(currentAngle);
-            if (Math.abs(delta.getDegrees()) > 150.0) {
+            if (Math.abs(delta.getDegrees()) > 90.0) {
                 return new SwerveModuleState(
                         -desiredState.speedMetersPerSecond,
                         desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
@@ -87,7 +87,7 @@ public abstract class GenericRobot {
     public SwerveDriveKinematics kinematics(){
         return null;
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
     public double getYaw() {
         return 0;
     }
@@ -316,23 +316,7 @@ public abstract class GenericRobot {
     public double getArmPosition(){return 0;}
 
     public void stackCargo(double zPos){
-        boolean openGrip = false;
-        double armPower = 0;
-        if (Math.abs(getArmPosition()- zPos) <= 3){
-            openGrip = true;
-            armPower = 0;
-        }
-        else{
-            armPower = .02*(-getArmPosition() + zPos);
-            if (armPower < 0){
-                armPower = Math.max(-.5, armPower);
-            }
-            else{
-                armPower = Math.min(.5, armPower);
-            }
-        }
-        moveArm(armPower);
-        openGripper(openGrip);
+
     }
 
     public void liftArm(){

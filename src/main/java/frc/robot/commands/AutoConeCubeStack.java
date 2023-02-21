@@ -56,7 +56,7 @@ public class AutoConeCubeStack extends genericCommand {
 
         xspd = AutoCodeLines.getVelocityX(new Point(currPose.getX(), currPose.getY()), desiredPoint, 1);
         yspd = AutoCodeLines.getVelocityY(new Point(currPose.getX(), currPose.getY()), desiredPoint, 1);
-
+/////////////////////////////////////////////////////////////////////////////////////////avoids charge station-but only for blue
         if (currPose.getX() >= bottLeftCS.x && currPose.getX() <= topRightCS.x
         && currPose.getY() >= bottLeftCS.y && currPose.getY() <= topRightCS.y){
             //check which side I'm on

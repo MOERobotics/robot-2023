@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
-public class swerveBot extends GenericRobot{
+public class    swerveBot extends GenericRobot{
     private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
@@ -72,6 +72,8 @@ public class swerveBot extends GenericRobot{
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
     SwerveDriveOdometry m_odometry;
+
+    Pose2d startingPoseOdom = defaultPose;
 
 
 
@@ -134,14 +136,14 @@ public class swerveBot extends GenericRobot{
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
-        leftMotorARPM.setP(7.0e-5);
+        leftMotorARPM.setP(1.5e-4);
         leftMotorARPM.setI(0);
         leftMotorARPM.setIZone(0);
         leftMotorARPM.setD(1.0e-4);
         leftMotorARPM.setFF(1.76182e-4);
         leftMotorARPM.setOutputRange(-1,1);
 
-        leftMotorBRPM.setP(7.0e-5);
+        leftMotorBRPM.setP(1.5e-4);
         leftMotorBRPM.setI(0);
         leftMotorBRPM.setD(1.0e-4);
         leftMotorBRPM.setIZone(0);
@@ -211,14 +213,14 @@ public class swerveBot extends GenericRobot{
         SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
         SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
         SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
-
-        Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
+        Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(currHeading),
                 new SwerveModulePosition[] {
-                        new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(-getPivotLeftMotorA())),
-                        new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(-getPivotRightMotorA())),
-                        new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(-getPivotLeftMotorB())),
-                        new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(-getPivotRightMotorB()))
-        });
+                        new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
+                        new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(getPivotRightMotorA())),
+                        new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(getPivotLeftMotorB())),
+                        new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(getPivotRightMotorB()))
+                });
+        //Pose2d correctPose = new Pose2d(myPose.getX(),(2*startingPoseOdom.getY() - myPose.getY()), myPose.getRotation());
         SmartDashboard.putNumber("xPose", myPose.getX());
         SmartDashboard.putNumber("yPose", myPose.getY());
         SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
@@ -227,13 +229,14 @@ public class swerveBot extends GenericRobot{
 
     @Override
     public void setPose(Pose2d startPose){
+        startingPoseOdom = startPose;
         m_odometry = new SwerveDriveOdometry(
-                kinematics(), Rotation2d.fromDegrees(-startHeading),
+                kinematics(), Rotation2d.fromDegrees(startHeading),
                 new SwerveModulePosition[] {
-                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(-startPivots[0])),
-                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(-startPivots[1])),
-                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(-startPivots[2])),
-                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
+                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(startPivots[0])),
+                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(startPivots[1])),
+                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(startPivots[2])),
+                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(startPivots[3]))
                 }, startPose);
     }
     @Override

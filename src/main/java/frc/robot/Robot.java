@@ -22,11 +22,11 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Robot extends TimedRobot {
 
   genericAutonomous autonomous = new ExitAndEngage();
-  GenericTeleop driveCode = new DriveCode();
+  GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new swerveBot();
 
-  MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+  MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
   @Override
@@ -48,20 +48,14 @@ public class Robot extends TimedRobot {
   }
 
 
- @Override
- public void robotPeriodic() {
-  SmartDashboard.putNumber("yaw", robot.getYaw());
-  SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
-  SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
-  SmartDashboard.putNumber("rightApivot", robot.getPivotRightMotorA());
-  SmartDashboard.putNumber("rightBpivot", robot.getPivotRightMotorB());
+  @Override
+  public void robotPeriodic() {
+   SmartDashboard.putNumber("yaw", robot.getYaw());
+   SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
+   SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
+   SmartDashboard.putNumber("rightApivot", robot.getPivotRightMotorA());
+   SmartDashboard.putNumber("rightBpivot", robot.getPivotRightMotorB());
 
-  SmartDashboard.putNumber("leftApivotRaw", robot.rawEncoderLeftA());
-  SmartDashboard.putNumber("leftBpivotRaw", robot.rawEncoderLeftB());
-  SmartDashboard.putNumber("rightApivotRaw", robot.rawEncoderRightA());
-  SmartDashboard.putNumber("rightBpivotRaw", robot.rawEncoderRightB());
-  SmartDashboard.putNumber("pitch", robot.getPitch());
-  SmartDashboard.putNumber("roll", robot.getRoll());
    SmartDashboard.putNumber("leftApivotRaw", robot.rawEncoderLeftA());
    SmartDashboard.putNumber("leftBpivotRaw", robot.rawEncoderLeftB());
    SmartDashboard.putNumber("rightApivotRaw", robot.rawEncoderRightA());
@@ -73,9 +67,10 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
-   SmartDashboard.putBoolean("Red Robot", robot.getRed());
+  SmartDashboard.putBoolean("Red Robot", robot.getRed());
 
    SmartDashboard.putNumber("armPosition", robot.getArmPosition());
+   SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
 
 
   robot.getDriveDistanceInchesLeftA();
@@ -85,42 +80,46 @@ public class Robot extends TimedRobot {
  }
 
 
- @Override
- public void autonomousInit() {
-  autonomous.autonomousInit(robot);
- }
+  @Override
+  public void autonomousInit() {
+    autonomous.autonomousInit(robot);
+  }
 
 
- @Override
- public void autonomousPeriodic() {
-  autonomous.autonomousPeriodic(robot);
- }
+  @Override
+  public void autonomousPeriodic() {
+    autonomous.autonomousPeriodic(robot);
+    vision.genericPeriodic();
+  }
 
 
- @Override
- public void teleopInit() {
-  driveCode.teleopInit(robot);
- }
+  @Override
+  public void teleopInit() {
+    teleop.teleopInit(robot);
+  }
 
 
- @Override
- public void teleopPeriodic() {
-  driveCode.teleopPeriodic(robot);
- }
+  @Override
+  public void teleopPeriodic() {
+    teleop.teleopPeriodic(robot);
+   vision.genericPeriodic();
+  }
 
 
- @Override
- public void disabledInit() {}
+  @Override
+  public void disabledInit() {}
 
 
- @Override
- public void disabledPeriodic() {}
+  @Override
+  public void disabledPeriodic() {
+   vision.disabledPeriodic();
+  }
 
 
   @Override
   public void testInit() {
    SmartDashboard.putData("Field", field);
-
+   robot.setPose();
   }
 
 
@@ -133,13 +132,15 @@ public class Robot extends TimedRobot {
    SmartDashboard.putData("Field", field);
    SmartDashboard.putNumber("field x", field.getRobotPose().getX());
    SmartDashboard.putNumber("field y", field.getRobotPose().getY());
+
+   vision.genericPeriodic();
   }
 
 
- @Override
- public void simulationInit() {}
+  @Override
+  public void simulationInit() {}
 
 
- @Override
- public void simulationPeriodic() {}
+  @Override
+  public void simulationPeriodic() {}
 }
