@@ -11,27 +11,27 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class autoRoutine extends genericAutonomous {
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 30;
+    double desiredInchesPerSecond = 70;
     double ds = desiredInchesPerSecond;
     int autoStep;
-    double xPidK = 2.0e-1;
+    double xPidK = 7;
 
     double widthRobot = 34;
 
 
-    double yPidK = 0.7; //1.0e-3;
-    Point startPositionBlue = new Point(55.88, 200.47);
+    double yPidK = 7; //1.0e-3;
+    Point startPositionBlue = new Point(55.88+4, 200.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
     Point secondPositionBlue = new Point(275.88-20, 182.235); //269.3,180.8
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
-    Point thirdPositionBlue = new Point(55.88, 200.47); //55.8,199.43
+    Point thirdPositionBlue = new Point(55.88+10, 200.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
-    Point fourthPositionBlue = new Point(55.8, 154.37); //54.5,154.89
+    Point fourthPositionBlue = new Point(55.8+10, 154.37); //54.5,154.89
     Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
-    Point endPositionBlue = new Point(105.17, 120.81); //114.67,131.96
+    Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
-    double kP = 0.75e-1; //.5e-1
+    double kP = 0.5e-1; //.5e-1
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
 
@@ -93,7 +93,7 @@ public class autoRoutine extends genericAutonomous {
         double currPitch = robot.getPitch();
 
         double desiredPitch = 9.0;
-
+        Pose2d currPose = robot.getPose();
         SmartDashboard.putNumber("s", s);
         SmartDashboard.putNumber("autostep", autoStep);
         SmartDashboard.putNumber("xpsd", xspd);
@@ -103,7 +103,8 @@ public class autoRoutine extends genericAutonomous {
         SmartDashboard.putBoolean("do I think im red?", robot.getRed());
         SmartDashboard.putNumber("startPosition", startPosition.x);
         SmartDashboard.putNumber("startBlue", startPositionBlue.x);
-        Pose2d currPose = robot.getPose();
+        SmartDashboard.putNumber("x correction", xPidK * (positionFunctionX(s) - currPose.getX()));
+        SmartDashboard.putNumber("y correction", yPidK * (positionFunctionY(s) - currPose.getY()));
 
         switch (autoStep) {
             case 0: //resets everything
@@ -125,7 +126,7 @@ public class autoRoutine extends genericAutonomous {
                     yspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autoStep = 20;
+                    autoStep++;
                 }
                 break;
             case 2:
@@ -152,7 +153,15 @@ public class autoRoutine extends genericAutonomous {
                     turnspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autoStep++;
+                    autoStep = 15;
+                }
+                break;
+            case 15:
+                xspd = yspd = turnspd = 0;
+                if (m_timer.get() >= 1){
+                    autoStep = 4;
+                    m_timer.reset();
+                    m_timer.start();
                 }
                 break;
             case 4:
