@@ -37,8 +37,9 @@ public class VisionScoring extends genericAutonomous{
         robot.resetStartHeading();
 
 
-        MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+        /*MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
         visionPose = vision.robotFieldPoseInches();
+         */
         if (visionPose == null) return;
         startPosition = new Point(visionPose.getX(), visionPose.getY() );
         endPosition = new Point(visionPose.getX(), 192.9);

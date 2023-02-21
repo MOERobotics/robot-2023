@@ -40,8 +40,8 @@ public class F3Dock extends genericAutonomous{
     @Override
     public void autonomousPeriodic(GenericRobot robot){
 
-        currPitch = robot.getRoll(); //test switching roll and pitch
-        currRoll = robot.getPitch();
+        currPitch = robot.getPitch(); //test switching roll and pitch
+        currRoll = robot.getRoll();
         //I4H
         SmartDashboard.putNumber("autostep", autonomousStep);
         SmartDashboard.putNumber("s",s_0);

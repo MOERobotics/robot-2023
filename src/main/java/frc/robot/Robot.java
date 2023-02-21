@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.ExitAndEngage;
+import frc.robot.autonomous.F3Dock;
 import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
