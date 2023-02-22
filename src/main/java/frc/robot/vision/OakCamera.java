@@ -6,16 +6,20 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class OakCamera implements NetworkCamera{
     NetworkTableEntry poseEntry;
+    NetworkTableEntry detectionsEntry;
     double[] lastPose;
 
     OakCamera(){
         var nt = NetworkTableInstance.getDefault();
         var sd = nt.getTable("SmartDashboard");
         poseEntry = sd.getEntry("pose");
+        detectionsEntry = sd.getEntry("detections");
     }
     @Override
     public EstimatedRobotPose getPose() {
@@ -49,4 +53,23 @@ public class OakCamera implements NetworkCamera{
         var pose3d = new Pose3d(x, y, z, rotation);
         return new EstimatedRobotPose(pose3d, latency, accuracy);
     }
+
+    public List<Detections> getDetections(){
+        var detections = detectionsEntry.getDoubleArray(new double[0]);
+
+        List<Detections> debt = new ArrayList<>();
+
+        for(int i =0; i<detections.length; i+=4){
+            var x= detections[i];
+            var y= detections[i+1];
+            var z= detections[i+2];
+            Detections.Cargo cargoType = Detections.Cargo.values()[(int)detections[i+3]];
+            Detections newDebt = new Detections(x,y,z,cargoType);
+            debt.add(newDebt);
+        }
+
+        return debt;
+    }
+
+
 }

@@ -2,6 +2,9 @@ package frc.robot.vision;
 
 import edu.wpi.first.math.geometry.Pose3d;
 
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Camera in network tables
  */
@@ -12,4 +15,8 @@ public interface NetworkCamera {
      * @return EstimatedRobotPose, a combination of Pose3D, timestamps, and accuracy
      */
     EstimatedRobotPose getPose();
+
+    default List<Detections> getDetections() {
+        return Collections.emptyList();
+    }
 }
