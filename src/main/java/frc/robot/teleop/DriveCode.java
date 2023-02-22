@@ -1,5 +1,6 @@
 package frc.robot.teleop;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -34,8 +35,19 @@ public class DriveCode extends GenericTeleop{
     boolean init = false;
     boolean autoStackCommand = false;
 
+    double desiredYaw = 0;
+    PIDController yawControl = new PIDController(.5e-1, 0,0);
+    double startAngle;
+    boolean btnLeft = false;
+    boolean btnRight = false;
+    boolean autoBalance;
+    int count;
+    double totalPathLength = 0;
+
     @Override
     public void teleopInit(GenericRobot robot) {
+        yawControl.enableContinuousInput(-180,180);
+
         resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
@@ -51,6 +63,7 @@ public class DriveCode extends GenericTeleop{
 
         robot.resetStartPivots();
         robot.setPose();
+        desiredYaw = 0;
     }
 
     @Override
@@ -69,6 +82,7 @@ public class DriveCode extends GenericTeleop{
             autoStackCommand = false;
         }
 
+
         if (xbox.getRawButton(5)) { // speed boosters
             turnspd *= 2;
         }
@@ -77,14 +91,26 @@ public class DriveCode extends GenericTeleop{
             yspd *= 2;
         }
 
+        if (turnspd != 0){
+            desiredYaw = robot.getYaw();
+        }
+        else {
+            if (xspd != 0 || yspd != 0) {
+                turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
+            }
+        }
+
         if (xbox.getRawButton(1)) { //resetter
             resetting = true;
+            Pose2d m_pose = robot.getPose();
             robot.resetAttitude();
             robot.resetPIDPivot();
             robot.resetStartHeading();
             robot.resetStartDists();
             robot.resetStartPivots();
-            xspd = yspd = turnspd = 0;
+            robot.setPose(m_pose);
+            yawControl.reset();
+            desiredYaw = 0;
         }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
@@ -100,10 +126,10 @@ public class DriveCode extends GenericTeleop{
         // 2 is b, 3 is x
 
         if (xbox2.getRawButton(3)){ //collect in
-            collectorRPM = 10000;
+            collectorRPM = 7500;
         }
         else if (xbox2.getRawButton(2)){ //collect out
-            collectorRPM = -10000;
+            collectorRPM = -7500;
         }
         else{ //no more collecting :(
             collectorRPM = 0;

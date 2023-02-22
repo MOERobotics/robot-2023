@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
-public class overStationAndBalance extends genericAutonomous{
+public class ExitAndEngage extends genericAutonomous{
 
     private final Timer m_timer = new Timer();
     double desiredInchesPerSecond = 12;
@@ -19,10 +19,10 @@ public class overStationAndBalance extends genericAutonomous{
     double currRoll;
     double desiredPitch = 9.0;
     double xPose;
-    double baseSpd = 40.0;
+    double baseSpd = 50.0;
     double correctionPower = -14.0;
     double climbPower = -30.0;
-    double basePower = -35.0;
+    double basePower = -45.0;
     double kP = 0.05;
     PIDController PID = new PIDController(kP,0,0);
     @Override
@@ -40,8 +40,8 @@ public class overStationAndBalance extends genericAutonomous{
     @Override
     public void autonomousPeriodic(GenericRobot robot){
 
-        currPitch = robot.getRoll(); //test switching roll and pitch
-        currRoll = robot.getPitch();
+        currPitch = robot.getPitch(); //test switching roll and pitch
+        currRoll = robot.getRoll();
         //I4H
         SmartDashboard.putNumber("autostep", autonomousStep);
         SmartDashboard.putNumber("s",s_0);
@@ -70,14 +70,14 @@ public class overStationAndBalance extends genericAutonomous{
                 break;
             case 3:
                 xspd = baseSpd;
-                if (Math.abs(currPitch) <= 9) { //robot has exited charge station
+                if (currPitch < 9 && currPitch >=0) { //robot has exited charge station
                     xPose = currPose.getX();
                     autonomousStep++;
                 }
                 break;
             case 4:
                 xspd = baseSpd;
-                if (currPose.getX() - xPose >= 2) {// make sure you fully exit community
+                if (currPose.getX() - xPose >= 10) {// make sure you fully exit community
                     xspd = 0;
                     autonomousStep++;
                 }

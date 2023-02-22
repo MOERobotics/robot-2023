@@ -3,6 +3,7 @@ package frc.robot.autonomous;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.AutoCodeLines;
 import org.opencv.core.Point;
@@ -38,6 +39,7 @@ public class exampleAutonomous extends genericAutonomous{
 
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
+
         Pose2d currPose = robot.getPose();
         switch(autonomousStep){
             case 0:
