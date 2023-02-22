@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -71,6 +72,10 @@ public class swerveBot extends GenericRobot{
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
     SwerveDriveOdometry m_odometry;
+
+    /////////////////////////////////////////////////////////////Light Sensors
+    DigitalInput leftLightSensor = new DigitalInput(0);
+    DigitalInput rightLightSensor = new DigitalInput(1);
 
 
 
@@ -635,4 +640,11 @@ public class swerveBot extends GenericRobot{
     public boolean gripperIsOpen() {
         return super.gripperIsOpen();
     }
+
+    /////////////////////////////////////////////////////////////////////////////Light Sensor Code
+    @Override
+    public boolean getLeftLightSensor(){return leftLightSensor.get();}
+
+    @Override
+    public boolean getRightLightSensor(){return rightLightSensor.get();}
 }
