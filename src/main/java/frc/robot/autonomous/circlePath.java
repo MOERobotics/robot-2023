@@ -17,12 +17,18 @@ public class circlePath extends genericAutonomous{
 
     double xPidK = .05;
     double yPidK = .05;
+    double desiredHeading;
+
+
     @Override
     public void autonomousInit(GenericRobot robot) {
         m_timer.reset();
         autonomousStep = 0;
     }
-
+//220 inches between spot b and cone,
+// drive 220 - width of robot(26 inches+maybe inch or two),
+// move 7 inches to the north, drive foot, drive back 19+190
+    //velocityFunctionX
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
         SmartDashboard.putNumber("autostep", autonomousStep);
@@ -44,13 +50,19 @@ public class circlePath extends genericAutonomous{
                 yspd = velocityFunctionY(s_0);
                       //  + yPidK*(positionFunctionY(s_0) - currPose.getY());
                 turnspd = velocityFunctionTheta(s_0);
+                /*
                 if (s_0 >= 6*Math.PI*radius) { //1 full circle
                     xspd = 0;
                     yspd = 0;
                     turnspd = 0;
                     m_timer.stop();
                     autonomousStep += 1;
-                }
+                } */
+
+                //currPose = ;
+
+
+
                 break;
             case 2:
                 xspd = 0;

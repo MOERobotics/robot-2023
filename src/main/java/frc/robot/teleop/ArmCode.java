@@ -6,7 +6,11 @@ import frc.robot.generic.GenericRobot;
 public class ArmCode extends GenericTeleop{
 
     Joystick xbox = new Joystick(1);
+    double collectorRPM = 0;
+    double armPower = 0;
+    boolean liftTopRoller = false;
 
+    //////////////////////////////////////Ideally have a button box and press where you want a cube/cone depoed.
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -15,18 +19,33 @@ public class ArmCode extends GenericTeleop{
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
-        if (xbox.getRawButton(5)){
-            robot.setTopRollerPosPower(.5);
+        // Bumpers left 5, right 6
+
+        if (xbox.getRawButton(5)){ //move roller up and down
+            liftTopRoller = true;
         }
         else if (xbox.getRawButton(6)){
-            robot.setTopRollerPosPower(-.5);
+            liftTopRoller = false;
+        }
+
+        // 2 is b, 3 is x
+
+        if (xbox.getRawButton(3)){ //collect in
+            collectorRPM = 10000;
+        }
+        else if (xbox.getRawButton(2)){ //collect out
+            collectorRPM = -10000;
         }
         else{
-            robot.setTopRollerPosPower(0);
+            collectorRPM = 0;
         }
 
-        if (xbox.getRawButton(3)){
+        armPower = robot.deadzone(xbox.getRawAxis(1), .2);
 
-        }
+        ///////////////////////////////////////////////////////////////////////////Power setters
+        robot.collect(collectorRPM);
+        robot.raiseTopRoller(liftTopRoller);
+        robot.moveArm(armPower);
+
     }
 }

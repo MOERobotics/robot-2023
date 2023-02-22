@@ -22,9 +22,11 @@ public abstract class GenericRobot {
     double[] startPivots;
     double startHeading;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
+    boolean Red;
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////Helpful Swerve commands
     public void swerve(SwerveModuleState frontLeft, SwerveModuleState frontRight,
-                               SwerveModuleState backLeft, SwerveModuleState backRight){
+                       SwerveModuleState backLeft, SwerveModuleState backRight){
         setLeftDriveARPM(frontLeft.speedMetersPerSecond*convertInchpsToRPM());
         setPivotLeftMotorA(frontLeft.angle.getDegrees());
 
@@ -52,7 +54,7 @@ public abstract class GenericRobot {
 
     public SwerveModuleState optimizeSwervePivots(SwerveModuleState desiredState, Rotation2d currentAngle){
             var delta = desiredState.angle.minus(currentAngle);
-            if (Math.abs(delta.getDegrees()) > 150.0) {
+            if (Math.abs(delta.getDegrees()) > 90.0) {
                 return new SwerveModuleState(
                         -desiredState.speedMetersPerSecond,
                         desiredState.angle.rotateBy(Rotation2d.fromDegrees(180.0)));
@@ -85,7 +87,7 @@ public abstract class GenericRobot {
     public SwerveDriveKinematics kinematics(){
         return null;
     }
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// NavX Commands
     public double getYaw() {
         return 0;
     }
@@ -118,6 +120,8 @@ public abstract class GenericRobot {
 
     public void resetPigeon(){
     }
+
+    public void setPigeonYaw(double startYaw){}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
@@ -262,16 +266,21 @@ public abstract class GenericRobot {
 
     }
 
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+
+    }
+
     static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
     public Pose2d getPose() {
         return defaultPose;
     }
 
+    public void setPose(Pose2d startPose){}
     public void setPose(){}
 
 
     public void resetStartHeading() {
-        startHeading = getYaw();
+        startHeading = getPigeonYaw();
     }
 
     public void resetStartDists() {
@@ -293,7 +302,7 @@ public abstract class GenericRobot {
     public void setBottomRollerRPM(double rpm){}
     public void setTopRollerRPM(double rpm){}
 
-    public void setTopRollerPosPower(double power){}
+    public void raiseTopRoller(boolean up){}
 
     public double getTopRollerPosition(){return 0;}
 
@@ -306,11 +315,29 @@ public abstract class GenericRobot {
     public void moveArm(double power){}
     public double getArmPosition(){return 0;}
 
+    public void stackCargo(double zPos){
+
+    }
+
+    public void liftArm(){
+
+    }
+
+    public void dropArm(){}
     ///////////////////////////////////////////////////////////////////////////////////Gripper Code
-    public void openGripper(){}
-    public void closeGripper(){}
+    public void openGripper(boolean open){}
 
     public boolean gripperIsOpen(){return false;}
 
+    ///////////////////////////////////////////////////////////////////////////////////Tape Sensors
+
+    public boolean getLeftASensor(){return false;}
+    public boolean getLeftBSensor(){return false;}
+    public boolean getRightASensor(){return false;}
+    public boolean getRightBSensor(){return false;}
+
+    public boolean getRed(){return Red;}
+
+    public void setRed(boolean redStatus){Red = redStatus;}
 
 }

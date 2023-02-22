@@ -12,23 +12,26 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
 import frc.robot.generic.GenericRobot;
+import frc.robot.generic.TherMOEDynamic;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
+import frc.robot.teleop.ArmCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
+import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
-  public static final GenericTeleop
-          driveCode = new DriveCode();
+
 
  // GenericRobot robot = new SwerveBot();
-  GenericTeleop teleop = driveCode;
-  GenericRobot robot = new swerveBot();
-  MoeNetVision vision = new MoeNetVision(robot);
-  genericAutonomous autonomous = new AbsolutePosition(vision);
+  genericAutonomous autonomous = new baseAuto();
+  GenericTeleop teleop = new DriveCode();
+  DriverStation.Alliance OurAllianceColor;
+  GenericRobot robot = new TherMOEDynamic();
 
- Field2d field = new Field2d();
+  MoeNetVision vision = new MoeNetVision(robot);
+  Field2d field = new Field2d();
 
   @Override
   public void robotInit() {
@@ -55,11 +58,17 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
-   robot.getDriveDistanceInchesLeftA();
-   robot.getDriveDistanceInchesLeftB();
-   robot.getDriveDistanceInchesRightB();
-   robot.getDriveDistanceInchesRightA();
-  }
+  SmartDashboard.putBoolean("Red Robot", robot.getRed());
+
+   SmartDashboard.putNumber("armPosition", robot.getArmPosition());
+   SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
+
+
+  robot.getDriveDistanceInchesLeftA();
+  robot.getDriveDistanceInchesLeftB();
+  robot.getDriveDistanceInchesRightB();
+  robot.getDriveDistanceInchesRightA();
+ }
 
 
   @Override
@@ -77,13 +86,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    driveCode.teleopInit(robot);
+    teleop.teleopInit(robot);
   }
 
 
   @Override
   public void teleopPeriodic() {
-    driveCode.teleopPeriodic(robot);
+    teleop.teleopPeriodic(robot);
    vision.genericPeriodic();
   }
 
