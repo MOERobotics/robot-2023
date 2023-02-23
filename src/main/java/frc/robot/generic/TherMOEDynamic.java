@@ -4,23 +4,27 @@ import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.*;
+import com.revrobotics.AnalogInput;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
-import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
+import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
 
 public class TherMOEDynamic extends GenericRobot{
 
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
-    WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
+    public final double MAX_ARM_HEIGHT = 51.75;
+    public final double armRadius = 44;
+    public final double MIN_ARM_HEIGHT = MAX_ARM_HEIGHT-armRadius;
+    public final double shoulderCalib = 3.21;
+    //WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
     CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
     CANSparkMax pivotLeftMotorA   = new CANSparkMax(18, kBrushless);
@@ -29,7 +33,7 @@ public class TherMOEDynamic extends GenericRobot{
     CANSparkMax pivotLeftMotorB   = new CANSparkMax(16, kBrushless);
 
     CANSparkMax rightMotorA       = new CANSparkMax(1, kBrushless);
-    CANSparkMax pivotRightMotorA   = new CANSparkMax(0, kBrushless);
+    CANSparkMax pivotRightMotorA   = new CANSparkMax(20, kBrushless);
 
     CANSparkMax rightMotorB       = new CANSparkMax(13, kBrushless);
     CANSparkMax pivotRightMotorB   = new CANSparkMax(12, kBrushless);
@@ -44,10 +48,10 @@ public class TherMOEDynamic extends GenericRobot{
     RelativeEncoder encoderPivotRightB = pivotRightMotorB.getEncoder();
     RelativeEncoder encoderPivotLeftB = pivotLeftMotorB.getEncoder();
 
-    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(6);
-    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(5);
-    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(4);
-    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(3);
+    CANCoder LeftApivotAbsEncoder = new WPI_CANCoder(31);
+    CANCoder RightApivotAbsEncoder = new WPI_CANCoder(32);
+    CANCoder LeftBpivotAbsEncoder = new WPI_CANCoder(34);
+    CANCoder RightBpivotAbsEncoder = new WPI_CANCoder(33);
 
 //////////////////////////////////////////////////////////////////////////////////////Arm Motors
 
@@ -77,8 +81,32 @@ public class TherMOEDynamic extends GenericRobot{
 
     SwerveDriveOdometry m_odometry;
 
+    Solenoid gripper;
+    Solenoid retractor;
+
+    AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
+
+    SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch cargoFinderReverse = bottomCollectorRoller.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    //    SparkMaxAnalogSensor shoulder = leftArmMotor.getAnalog(CANAnalog.AnalogMode.kAbsolute);
+
+
+    // Robot chassic dimensions, shaft to shaft.
+    static final double w = 13.875;
+    static final double d = 10.375;
+    private static final int PH_CAN_ID = 1;
+
+    Pose2d startingPoseOdom = defaultPose;
+    PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
 
     public TherMOEDynamic(){
+
+        cargoFinderForward.enableLimitSwitch(false);
+        cargoFinderReverse.enableLimitSwitch(false);
+
+        m_ph.enableCompressorAnalog(100,120);
+
         pivotLeftAPID.enableContinuousInput(-180,180);
         pivotLeftBPID.enableContinuousInput(-180,180);
         pivotRightAPID.enableContinuousInput(-180,180);
@@ -103,6 +131,8 @@ public class TherMOEDynamic extends GenericRobot{
         pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        leftArmMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        rightArmMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
 
         leftMotorARPM.setP(7.0e-5);
@@ -133,26 +163,28 @@ public class TherMOEDynamic extends GenericRobot{
         rightMotorBRPM.setFF(1.76182e-4);
         rightMotorBRPM.setOutputRange(-1,1);
 
-        topCollectorRollerRPM.setP(0);//TODO: get electrical to tune
+        topCollectorRollerRPM.setP(7.0e-5);//TODO: get electrical to tune
         topCollectorRollerRPM.setI(0);
         topCollectorRollerRPM.setIZone(0);
-        topCollectorRollerRPM.setD(0);
-        topCollectorRollerRPM.setFF(0);
+        topCollectorRollerRPM.setD(1.0e-4);
+        topCollectorRollerRPM.setFF(1.76182e-4);
         topCollectorRollerRPM.setOutputRange(-1,1);
 
-        bottomCollectorRollerRPM.setP(0); //TODO: get electrical to tune
+        bottomCollectorRollerRPM.setP(7.0e-5); //TODO: get electrical to tune
         bottomCollectorRollerRPM.setI(0);
         bottomCollectorRollerRPM.setIZone(0);
-        bottomCollectorRollerRPM.setD(0);
-        bottomCollectorRollerRPM.setFF(0);
+        bottomCollectorRollerRPM.setD(1.0e-4);
+        bottomCollectorRollerRPM.setFF(1.76182e-4);
         bottomCollectorRollerRPM.setOutputRange(-1,1);
 
         leftArmMotor.setInverted(false);
-        rightArmMotor.setInverted(false);
-        rightArmMotor.follow(leftArmMotor);
+        rightArmMotor.follow(leftArmMotor,true);
 
         topCollectorRoller.setInverted(false);
         bottomCollectorRoller.setInverted(false);
+
+        retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
+        gripper   = new Solenoid(PneumaticsModuleType.REVPH,12);
 
     }
 
@@ -170,18 +202,27 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public SwerveDriveKinematics kinematics() {
+
         return new SwerveDriveKinematics(
-                new Translation2d(14, 14),//everything is in inches
-                new Translation2d(14, -14),
-                new Translation2d(-14, 14),
-                new Translation2d(-14, -14)
+                new Translation2d(w, d),//everything is in inches
+                new Translation2d(w, -d),
+                new Translation2d(-w, d),
+                new Translation2d(-w, -d)
         );
     }
 
     @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
+        this.setDrive(xspd,yspd,turnspd,false);
+    }
+    @Override
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+        double m_yaw = getYaw();
+        if (auto){
+            m_yaw = getPigeonYaw();
+        }
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
-                yspd, turnspd, Rotation2d.fromDegrees(-getYaw()));
+                yspd, turnspd, Rotation2d.fromDegrees(-m_yaw));
         SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);
         SwerveModuleState frontLeftState = moduleStates[0],
                 frontRightState = moduleStates[1],
@@ -207,29 +248,50 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public Pose2d getPose() {
         double currHeading = getYaw();
-        Pose2d startPose = GenericRobot.defaultPose;
+        SmartDashboard.putNumber("leftAStartPos", startDists[0]);
+        SmartDashboard.putNumber("rightAStartPos", startDists[1]);
+        SmartDashboard.putNumber("leftBStartPos", startDists[2]);
+        SmartDashboard.putNumber("rightBStartPos", startDists[3]);
+
+        SmartDashboard.putNumber("leftAStartPivot", startPivots[0]);
+        SmartDashboard.putNumber("rightAStartPivot", startPivots[1]);
+        SmartDashboard.putNumber("leftBStartPivot", startPivots[2]);
+        SmartDashboard.putNumber("rightBStartPivot", startPivots[3]);
+
+        SmartDashboard.putNumber("leftACurrPos", getDriveDistanceInchesLeftA());
+        SmartDashboard.putNumber("rightACurrPos",getDriveDistanceInchesRightA());
+        SmartDashboard.putNumber("leftBCurrPos", getDriveDistanceInchesLeftB());
+        SmartDashboard.putNumber("rightBCurrPos", getDriveDistanceInchesRightB());
+
+        SmartDashboard.putNumber("leftACurrPivot", getPivotLeftMotorA());
+        SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
+        SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
+        SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
                 new SwerveModulePosition[] {
-                        new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(-getPivotLeftMotorA())),
-                        new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(-getPivotRightMotorA())),
-                        new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(-getPivotLeftMotorB())),
-                        new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(-getPivotRightMotorB()))
+                        new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
+                        new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(getPivotRightMotorA())),
+                        new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(getPivotLeftMotorB())),
+                        new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(getPivotRightMotorB()))
                 });
+
         SmartDashboard.putNumber("xPose", myPose.getX());
         SmartDashboard.putNumber("yPose", myPose.getY());
         SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
         return myPose;
     }
 
-    @Override
+
+
     public void setPose(Pose2d startPose) {
+        startingPoseOdom = startPose;
         m_odometry = new SwerveDriveOdometry(
                 kinematics(), Rotation2d.fromDegrees(-startHeading),
                 new SwerveModulePosition[] {
-                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(-startPivots[0])),
-                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(-startPivots[1])),
-                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(-startPivots[2])),
-                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(-startPivots[3]))
+                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(startPivots[0])),
+                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(startPivots[1])),
+                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(startPivots[2])),
+                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(startPivots[3]))
                 }, startPose);
     }
 
@@ -259,7 +321,7 @@ public class TherMOEDynamic extends GenericRobot{
         navx.reset();
     }
 
-    @Override
+    /*@Override
     public double getPigeonYaw() {
         return pigeon.getYaw();
     }
@@ -283,10 +345,15 @@ public class TherMOEDynamic extends GenericRobot{
     public void resetPigeon() {
         pigeon.reset();
     }
+
+    @Override
+    public void setPigeonYaw(double startYaw){
+        pigeon.setYaw(startYaw);
+    }*/
 //////////////////////////////////////////////////////////////////////////////////////////drive motor encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
-        return 6.75/12.375*1.03;
+        return 6.75/12.375*1.03/1.022;
     }
 
     @Override
@@ -306,7 +373,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public double convertInchpsToRPM() {
-        return 32.73*1.03;
+        return 32.73*1.03/1.022;
     }
 
     @Override
@@ -474,6 +541,9 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void collect(double rpm) {
+        if (cargoInCollector()){
+            rpm = 0;
+        }
         setTopRollerRPM(rpm);
         setBottomRollerRPM(rpm);
     }
@@ -490,7 +560,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void raiseTopRoller(boolean up) {
-        super.raiseTopRoller(up);
+        retractor.set(up);
     }
 
     @Override
@@ -500,7 +570,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public boolean cargoInCollector() {
-        return super.cargoInCollector();
+        return cargoFinderForward.isPressed();
     }
 ////////////////////////////////////////////////////////////////////////////////////arm motor commands
     @Override
@@ -515,27 +585,92 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void moveArm(double power) {
+        if (getArmPosition() <= MIN_ARM_HEIGHT && power < 0){
+            power = 0;
+        }
+        if (getArmPosition() >= MAX_ARM_HEIGHT && power > 0){
+            power = 0;
+        }
         leftArmMotor.set(power);
         rightArmMotor.set(power);
+    }
+    @Override
+    public void liftArm(){
+        boolean openGrip = false;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- MAX_ARM_HEIGHT) <= 3){
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + MAX_ARM_HEIGHT);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
+    }
+
+    @Override
+    public void dropArm(){
+        boolean openGrip = true;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- MIN_ARM_HEIGHT) <= 3){
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + MIN_ARM_HEIGHT);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
     }
 
     @Override
     public double getArmPosition() {
-        return super.getArmPosition();
-    }
-/////////////////////////////////////////////////////////////////////////////////////gripper commands
-    @Override
-    public void openGripper() {
-        super.openGripper();
+        double theta =  (Math.PI/2)*(shoulderCalib - shoulder.getPosition());
+        return MAX_ARM_HEIGHT - armRadius*Math.sin(theta);
     }
 
     @Override
-    public void closeGripper() {
-        super.closeGripper();
+    public void stackCargo(double zPos) {
+        boolean openGrip = false;
+        double armPower = 0;
+        if (Math.abs(getArmPosition()- zPos) <= 3){ //6" (+/- 3)tolerance
+            openGrip = true;
+            armPower = 0;
+        }
+        else{
+            armPower = .02*(-getArmPosition() + zPos);
+            if (armPower < 0){
+                armPower = Math.max(-.5, armPower);
+            }
+            else{
+                armPower = Math.min(.5, armPower);
+            }
+        }
+        moveArm(armPower);
+        openGripper(openGrip);
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////gripper commands
+    @Override
+    public void openGripper(boolean open) {
+        gripper.set(open);
+    }
+
 
     @Override
     public boolean gripperIsOpen() {
-        return super.gripperIsOpen();
+        return gripper.get();
     }
+
 }

@@ -12,39 +12,30 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
 import frc.robot.generic.GenericRobot;
+import frc.robot.generic.TherMOEDynamic;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
+import frc.robot.teleop.ArmCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
 import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
-  public static final GenericTeleop
-          driveCode = new DriveCode();
+
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new A1B2CnoDock();
-  GenericTeleop teleop = driveCode;
-  GenericRobot robot = new swerveBot();
+  genericAutonomous autonomous = new baseAuto();
+  GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
+  GenericRobot robot = new TherMOEDynamic();
 
-  MoeNetVision vision = new MoeNetVision(NetworkTableInstance.getDefault());
+  MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
   @Override
   public void robotInit() {
    robot.resetPigeon();
-
-   OurAllianceColor = DriverStation.getAlliance();
-
-   if (OurAllianceColor == DriverStation.Alliance.Red)
-   {
-    robot.setRed(true);
-   }
-   else {
-    robot.setRed(false);
-   }
   }
 
 
@@ -67,13 +58,17 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
-   SmartDashboard.putBoolean("Red Robot", robot.getRed());
+  SmartDashboard.putBoolean("Red Robot", robot.getRed());
 
-   robot.getDriveDistanceInchesLeftA();
-   robot.getDriveDistanceInchesLeftB();
-   robot.getDriveDistanceInchesRightB();
-   robot.getDriveDistanceInchesRightA();
-  }
+   SmartDashboard.putNumber("armPosition", robot.getArmPosition());
+   SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
+
+
+  robot.getDriveDistanceInchesLeftA();
+  robot.getDriveDistanceInchesLeftB();
+  robot.getDriveDistanceInchesRightB();
+  robot.getDriveDistanceInchesRightA();
+ }
 
 
   @Override
@@ -85,18 +80,20 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     autonomous.autonomousPeriodic(robot);
+    vision.genericPeriodic();
   }
 
 
   @Override
   public void teleopInit() {
-    driveCode.teleopInit(robot);
+    teleop.teleopInit(robot);
   }
 
 
   @Override
   public void teleopPeriodic() {
-    driveCode.teleopPeriodic(robot);
+    teleop.teleopPeriodic(robot);
+   vision.genericPeriodic();
   }
 
 
@@ -105,13 +102,15 @@ public class Robot extends TimedRobot {
 
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+   vision.disabledPeriodic();
+  }
 
 
   @Override
   public void testInit() {
    SmartDashboard.putData("Field", field);
-
+   robot.setPose();
   }
 
 
@@ -124,6 +123,8 @@ public class Robot extends TimedRobot {
    SmartDashboard.putData("Field", field);
    SmartDashboard.putNumber("field x", field.getRobotPose().getX());
    SmartDashboard.putNumber("field y", field.getRobotPose().getY());
+
+   vision.genericPeriodic();
   }
 
 
