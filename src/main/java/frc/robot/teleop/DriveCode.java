@@ -139,11 +139,10 @@ public class DriveCode extends GenericTeleop{
 
         //currently using Joystick buttons
 
-        //gripper functions currently do not work.
-        if(xbox2.getRawButton(13)){ //open gripper?
+        if(xbox2.getRawButton(13)){ //open gripper
             openGripper = true;
         }
-        else if (xbox2.getRawButton(12)) { //close gripper?
+        else if (xbox2.getRawButton(12)) { //close gripper
             openGripper = false;
         }
 

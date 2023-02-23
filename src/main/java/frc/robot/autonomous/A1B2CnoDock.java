@@ -42,9 +42,11 @@ public class A1B2CnoDock extends genericAutonomous{
     double yPidK = 7;
     double kP = 0.5e-1;
     double s = 0;
-
     PIDController PID = new PIDController(kP,0,0);
 
+    double collectorRPM;
+    double baseCollectionRPM = 7500;
+    boolean dropTopRoller;
 
     @Override
     public void autonomousInit(GenericRobot robot){
@@ -95,22 +97,27 @@ public class A1B2CnoDock extends genericAutonomous{
                 xspd = yspd = turnspd = 0;
                 autonomousStep++;
                 break;
-            case 1:
+            case 1: //Drives from position A to position 1
                 double t = m_timer.get();
                 s = getS(m_timer.get());
+                dropTopRoller = true;
+                collectorRPM = baseCollectionRPM;
                 xspd = velocityFunctionX(s,t) + xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s,t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 SmartDashboard.putNumber("s in case 1", s);
                 if (s >= distAto1) {
                     xspd = yspd = 0;
+                    dropTopRoller = false;
+                    collectorRPM = 0;
                     m_timer.reset();
                     m_timer.start();
                     autonomousStep++;
                 }
                 break;
-            case 2:
+            case 2: //Drives from position 1 to position B
                 t = m_timer.get();
                 s = getS(t);
+                //TODO: add raising arm code
                 xspd = velocityFunctionX(s,t) + xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s,t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 if (s >= dist1toB) {
@@ -120,7 +127,7 @@ public class A1B2CnoDock extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 3:
+            case 3: //Drives from poistion B to position Frog (to avoid charging station)
                 t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s,t) + xPidK * (positionFunctionX(s) - currPose.getX());
@@ -132,19 +139,23 @@ public class A1B2CnoDock extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 4:
+            case 4: //Drives from position Frog to position 2
                 t = m_timer.get();
                 s = getS(t);
+                dropTopRoller = true;
+                collectorRPM = baseCollectionRPM;
                 xspd = velocityFunctionX(s,t) + xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s,t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 if (s >= distFrogto2) {
                     xspd = yspd = 0;
+                    dropTopRoller = false;
+                    collectorRPM = 0;
                     m_timer.reset();
                     m_timer.start();
                     autonomousStep++;
                 }
                 break;
-            case 5:
+            case 5: //Drives from position 2 to position Frog
                 t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s,t) + xPidK * (positionFunctionX(s) - currPose.getX());
@@ -156,7 +167,7 @@ public class A1B2CnoDock extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 6:
+            case 6: //Drives from position Frog to position C
                 t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s,t) + xPidK * (positionFunctionX(s) - currPose.getX());
@@ -168,13 +179,15 @@ public class A1B2CnoDock extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 7:
+            case 7: //End of autonomous
                 m_timer.reset();
                 xspd = yspd = 0;
                 break;
         }
 
         if(autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
+        robot.raiseTopRoller(dropTopRoller);
+        robot.collect(collectorRPM);
         robot.setDrive(xspd, yspd, turnspd);
     }
 
