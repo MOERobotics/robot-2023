@@ -22,7 +22,10 @@ public class TherMOEDynamic extends GenericRobot{
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     public final double MAX_ARM_HEIGHT = 51.75;
     public final double armRadius = 44;
-    public final double MIN_ARM_HEIGHT = MAX_ARM_HEIGHT-armRadius;
+    public final double MIN_ARM_HEIGHT = MAX_ARM_HEIGHT-armRadius-2;
+
+    public final double lowestAngle = -6;
+    public final double greatestAngle = 100;
     public final double shoulderCalib = 3.21;
     //WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
@@ -85,6 +88,7 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid retractor;
 
     AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
+    CANCoder shoulder2 = new WPI_CANCoder(35);
 
     SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch cargoFinderReverse = bottomCollectorRoller.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
@@ -126,6 +130,9 @@ public class TherMOEDynamic extends GenericRobot{
         leftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
         rightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         rightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
+
+        topCollectorRoller.setIdleMode(CANSparkMax.IdleMode.kBrake);
+        bottomCollectorRoller.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
         pivotLeftMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -541,7 +548,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void collect(double rpm) {
-        if (cargoInCollector()){
+        if (cargoInCollector() && rpm > 0){
             rpm = 0;
         }
         setTopRollerRPM(rpm);
@@ -585,10 +592,10 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void moveArm(double power) {
-        if (getArmPosition() <= MIN_ARM_HEIGHT && power < 0){
+        if (getPotDegrees() <= lowestAngle && power < 0){
             power = 0;
         }
-        if (getArmPosition() >= MAX_ARM_HEIGHT && power > 0){
+        if (getPotDegrees() >= greatestAngle && power > 0){
             power = 0;
         }
         leftArmMotor.set(power);
@@ -636,16 +643,25 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public double getArmPosition() {
-        double theta =  (Math.PI/2)*(shoulderCalib - shoulder.getPosition());
-        return MAX_ARM_HEIGHT - armRadius*Math.sin(theta);
+        SmartDashboard.putNumber("potentiometer Reading - shoulder1", shoulder.getPosition());
+        SmartDashboard.putNumber("pot Reading - shoulder 2", shoulder2.getAbsolutePosition());
+        double theta =  getPotRadians();
+        return MAX_ARM_HEIGHT - armRadius + armRadius*Math.sin(theta);
+    }
+
+    @Override
+    public double getPotRadians(){
+        return getPotDegrees()*Math.PI/180;
+    }
+    @Override
+    public double getPotDegrees(){
+        return -shoulder2.getAbsolutePosition();
     }
 
     @Override
     public void stackCargo(double zPos) {
-        boolean openGrip = false;
         double armPower = 0;
         if (Math.abs(getArmPosition()- zPos) <= 3){ //6" (+/- 3)tolerance
-            openGrip = true;
             armPower = 0;
         }
         else{
@@ -658,7 +674,18 @@ public class TherMOEDynamic extends GenericRobot{
             }
         }
         moveArm(armPower);
-        openGripper(openGrip);
+    }
+
+    @Override
+    public void holdArmPosition(double pos){
+        double armPower = .01*(-getPotDegrees() + pos);
+        if (armPower < 0){
+            armPower = Math.max(-.05, armPower);
+        }
+        else{
+            armPower = Math.min(.05, armPower);
+        }
+        moveArm(armPower);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////gripper commands

@@ -29,13 +29,14 @@ public class DriveCode extends GenericTeleop{
     double collectorRPM = 0;
     double armPower = 0;
     boolean dropTopRoller = false;
-    boolean openGripper = false;
+    boolean openGripper = true;
 
     boolean balanceCommand = false;
     boolean init = false;
     boolean autoStackCommand = false;
 
     double desiredYaw = 0;
+    double desiredPos = -6;
     PIDController yawControl = new PIDController(.5e-1, 0,0);
     double startAngle;
     boolean btnLeft = false;
@@ -43,6 +44,7 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+    boolean firstTrip = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -126,12 +128,19 @@ public class DriveCode extends GenericTeleop{
         // 2 is b, 3 is x
 
         if (xbox2.getRawButton(3)){ //collect in
-            collectorRPM = 7500;
+            openGripper = true;
+            desiredPos = -6;
+            if (robot.cargoInCollector()) firstTrip = true;
+            collectorRPM = 0;
+            if(!firstTrip) collectorRPM = 7500;
         }
         else if (xbox2.getRawButton(2)){ //collect out
+            openGripper = true;
+            desiredPos = -6;
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
+            firstTrip = false;
             collectorRPM = 0;
         }
         //TODO: change the getRawButton to triggers, left trigger barfs the piece out, right trigger
@@ -148,6 +157,7 @@ public class DriveCode extends GenericTeleop{
         }
 
         armPower = -robot.deadzone(xbox2.getRawAxis(1), .2);
+        if(armPower != 0) desiredPos = robot.getPotDegrees();
 
         //////////////////////////////////////////////////////////////////////////////autoStacking commands
         /*
@@ -179,7 +189,12 @@ public class DriveCode extends GenericTeleop{
             robot.setDrive(xspd, yspd, turnspd);
             robot.collect(collectorRPM);
             robot.raiseTopRoller(dropTopRoller);
-            robot.moveArm(armPower);
+            if (armPower != 0) {
+                robot.moveArm(armPower);
+            }
+            else{
+                robot.holdArmPosition(desiredPos);
+            }
             robot.openGripper(openGripper);
         }
     }
