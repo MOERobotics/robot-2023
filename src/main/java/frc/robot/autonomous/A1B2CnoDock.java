@@ -1,5 +1,6 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,6 +20,13 @@ public class A1B2CnoDock extends genericAutonomous{
     Point positionC = new Point(71.76, 167.36);
     Point positionFrog = new Point(190.76, 179.43);
 
+    Point positionABlue = new Point(71.76, 214.73);
+    Point position1Blue = new Point(255.88, 182.24);
+    Point positionBBlue = new Point(71.76, 189.06);
+    Point position2Blue = new Point(276.88, 137.24);
+    Point positionCBlue = new Point(71.76, 167.36);
+    Point positionFrogBlue = new Point(190.76, 179.43);
+
     double distAto1 = AutoCodeLines.getDistance(positionA,position1);
     double dist1toB = AutoCodeLines.getDistance(position1,positionB);
     double distBtoFrog = AutoCodeLines.getDistance(positionB,positionFrog);
@@ -32,29 +40,49 @@ public class A1B2CnoDock extends genericAutonomous{
     double lengthOfField = 650.7;
     double xPidK = 7;
     double yPidK = 7;
+    double kP = 0.5e-1;
     double s = 0;
+
+    PIDController PID = new PIDController(kP,0,0);
+
 
     @Override
     public void autonomousInit(GenericRobot robot){
         m_timer.reset();
         robot.resetStartDists();
         robot.resetStartPivots();
+        robot.resetAttitude();
         robot.resetStartHeading();
         Rotation2d startRot = new Rotation2d(0);
         robot.setPigeonYaw(0);
         if(robot.getRed()){
-            //TODO: Change later
-            robot.setPose(new Pose2d(lengthOfField - positionA.x, positionA.y, new Rotation2d(0)));
+            positionA.x = lengthOfField - positionABlue.x;
+            position1.x = lengthOfField - position1Blue.x;
+            positionB.x = lengthOfField - positionBBlue.x;
+            position2.x = lengthOfField - position2Blue.x;
+            positionC.x = lengthOfField - positionCBlue.x;
+            positionFrog.x = lengthOfField - positionFrogBlue.x;
+
+            startRot = new Rotation2d(Math.PI);
+            robot.setPigeonYaw(180);
         } else {
-            //TODO: See above
-            robot.setPose(new Pose2d(positionA.x, positionA.y, new Rotation2d(0)));
+            positionA.x = positionABlue.x;
+            position1.x = position1Blue.x;
+            positionB.x = positionBBlue.x;
+            position2.x = position2Blue.x;
+            positionC.x = positionCBlue.x;
+            positionFrog.x = positionFrogBlue.x;
         }
+        robot.setPose(new Pose2d(positionA.x, positionA.y, startRot));
+        PID.enableContinuousInput(-180,180);
+        xspd = yspd = 0;
         autonomousStep = 0;
     }
     @Override
     public void autonomousPeriodic(GenericRobot robot){
         SmartDashboard.putNumber("autostep", autonomousStep);
         SmartDashboard.putNumber("Distance a to 1", distAto1);
+
         Pose2d currPose = robot.getPose();
 
         switch(autonomousStep){
@@ -146,7 +174,7 @@ public class A1B2CnoDock extends genericAutonomous{
                 break;
         }
 
-        //if(autonomousStep > 0) turnspd = PID.calcuate(-robot.getYaw());
+        if(autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
         robot.setDrive(xspd, yspd, turnspd);
     }
 
