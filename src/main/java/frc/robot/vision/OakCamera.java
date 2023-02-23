@@ -54,17 +54,17 @@ public class OakCamera implements NetworkCamera{
         return new EstimatedRobotPose(pose3d, latency, accuracy);
     }
 
-    public List<Detections> getDetections(){
+    public List<Detection> getDetections(){
         var detections = detectionsEntry.getDoubleArray(new double[0]);
 
-        List<Detections> debt = new ArrayList<>();
+        List<Detection> debt = new ArrayList<>();
 
         for(int i =0; i<detections.length; i+=4){
             var x= detections[i];
             var y= detections[i+1];
             var z= detections[i+2];
-            Detections.Cargo cargoType = Detections.Cargo.values()[(int)detections[i+3]];
-            Detections newDebt = new Detections(x,y,z,cargoType);
+            Detection.Cargo cargoType = Detection.Cargo.values()[(int)detections[i+3]];
+            Detection newDebt = new Detection(x,y,z,cargoType);
             debt.add(newDebt);
         }
 

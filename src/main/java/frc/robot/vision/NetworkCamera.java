@@ -1,7 +1,5 @@
 package frc.robot.vision;
 
-import edu.wpi.first.math.geometry.Pose3d;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +14,7 @@ public interface NetworkCamera {
      */
     EstimatedRobotPose getPose();
 
-    default List<Detections> getDetections() {
+    default List<Detection> getDetections() {
         return Collections.emptyList();
     }
 }
