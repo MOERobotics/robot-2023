@@ -55,6 +55,8 @@ public class A1B2CnoDock extends genericAutonomous{
         robot.resetStartPivots();
         robot.resetAttitude();
         robot.resetStartHeading();
+        collectorRPM = 0;
+        dropTopRoller = false;
         Rotation2d startRot = new Rotation2d(0);
         robot.setPigeonYaw(0);
         if(robot.getRed()){
