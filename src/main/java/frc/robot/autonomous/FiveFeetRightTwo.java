@@ -104,7 +104,7 @@ public class FiveFeetRightTwo extends genericAutonomous{
         return 0;
     }
     @Override
-    public double velocityFunctionX(double s){
+    public double velocityFunctionX(double s,double time){
         if (s <= firstDist){
             return 1*ds;
         }
@@ -116,7 +116,7 @@ public class FiveFeetRightTwo extends genericAutonomous{
         }
     }
     @Override
-    public double velocityFunctionY(double s){
+    public double velocityFunctionY(double s,double time){
         if (s <= firstDist){
             return 0;
         }
@@ -131,7 +131,7 @@ public class FiveFeetRightTwo extends genericAutonomous{
         }
     }
     @Override
-    public double velocityFunctionTheta(double s){
+    public double velocityFunctionTheta(double s,double time){
         return 0;
     }
     @Override

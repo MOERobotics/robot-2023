@@ -193,7 +193,7 @@ public class SlendermanPants extends genericAutonomous {
     }
 
     @Override
-    public double velocityFunctionTheta(double s){
+    public double velocityFunctionTheta(double s, double time){
         return 0;
     }
 

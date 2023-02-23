@@ -45,8 +45,8 @@ public class DoStuffGoLeftOfChargeDock extends genericAutonomous {
                 case 1:
                     t = m_timer.get();
                     s_0 = getS(t);
-                    xspd = velocityFunctionX(s_0);
-                    yspd = velocityFunctionY(s_0);
+                    xspd = velocityFunctionX(s_0,t);
+                    yspd = velocityFunctionY(s_0,t);
                     if (s_0 > firstDist) {
                         xspd = (220)/firstDist;
                         yspd = 182.235;
@@ -57,8 +57,8 @@ public class DoStuffGoLeftOfChargeDock extends genericAutonomous {
                 case 2:
                     t = m_timer.get();
                     s_0 = getS(t);
-                    xspd = velocityFunctionX(s_0);
-                    yspd = velocityFunctionY(s_0);
+                    xspd = velocityFunctionX(s_0,t);
+                    yspd = velocityFunctionY(s_0,t);
                     if (s_0 > firstDist + secondDist) {
                         xspd = 0;
                         yspd = 0;
@@ -69,8 +69,8 @@ public class DoStuffGoLeftOfChargeDock extends genericAutonomous {
                 case 3:
                     t = m_timer.get();
                     s_0 = getS(t);
-                    xspd = velocityFunctionX(s_0);
-                    yspd = velocityFunctionX((s_0));
+                    xspd = velocityFunctionX(s_0,t);
+                    yspd = velocityFunctionX(s_0,t);
                     if (s_0 > firstDist + secondDist + thirdDist) {
                         xspd = 0;
                         yspd = 0;
@@ -81,8 +81,8 @@ public class DoStuffGoLeftOfChargeDock extends genericAutonomous {
                 case 4:
                     t = m_timer.get();
                     s_0 = getS(t);
-                    xspd = velocityFunctionX(s_0);
-                    yspd = velocityFunctionY(s_0);
+                    xspd = velocityFunctionX(s_0,t);
+                    yspd = velocityFunctionY(s_0,t);
                     if (s_0 > firstDist + secondDist + thirdDist + fourthDist) {
                         xspd = 0;
                         yspd = 0;
@@ -103,7 +103,7 @@ public class DoStuffGoLeftOfChargeDock extends genericAutonomous {
         }
 
     @Override
-    public double velocityFunctionY(double s) {
+    public double velocityFunctionY(double s, double time) {
         if (s <= firstDist) {
             return 0;
         } else if (s <= firstDist + secondDist) {
@@ -113,7 +113,7 @@ public class DoStuffGoLeftOfChargeDock extends genericAutonomous {
         }
     }
     @Override
-    public double velocityFunctionX(double s){
+    public double velocityFunctionX(double s, double time){
         if (s <= firstDist){
             return 1*ds;
         }
