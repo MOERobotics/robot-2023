@@ -64,7 +64,7 @@ public class OakCamera implements NetworkCamera{
             var y= detections[i+1];
             var z= detections[i+2];
             Detection.Cargo cargoType = Detection.Cargo.values()[(int)detections[i+3]];
-            Detection newDebt = new Detection(x,y,z,cargoType);
+            Detection newDebt = new Detection(x,z,y,cargoType);
             debt.add(newDebt);
         }
 
