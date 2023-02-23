@@ -22,13 +22,13 @@ public abstract class genericAutonomous {
     public double positionFunctionTheta(double s){
         return 0;
     }
-    public double velocityFunctionX(double s){
+    public double velocityFunctionX(double s, double time){
         return 0;
     }
-    public double velocityFunctionY(double s){
+    public double velocityFunctionY(double s, double time){
         return 0;
     }
-    public double velocityFunctionTheta(double s){
+    public double velocityFunctionTheta(double s, double time){
         return 0;
     }
     public double vFX(double s, int autoStep) { return 0; }
@@ -37,5 +37,7 @@ public abstract class genericAutonomous {
     public double getS(double time){
         return time;
     }
+
+    public double getdS(double time){return 0;}
 
 }
