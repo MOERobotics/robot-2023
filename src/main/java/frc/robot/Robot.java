@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Robot extends TimedRobot {
 
-  genericAutonomous autonomous = new ExitAndEngage();
+  genericAutonomous autonomous = new F3Dock();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new swerveBot();
@@ -51,6 +51,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+      SmartDashboard.putBoolean("SeeLeftLightSensor", robot.getLeftLightSensor());
+      SmartDashboard.putBoolean("SeeRightLightSensor", robot.getRightLightSensor());
    SmartDashboard.putNumber("yaw", robot.getYaw());
    SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
    SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
