@@ -9,7 +9,7 @@ import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class autoRoutine extends genericAutonomous {
+public class A1CDock extends genericAutonomous {
     double xspd, yspd, turnspd;
     double desiredInchesPerSecond = 70;
     double ds = desiredInchesPerSecond;
@@ -18,8 +18,7 @@ public class autoRoutine extends genericAutonomous {
 
     double widthRobot = 34;
 
-
-    double yPidK = 7; //1.0e-3;
+    double yPidK = 7;
     Point startPositionBlue = new Point(55.88+4, 200.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);

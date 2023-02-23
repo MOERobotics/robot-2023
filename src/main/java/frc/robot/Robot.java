@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
           driveCode = new DriveCode();
 
  // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new autoRoutine();
+  genericAutonomous autonomous = new A1CDock();
   GenericTeleop teleop = driveCode;
   GenericRobot robot = new swerveBot();
   DriverStation.Alliance OurAllianceColor;
