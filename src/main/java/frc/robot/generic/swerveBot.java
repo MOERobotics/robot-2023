@@ -246,12 +246,12 @@ public class    swerveBot extends GenericRobot{
 
     @Override
     public double getRoll() {
-        return navx.getRoll();
+        return navx.getPitch();
     }
 
     @Override
     public double getPitch() {
-        return navx.getPitch();
+        return -navx.getRoll();
     }
 
     @Override
@@ -403,7 +403,7 @@ public class    swerveBot extends GenericRobot{
     public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
         double m_yaw = getYaw();
         if (auto){
-            m_yaw = getPigeonYaw();
+            m_yaw = -getPigeonYaw();
         }
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
                 yspd, turnspd, Rotation2d.fromDegrees(-m_yaw));
