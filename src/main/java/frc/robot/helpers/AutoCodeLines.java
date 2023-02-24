@@ -35,7 +35,7 @@ public class AutoCodeLines {
 
     public static double getdS(double distance, double timeToMax, double averageSpeed, double t){
         double overAllTime = distance/averageSpeed;
-        double minSpeed = 10;
+        double minSpeed = 5;
         double maxSpeed = (distance-minSpeed*timeToMax)/(overAllTime-timeToMax);
         if (t < timeToMax){
             return minSpeed + ((maxSpeed-minSpeed)/(timeToMax))*t;
@@ -54,7 +54,7 @@ public class AutoCodeLines {
 
     public static double getS(double distance, double timeToMax, double averageSpeed, double t){
         double overAllTime = distance/averageSpeed;
-        double minSpeed = 10;
+        double minSpeed = 5;
         double maxSpeed = (distance-minSpeed*timeToMax)/(overAllTime-timeToMax);
         double currSpeed = getdS(distance,timeToMax,averageSpeed,t);
         if (t < timeToMax){
