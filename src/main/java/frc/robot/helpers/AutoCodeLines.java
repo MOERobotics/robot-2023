@@ -34,31 +34,42 @@ public class AutoCodeLines {
     }
 
     public static double getdS(double distance, double timeToMax, double averageSpeed, double t){
-        double time = distance/averageSpeed;
-        double maxSpeed = averageSpeed*time/(time-timeToMax);
-        if (t <= timeToMax){
-            return maxSpeed/timeToMax*t;
+        double overAllTime = distance/averageSpeed;
+        double minSpeed = 10;
+        double maxSpeed = (distance-minSpeed*timeToMax)/(overAllTime-timeToMax);
+        if (t < timeToMax){
+            return minSpeed + ((maxSpeed-minSpeed)/(timeToMax))*t;
         }
-        else if (t <= time-timeToMax){
+        else if (t < overAllTime-timeToMax){
             return maxSpeed;
         }
+        else if (t <= overAllTime){
+            return maxSpeed - ((maxSpeed-minSpeed)/(timeToMax))*(t-overAllTime+timeToMax);
+        }
         else{
-            return -maxSpeed/timeToMax*(t-time);
+            return minSpeed;
         }
     }
 
 
     public static double getS(double distance, double timeToMax, double averageSpeed, double t){
-        double time = distance/averageSpeed;
-        double maxSpeed = averageSpeed*time/(time-timeToMax);
-        if (t <= timeToMax){
-            return maxSpeed/timeToMax*t*t/2;
+        double overAllTime = distance/averageSpeed;
+        double minSpeed = 10;
+        double maxSpeed = (distance-minSpeed*timeToMax)/(overAllTime-timeToMax);
+        double currSpeed = getdS(distance,timeToMax,averageSpeed,t);
+        if (t < timeToMax){
+            return (currSpeed+minSpeed)*t/2;
         }
-        else if (t <= time-timeToMax){
-            return timeToMax*maxSpeed/2 + maxSpeed*(t-timeToMax);
+        else if (t < overAllTime-timeToMax){
+            return (minSpeed + maxSpeed)*timeToMax/2 + currSpeed*(t-timeToMax);
+        }
+        else if (t <= overAllTime){
+            return distance - (currSpeed+minSpeed)*(overAllTime-t)/2;
         }
         else{
-            return timeToMax*maxSpeed + maxSpeed*(t-2*timeToMax) - maxSpeed/timeToMax*(t-time)*(t-time)/2;
+            return distance;
         }
     }
+
+
 }

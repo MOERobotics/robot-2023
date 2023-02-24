@@ -203,7 +203,7 @@ public class A1CDock extends genericAutonomous {
                 break;
 
         }
-        if (autoStep > 0) turnspd = PID.calculate(-robot.getYaw());
+        if (autoStep > 0 && autoStep < 5) turnspd = PID.calculate(-robot.getYaw());
         robot.setDrive(xspd, yspd, turnspd, true);
     }
 
@@ -299,10 +299,10 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getS(secondDist, .5, desiredInchesPerSecond, time);
         }
         if (autoStep == 3){
-            return AutoCodeLines.getS(thirdDist, .5, desiredInchesPerSecond, time);
+            return AutoCodeLines.getS(thirdDist, .1, desiredInchesPerSecond, time);
         }
         if (autoStep == 4){
-            return AutoCodeLines.getS(fourthDist, .5, desiredInchesPerSecond, time);
+            return AutoCodeLines.getS(fourthDist, .1, desiredInchesPerSecond, time);
         }
         return 0;
     }
@@ -321,7 +321,7 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getdS(thirdDist, .1, desiredInchesPerSecond, time);
         }
         if (autoStep == 4){
-            return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond, time);
+            return AutoCodeLines.getdS(fourthDist, .1, desiredInchesPerSecond, time);
         }
         return 0;
     }
