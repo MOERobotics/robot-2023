@@ -165,7 +165,6 @@ public class DriveCode extends GenericTeleop{
         if button box buttons pressed, autoStackCommand = true;
         only canceled if driver moves joystick
          */
-
         ///////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
             if (!init){
