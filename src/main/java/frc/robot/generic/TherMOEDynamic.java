@@ -644,7 +644,9 @@ public class TherMOEDynamic extends GenericRobot{
         SmartDashboard.putNumber("potentiometer Reading - shoulder1", shoulder.getPosition());
         SmartDashboard.putNumber("pot Reading - shoulder 2", shoulder2.getAbsolutePosition());
         double theta =  getPotRadians();
-        return MAX_ARM_HEIGHT - armRadius + armRadius*Math.sin(theta);
+        double height = MAX_ARM_HEIGHT - armRadius + armRadius*Math.sin(theta);
+        if (theta > Math.PI/2) height = MAX_ARM_HEIGHT + armRadius*Math.sin(theta-Math.PI/2);
+        return height;
     }
 
     @Override
