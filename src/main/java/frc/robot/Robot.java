@@ -4,25 +4,22 @@
 
 package frc.robot;
 
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autonomous.ExitAndEngage;
-import frc.robot.autonomous.F3Dock;
+import frc.robot.autonomous.E2Dock;
 import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
 import frc.robot.teleop.GenericTeleop;
-import frc.robot.autonomous.VisionScoring;
 import frc.robot.vision.MoeNetVision;
 import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
 
-  genericAutonomous autonomous = new F3Dock();
+  genericAutonomous autonomous = new E2Dock();
   GenericTeleop teleop = new DriveCode();
  // GenericRobot robot = new SwerveBot();
   GenericRobot robot = new swerveBot();

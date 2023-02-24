@@ -31,6 +31,13 @@ public abstract class genericAutonomous {
     public double velocityFunctionTheta(double s, double time){
         return 0;
     }
+
+    public abstract double velocityFunctionX(double s);
+
+    public abstract double velocityFunctionY(double s);
+
+    public abstract double velocityFunctionTheta(double s);
+
     public double getS(double time){
         return time;
     }

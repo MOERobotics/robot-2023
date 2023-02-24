@@ -43,7 +43,7 @@ public class AutoCodeLines {
             return maxSpeed;
         }
         else{
-            return -maxSpeed/timeToMax*(t-time);
+            return -maxSpeed/timeToMax*(t-(time-timeToMax)) + maxSpeed;
         }
     }
 

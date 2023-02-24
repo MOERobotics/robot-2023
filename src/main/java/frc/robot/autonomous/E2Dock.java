@@ -9,7 +9,7 @@ import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.AutoCodeLines;
 import org.opencv.core.Point;
 
-public class F3Dock extends genericAutonomous{
+public class E2Dock extends genericAutonomous{
 
     private final Timer m_timer = new Timer();
     boolean sensorTripped = false;
@@ -25,8 +25,8 @@ public class F3Dock extends genericAutonomous{
     double ds = desiredInPerSec;
     double xspd,yspd,turnspd, s;
 
-    double xPidK = 1.0e-3;
-    double yPidK = 1.0e-3;
+    double xPidK = 3;
+    double yPidK = 3;
     double firstDist = 120;
     double secondDist = 60;
     double radius = 30;
@@ -185,70 +185,23 @@ public class F3Dock extends genericAutonomous{
                 break;
             case 4:
                 xspd = basePower;
-                if (Math.abs(currPitch) > 5) {
-                    autonomousStep++;
-                }
-                break;
-            case 5:
-//                        curPosOnRamp = base * Math.sin(currPitch) * (Math.cos(angleOfBoard) / Math.sin(angleOfBoard));
-//                        leftside = basePower*(base - curPosOnRamp)/base;
-//                        rightside = basePower*(base - curPosOnRamp)/base;
-                xspd = basePower;
-                if (Math.abs(currPitch) > 11) {
+                if (Math.abs(currPitch) > 11) { // driving back up charge station
                     autonomousStep += 1;
                 }
                 break;
-            case 6:
+            case 5:
                 xspd = climbPower;
-                if (Math.abs(currPitch) < 9) {
+                if (Math.abs(currPitch) < 10) { //flattened out
                     autonomousStep++;
                 }
                 break;
-            case 7:
-                //initPos = robotPose.getX() ;
-                xspd = -correctionPower;
-                //This is a future feature to stop and let others get on before autobalancing.
-                    /*if(Math.abs(curPitch)<15){
-                        leftside = 0;
-                        rightside = 0;
-                    }
-                    if(leftJoystick.getRawButtonPressed(9)) {
-                        autoStep++;
-                    }*/
-                autonomousStep++;
-                break;
-                /*case 4:
-                    currentpos = robotPose.getY() ;
-                    leftside = -climbPower;
-                    rightside = -climbPower;
-                    if(Math.abs(initPos - currentpos) > 1){
-                        leftside = 0;
-                        rightside = 0;
-                        autoStep++;
-                    }
-                    break;
-                case 5:
-                    leftside = 0;
-                    rightside = 0;
-                    if(Math.abs(currPitch) < 2){
-                        autoStep++;
-                    }
-                    break;*/
-            case 8:
-                if (currPitch < -desiredPitch) {
-                    xspd = -correctionPower;
+            case 6:
+                if (currPitch < -desiredPitch) { //correcting begins
+                    xspd = correctionPower; //backward
                 } else if (currPitch > desiredPitch) {
-                    xspd = correctionPower;
+                    xspd = -correctionPower; //forward
                 } else {
                     xspd = 0;
-                    autonomousStep++;
-                }
-                break;
-            case 9:
-                if (Math.abs(currPitch) > desiredPitch) {
-                    autonomousStep--;
-                } else {
-                    xspd = yspd = turnspd = 0;
                 }
                 break;
         }

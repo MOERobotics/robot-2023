@@ -108,6 +108,58 @@ public class ExitAndEngage extends genericAutonomous{
         robot.setDrive(xspd, yspd, turnspd);
     }
 
+    @Override
+    public double positionFunctionX(double s) {
+        return super.positionFunctionX(s);
+    }
 
+    @Override
+    public double positionFunctionY(double s) {
+        return super.positionFunctionY(s);
+    }
 
+    @Override
+    public double positionFunctionTheta(double s) {
+        return super.positionFunctionTheta(s);
+    }
+
+    @Override
+    public double velocityFunctionX(double s, double time) {
+        return super.velocityFunctionX(s, time);
+    }
+
+    @Override
+    public double velocityFunctionY(double s, double time) {
+        return super.velocityFunctionY(s, time);
+    }
+
+    @Override
+    public double velocityFunctionTheta(double s, double time) {
+        return super.velocityFunctionTheta(s, time);
+    }
+
+    @Override
+    public double velocityFunctionX(double s) {
+        return 0;
+    }
+
+    @Override
+    public double velocityFunctionY(double s) {
+        return 0;
+    }
+
+    @Override
+    public double velocityFunctionTheta(double s) {
+        return 0;
+    }
+
+    @Override
+    public double getS(double time) {
+        return super.getS(time);
+    }
+
+    @Override
+    public double getdS(double time) {
+        return super.getdS(time);
+    }
 }
