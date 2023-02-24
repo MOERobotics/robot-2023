@@ -157,7 +157,7 @@ public class DriveCode extends GenericTeleop{
             openGripper = false;
         }
 
-        armPower = robot.deadzone(xboxFuncOp.getRawAxis(1), .2);
+        armPower = robot.deadzone(xboxFuncOp.getRawAxis(1), .2); //moves arm up and down
         if(armPower != 0) desiredPos = robot.getPotDegrees();
 
         //////////////////////////////////////////////////////////////////////////////autoStacking commands
