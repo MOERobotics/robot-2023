@@ -116,7 +116,6 @@ public class DriveCode extends GenericTeleop{
         }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
-        // Bumpers left 5, right 6
 
         if (xbox2.getRawButton(5)){ //move collector up
             dropTopRoller = false;
@@ -124,8 +123,8 @@ public class DriveCode extends GenericTeleop{
         else if (xbox2.getRawButton(6)){ //move collector down
             dropTopRoller = true;
         }
+        if (robot.getPotDegrees() > 0) dropTopRoller = false;
 
-        // 2 is b, 3 is x
 
         if (xbox2.getRawButton(3)){ //collect in
             openGripper = true;
@@ -143,12 +142,7 @@ public class DriveCode extends GenericTeleop{
             firstTrip = false;
             collectorRPM = 0;
         }
-        //TODO: change the getRawButton to triggers, left trigger barfs the piece out, right trigger
-
-
-        //currently using Joystick buttons
-
-        //gripper functions currently do not work.
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////gripper code
         if(xbox2.getRawButton(13)){ //open gripper?
             openGripper = true;
         }
