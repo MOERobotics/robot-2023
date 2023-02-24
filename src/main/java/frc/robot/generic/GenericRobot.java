@@ -315,7 +315,13 @@ public abstract class GenericRobot {
     public void moveArm(double power){}
     public double getArmPosition(){return 0;}
 
+    public double getPotDegrees(){return 0;}
+    public double getPotRadians(){return 0;}
+
     public void stackCargo(double zPos){
+
+    }
+    public void holdArmPosition(double pos){
 
     }
 

@@ -28,13 +28,14 @@ public class DriveCode extends GenericTeleop{
     double collectorRPM = 0;
     double armPower = 0;
     boolean dropTopRoller = false;
-    boolean openGripper = false;
+    boolean openGripper = true;
 
     boolean balanceCommand = false;
     boolean init = false;
     boolean autoStackCommand = false;
 
     double desiredYaw = 0;
+    double desiredPos = -6;
     PIDController yawControl = new PIDController(.5e-1, 0,0);
     double startAngle;
     boolean btnLeft = false;
@@ -42,6 +43,7 @@ public class DriveCode extends GenericTeleop{
     boolean autoBalance;
     int count;
     double totalPathLength = 0;
+    boolean firstTrip = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -128,16 +130,23 @@ public class DriveCode extends GenericTeleop{
         else if (xboxFuncOp.getRawButton(6)){ //move collector down
             dropTopRoller = true;
         }
+        if (robot.getPotDegrees() > 0) dropTopRoller = false;
 
-        // 2 is b, 3 is x
 
         if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
-            collectorRPM = 7500;
+            openGripper = true;
+            desiredPos = -6;
+            if(robot.cargoInCollector()) firstTrip = true;
+            collectorRPM = 0;
+            if(!firstTrip) collectorRPM = 7500;
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
+            openGripper = true;
+            desiredPos = -6;
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
+            firstTrip = false;
             collectorRPM = 0;
         }
 
@@ -148,11 +157,8 @@ public class DriveCode extends GenericTeleop{
             openGripper = false;
         }
 
-        //TODO: Verify
-        armPower = -robot.deadzone(xboxFuncOp.getRawAxis(1), .2);
-
-
-
+        armPower = robot.deadzone(xboxFuncOp.getRawAxis(1), .2);
+        if(armPower != 0) desiredPos = robot.getPotDegrees();
 
         //////////////////////////////////////////////////////////////////////////////autoStacking commands
         /*
@@ -184,7 +190,12 @@ public class DriveCode extends GenericTeleop{
             robot.setDrive(xspd, yspd, turnspd);
             robot.collect(collectorRPM);
             robot.raiseTopRoller(dropTopRoller);
-            robot.moveArm(armPower);
+            if (armPower != 0) {
+                robot.moveArm(armPower);
+            }
+            else{
+                robot.holdArmPosition(desiredPos);
+            }
             robot.openGripper(openGripper);
         }
     }

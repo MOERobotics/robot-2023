@@ -41,6 +41,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+   SmartDashboard.putNumber("armPotDegrees", robot.getPotDegrees());
+   SmartDashboard.putNumber("armInches", robot.getArmPosition());
+
    SmartDashboard.putNumber("yaw", robot.getYaw());
    SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
    SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
