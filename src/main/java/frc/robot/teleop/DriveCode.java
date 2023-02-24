@@ -3,7 +3,6 @@ package frc.robot.teleop;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoConeCubeStack;
 import frc.robot.commands.autoBalance;
 import frc.robot.commands.autoBalanceBackward;
@@ -14,10 +13,10 @@ import frc.robot.generic.GenericRobot;
 public class DriveCode extends GenericTeleop{
 
     boolean resetting = false;
-    Joystick xbox = new Joystick(1);
+    Joystick xboxDriver = new Joystick(1);
 
     //currently this is the joystick
-    Joystick xbox2 = new Joystick(0);
+    Joystick xboxFuncOp = new Joystick(2);
 
     double xspd, yspd, turnspd;
 
@@ -74,19 +73,19 @@ public class DriveCode extends GenericTeleop{
         Pose2d robotPose = robot.getPose();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
-        xspd = robot.deadzone(-xbox.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
-        yspd = robot.deadzone(-xbox.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
-        turnspd = robot.deadzone(-xbox.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
+        xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
+        yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
+        turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
 
         if (xspd != 0 || yspd != 0 || turnspd != 0){
             autoStackCommand = false;
         }
 
 
-        if (xbox.getRawButton(5)) { // speed boosters
+        if (xboxDriver.getRawButton(5)) { // speed boosters
             turnspd *= 2;
         }
-        if (xbox.getRawButton(6)) {
+        if (xboxDriver.getRawButton(6)) {
             xspd *= 2;
             yspd *= 2;
         }
@@ -100,7 +99,7 @@ public class DriveCode extends GenericTeleop{
             }
         }
 
-        if (xbox.getRawButton(1)) { //resetter
+        if (xboxDriver.getRawButton(1)) { //resetter
             resetting = true;
             Pose2d m_pose = robot.getPose();
             robot.resetAttitude();
@@ -123,34 +122,34 @@ public class DriveCode extends GenericTeleop{
         //LT is 2
         //AxisY is 1
 
-        if (xbox2.getRawButton(5) ){ //move collector up
+        if (xboxFuncOp.getRawButton(5) ){ //move collector up
             dropTopRoller = false;
         }
-        else if (xbox2.getRawButton(6)){ //move collector down
+        else if (xboxFuncOp.getRawButton(6)){ //move collector down
             dropTopRoller = true;
         }
 
         // 2 is b, 3 is x
 
-        if (xbox2.getRawAxis(3) > 0.10){ //collect in
+        if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
             collectorRPM = 7500;
         }
-        else if (xbox2.getRawAxis(2) > 0.10){ //collect out
+        else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
             collectorRPM = 0;
         }
 
-        if(xbox2.getRawButton(2)){ //open gripper
+        if(xboxFuncOp.getRawButton(2)){ //open gripper
             openGripper = true;
         }
-        else if (xbox2.getRawButton(1)) { //close gripper
+        else if (xboxFuncOp.getRawButton(1)) { //close gripper
             openGripper = false;
         }
 
         //TODO: Verify
-        armPower = -robot.deadzone(xbox2.getRawAxis(1), .2);
+        armPower = -robot.deadzone(xboxFuncOp.getRawAxis(1), .2);
 
 
 
