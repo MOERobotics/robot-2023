@@ -116,9 +116,14 @@ public class DriveCode extends GenericTeleop{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////start arm code
-        // Bumpers left 5, right 6
 
-        if (xbox2.getRawButton(5)){ //move collector up
+        //LB is 5
+        //LR is 6
+        //RT is 3
+        //LT is 2
+        //AxisY is 1
+
+        if (xbox2.getRawButton(5) ){ //move collector up
             dropTopRoller = false;
         }
         else if (xbox2.getRawButton(6)){ //move collector down
@@ -127,36 +132,28 @@ public class DriveCode extends GenericTeleop{
 
         // 2 is b, 3 is x
 
-        if (xbox2.getRawButton(3)){ //collect in
+        if (xbox2.getRawAxis(3) > 0.10){ //collect in
             collectorRPM = 7500;
         }
-        else if (xbox2.getRawButton(2)){ //collect out
+        else if (xbox2.getRawAxis(2) > 0.10){ //collect out
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
             collectorRPM = 0;
         }
-        //TODO: change the getRawButton to triggers, left trigger barfs the piece out, right trigger
 
-
-        //currently using Joystick buttons
-
-        //gripper functions currently do not work.
-        if(xbox2.getRawButton(13)){ //open gripper?
+        if(xbox2.getRawButton(2)){ //open gripper
             openGripper = true;
         }
-        else if (xbox2.getRawButton(12)) { //close gripper?
+        else if (xbox2.getRawButton(1)) { //close gripper
             openGripper = false;
         }
 
+        //TODO: Verify
         armPower = -robot.deadzone(xbox2.getRawAxis(1), .2);
 
 
-        //LB is 5
-        //LR is 6
-        //RT is 3
-        //LT is 2
-        //AxisY is 1
+
 
         //////////////////////////////////////////////////////////////////////////////autoStacking commands
         /*
