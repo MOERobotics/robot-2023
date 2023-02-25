@@ -22,7 +22,7 @@ public class A1CDock extends genericAutonomous {
     Point startPositionBlue = new Point(55.88+4, 200.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
-    Point secondPositionBlue = new Point(275.88-20, 182.235); //269.3,180.8
+    Point secondPositionBlue = new Point(275.88-10, 182.235); //269.3,180.8
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88+10, 200.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
@@ -51,6 +51,9 @@ public class A1CDock extends genericAutonomous {
     double correctionPower = correctionPowerBlue;
     double climbPower = climbPowerBlue;
     double basePower = basePowerBlue;
+
+    boolean collectorUp = true;
+    double collectorRPM = 0;
     Rotation2d startRot;
 
     public void autonomousInit(GenericRobot robot) {
@@ -114,6 +117,8 @@ public class A1CDock extends genericAutonomous {
                 robot.resetStartDists();
                 robot.resetStartPivots();
                 robot.resetStartHeading();
+                collectorRPM = 7500;
+                collectorUp = false;
                 robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
                 xspd = yspd = turnspd = 0;
                 autoStep ++;
@@ -147,6 +152,8 @@ public class A1CDock extends genericAutonomous {
                 }
                 break;
             case 3:
+                collectorUp = true;
+                collectorRPM = 0;
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX()) ;
@@ -206,7 +213,11 @@ public class A1CDock extends genericAutonomous {
 
         }
         if (autoStep > 0 && autoStep < 5) turnspd = PID.calculate(-robot.getYaw());
+        robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true);
+        robot.collect(collectorRPM);
+
+
     }
 
     public double positionFunctionX(double s) {
