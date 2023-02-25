@@ -11,14 +11,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class A1CDock extends genericAutonomous {
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 70;
+    double desiredInchesPerSecond = 40;
     double ds = desiredInchesPerSecond;
     int autoStep;
-    double xPidK = 5;
+    double xPidK = 0;//3;
 
     double widthRobot = 34;
 
-    double yPidK = 5;
+    double yPidK = 0;//3;
     Point startPositionBlue = new Point(55.88+4, 200.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
@@ -299,10 +299,10 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getS(secondDist, .5, desiredInchesPerSecond, time);
         }
         if (autoStep == 3){
-            return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-20, time);
         }
         if (autoStep == 4){
-            return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-20, time);
         }
         return 0;
     }
@@ -318,10 +318,10 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getdS(secondDist, .5, desiredInchesPerSecond, time);
         }
         if (autoStep == 3){
-            return AutoCodeLines.getdS(thirdDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getdS(thirdDist, .2, desiredInchesPerSecond-20, time);
         }
         if (autoStep == 4){
-            return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond-20, time);
         }
         return 0;
     }

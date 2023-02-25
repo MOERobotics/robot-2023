@@ -27,7 +27,7 @@ public class TherMOEDynamic extends GenericRobot{
     public final double lowestAngle = -6;
     public final double greatestAngle = 100;
     public final double shoulderCalib = 3.21;
-    //WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
+    WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
     CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
     CANSparkMax pivotLeftMotorA   = new CANSparkMax(18, kBrushless);
@@ -92,9 +92,6 @@ public class TherMOEDynamic extends GenericRobot{
 
     SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch cargoFinderReverse = bottomCollectorRoller.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-
-    //    SparkMaxAnalogSensor shoulder = leftArmMotor.getAnalog(CANAnalog.AnalogMode.kAbsolute);
-
 
     // Robot chassic dimensions, shaft to shaft.
     static final double w = 13.875;
@@ -226,7 +223,7 @@ public class TherMOEDynamic extends GenericRobot{
     public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
         double m_yaw = getYaw();
         if (auto){
-            m_yaw = getPigeonYaw();
+            m_yaw = -getPigeonYaw();
         }
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
                 yspd, turnspd, Rotation2d.fromDegrees(-m_yaw));
@@ -254,7 +251,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public Pose2d getPose() {
-        double currHeading = getYaw();
+        double currHeading = getPigeonYaw();
         SmartDashboard.putNumber("leftAStartPos", startDists[0]);
         SmartDashboard.putNumber("rightAStartPos", startDists[1]);
         SmartDashboard.putNumber("leftBStartPos", startDists[2]);
@@ -274,14 +271,14 @@ public class TherMOEDynamic extends GenericRobot{
         SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
         SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
         SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
-        Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(-currHeading),
+        Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
                         new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(getPivotRightMotorA())),
                         new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(getPivotLeftMotorB())),
                         new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(getPivotRightMotorB()))
                 });
-
+        //Pose2d correctPose = new Pose2d(myPose.getX(),(2*startingPoseOdom.getY() - myPose.getY()), myPose.getRotation());
         SmartDashboard.putNumber("xPose", myPose.getX());
         SmartDashboard.putNumber("yPose", myPose.getY());
         SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
@@ -293,7 +290,7 @@ public class TherMOEDynamic extends GenericRobot{
     public void setPose(Pose2d startPose) {
         startingPoseOdom = startPose;
         m_odometry = new SwerveDriveOdometry(
-                kinematics(), Rotation2d.fromDegrees(-startHeading),
+                kinematics(), Rotation2d.fromDegrees(startHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(startPivots[0])),
                         new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(startPivots[1])),
@@ -327,8 +324,9 @@ public class TherMOEDynamic extends GenericRobot{
     public void resetAttitude() {
         navx.reset();
     }
+////////////////////////////////////////////////////////////////////////////////////Pigeon Commands
 
-    /*@Override
+    @Override
     public double getPigeonYaw() {
         return pigeon.getYaw();
     }
@@ -356,7 +354,7 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void setPigeonYaw(double startYaw){
         pigeon.setYaw(startYaw);
-    }*/
+    }
 //////////////////////////////////////////////////////////////////////////////////////////drive motor encoders
     @Override
     public double encoderLeftADriveTicksPerInch() {
