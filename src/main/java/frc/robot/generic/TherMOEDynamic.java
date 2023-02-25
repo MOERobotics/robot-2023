@@ -562,7 +562,12 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void collect(double rpm) {
-        if (cargoInCollector() && rpm > 0){
+        this.collect(rpm, false);
+    }
+
+    @Override
+    public void collect(double rpm, boolean autoMode) {
+        if (cargoInCollector() && rpm > 0 && !autoMode){
             rpm = 0;
         }
         setTopRollerRPM(rpm);
@@ -613,7 +618,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void moveArm(double power) {
-        if (armHitLimit() && power < 0){
+        if (getPotDegrees() <= lowestAngle && power < 0){
             power = 0;
         }
         if (getPotDegrees() >= greatestAngle && power > 0){
@@ -701,12 +706,12 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void holdArmPosition(double pos){
-        double armPower = .01*(-getPotDegrees() + pos);
+        double armPower = .02*(-getPotDegrees() + pos);
         if (armPower < 0){
-            armPower = Math.max(-.05, armPower);
+            armPower = Math.max(-.2, armPower);
         }
         else{
-            armPower = Math.min(.05, armPower);
+            armPower = Math.min(.2, armPower);
         }
         moveArm(armPower);
     }

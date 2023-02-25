@@ -71,26 +71,27 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
-  SmartDashboard.putBoolean("Red Robot", robot.getRed());
+   SmartDashboard.putBoolean("Red Robot", robot.getRed());
 
    SmartDashboard.putNumber("armPosition", robot.getArmPosition());
    SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
+   SmartDashboard.putBoolean("cargoDetected", robot.cargoDetected());
+   SmartDashboard.putBoolean("armHitLimit", robot.armHitLimit());
 
 
-  robot.getDriveDistanceInchesLeftA();
-  robot.getDriveDistanceInchesLeftB();
-  robot.getDriveDistanceInchesRightB();
-  robot.getDriveDistanceInchesRightA();
+   robot.getDriveDistanceInchesLeftA();
+   robot.getDriveDistanceInchesLeftB();
+   robot.getDriveDistanceInchesRightB();
+   robot.getDriveDistanceInchesRightA();
 
-  OurAllianceColor = DriverStation.getAlliance();
+   OurAllianceColor = DriverStation.getAlliance();
 
-  if (OurAllianceColor == DriverStation.Alliance.Red)
-  {
-   robot.setRed(true);
-  }
-  else {
-   robot.setRed(false);
-  }
+   if (OurAllianceColor == DriverStation.Alliance.Red) {
+     robot.setRed(true);
+   }
+   else {
+     robot.setRed(false);
+   }
 
  }
 

@@ -298,7 +298,10 @@ public abstract class GenericRobot {
     public void setBottomRollerPower(double power){}
     public void setTopRollerPower(double power){}
 
-    public void collect(double rpm){}
+    public void collect(double rpm, boolean autoMode){}
+    public void collect(double rpm){
+        this.collect(rpm, false);
+    }
     public void setBottomRollerRPM(double rpm){}
     public void setTopRollerRPM(double rpm){}
 

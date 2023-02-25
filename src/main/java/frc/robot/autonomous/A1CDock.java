@@ -19,10 +19,11 @@ public class A1CDock extends genericAutonomous {
     double widthRobot = 34;
 
     double yPidK = 7;
+    boolean autoMode = false;
     Point startPositionBlue = new Point(55.88+4, 200.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
-    Point secondPositionBlue = new Point(275.88-10, 182.235); //269.3,180.8
+    Point secondPositionBlue = new Point(275.88, 182.235); //269.3,180.8
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88+10, 200.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
@@ -54,11 +55,13 @@ public class A1CDock extends genericAutonomous {
 
     boolean collectorUp = true;
     double collectorRPM = 0;
+    boolean openGripper = true;
     Rotation2d startRot;
 
     public void autonomousInit(GenericRobot robot) {
         startRot = new Rotation2d(0);
         autoStep = 0;
+        autoMode = false;
         robot.setPigeonYaw(0);
         if(robot.getRed()){
             startPosition.x = lengthOfField - startPositionBlue.x;
@@ -90,6 +93,9 @@ public class A1CDock extends genericAutonomous {
         autoStep = 0;
         PID.enableContinuousInput(-180,180);
         xspd = yspd = 0;
+        openGripper = true;
+        m_timer.reset();
+        m_timer.start();
     }
 
     @Override
@@ -112,22 +118,30 @@ public class A1CDock extends genericAutonomous {
 
         switch (autoStep) {
             case 0: //resets everything
-                m_timer.reset();
-                m_timer.start();
+
                 robot.resetStartDists();
                 robot.resetStartPivots();
                 robot.resetStartHeading();
                 collectorRPM = 7500;
                 collectorUp = false;
+                openGripper = true;
+                autoMode = true;
                 robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
                 xspd = yspd = turnspd = 0;
-                autoStep ++;
+                if (m_timer.get() > .25){
+                    autoStep ++;
+                    autoMode = false;
+                    m_timer.reset();
+                    m_timer.get();
+                }
                 break;
             case 1:
+                autoMode = false;
                 double t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (robot.cargoDetected()) collectorRPM = 3000;
                 if (s >= firstDist) {
                     xspd = 0;
                     yspd = 0;
@@ -141,7 +155,7 @@ public class A1CDock extends genericAutonomous {
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-
+                if (robot.cargoDetected()) collectorRPM = 3000;
                 if (s >= secondDist) {
                     xspd = 0;
                     yspd = 0;
@@ -165,10 +179,14 @@ public class A1CDock extends genericAutonomous {
                     m_timer.reset();
                     m_timer.start();
                     autoStep = 15;
+                    autoMode = true;
+                    collectorRPM = 7500;
                 }
                 break;
             case 15:
                 xspd = yspd = turnspd = 0;
+                autoMode = true;
+                collectorRPM = 7500;
                 if (m_timer.get() >= 1){
                     autoStep = 4;
                     m_timer.reset();
@@ -176,6 +194,7 @@ public class A1CDock extends genericAutonomous {
                 }
                 break;
             case 4:
+                collectorRPM = 0;
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
@@ -215,7 +234,9 @@ public class A1CDock extends genericAutonomous {
         if (autoStep > 0 && autoStep < 5) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true);
-        robot.collect(collectorRPM);
+        robot.collect(collectorRPM, autoMode);
+        robot.openGripper(openGripper);
+        robot.holdArmPosition(-6);
 
 
     }
