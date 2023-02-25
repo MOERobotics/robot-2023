@@ -139,6 +139,8 @@ public class DriveCode extends GenericTeleop{
             if(robot.cargoInCollector()) firstTrip = true;
             collectorRPM = 0;
             if(!firstTrip) collectorRPM = 7500;
+            if (robot.cargoDetected()) collectorRPM = 3000;
+
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;

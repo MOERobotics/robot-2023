@@ -93,6 +93,12 @@ public class TherMOEDynamic extends GenericRobot{
     SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch cargoFinderReverse = bottomCollectorRoller.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
+    SparkMaxLimitSwitch firstCargoFinderForward = topCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch firstCargoFinderReverse = topCollectorRoller.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    SparkMaxLimitSwitch armLimitSwitchForward = leftArmMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch armLimitSwitchReverse = leftArmMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
     // Robot chassic dimensions, shaft to shaft.
     static final double w = 13.875;
     static final double d = 10.375;
@@ -105,6 +111,10 @@ public class TherMOEDynamic extends GenericRobot{
 
         cargoFinderForward.enableLimitSwitch(false);
         cargoFinderReverse.enableLimitSwitch(false);
+        firstCargoFinderForward.enableLimitSwitch(false);
+        firstCargoFinderReverse.enableLimitSwitch(false);
+        armLimitSwitchForward.enableLimitSwitch(false);
+        armLimitSwitchReverse.enableLimitSwitch(false);
 
         m_ph.enableCompressorAnalog(100,120);
 
@@ -583,6 +593,11 @@ public class TherMOEDynamic extends GenericRobot{
     public boolean cargoInCollector() {
         return cargoFinderForward.isPressed();
     }
+
+    @Override
+    public boolean cargoDetected(){return firstCargoFinderForward.isPressed();}
+    @Override
+    public boolean armHitLimit(){return armLimitSwitchReverse.isPressed();}
 ////////////////////////////////////////////////////////////////////////////////////arm motor commands
     @Override
     public void rightArmPower(double power) {
@@ -596,7 +611,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void moveArm(double power) {
-        if (getPotDegrees() <= lowestAngle && power < 0){
+        if (armHitLimit() && power < 0){
             power = 0;
         }
         if (getPotDegrees() >= greatestAngle && power > 0){

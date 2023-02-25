@@ -308,6 +308,9 @@ public abstract class GenericRobot {
 
     public boolean cargoInCollector(){return false;}
 
+    public boolean cargoDetected(){return false;}
+    public boolean armHitLimit(){return false;}
+
     ////////////////////////////////////////////////////////////////////////////////////Arm Code
 
     public void rightArmPower(double power){}
