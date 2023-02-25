@@ -20,18 +20,18 @@ public class A1CDock extends genericAutonomous {
 
     double yPidK = 7;
     boolean autoMode = false;
-    Point startPositionBlue = new Point(55.88+4, 200.47);
+    Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
     Point secondPositionBlue = new Point(275.88, 182.235); //269.3,180.8
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
-    Point thirdPositionBlue = new Point(55.88+10, 200.47); //55.8,199.43
+    Point thirdPositionBlue = new Point(55.88+10, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
-    Point fourthPositionBlue = new Point(55.8+10, 154.37); //54.5,154.89
+    Point fourthPositionBlue = new Point(55.8+10, 148.37); //54.5,154.89
     Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
     Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
-    double kP = 0.7e-1; //.5e-1
+    double kP = 1.0e-1; //.5e-1
 
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -128,7 +128,7 @@ public class A1CDock extends genericAutonomous {
                 autoMode = true;
                 robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
                 xspd = yspd = turnspd = 0;
-                if (m_timer.get() > .25){
+                if (m_timer.get() > .5){
                     autoStep ++;
                     autoMode = false;
                     m_timer.reset();
