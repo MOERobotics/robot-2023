@@ -36,6 +36,16 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
    robot.resetPigeon();
+   if (OurAllianceColor == DriverStation.Alliance.Red)
+   {
+    robot.setRed(true);
+   }
+   else {
+    robot.setRed(false);
+   }
+   if (robot.getRed()){
+    robot.setPigeonYaw(180);
+   }
   }
 
 

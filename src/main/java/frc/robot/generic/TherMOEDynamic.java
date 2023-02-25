@@ -271,6 +271,7 @@ public class TherMOEDynamic extends GenericRobot{
         SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
         SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
         SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
+        SmartDashboard.putNumber("startHeading", startHeading);
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
@@ -290,13 +291,17 @@ public class TherMOEDynamic extends GenericRobot{
     public void setPose(Pose2d startPose) {
         startingPoseOdom = startPose;
         m_odometry = new SwerveDriveOdometry(
-                kinematics(), Rotation2d.fromDegrees(startHeading),
+                kinematics(), startPose.getRotation(),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(startPivots[0])),
                         new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(startPivots[1])),
                         new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(startPivots[2])),
                         new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(startPivots[3]))
                 }, startPose);
+    }
+    @Override
+    public void resetStartHeading(){
+        startHeading = pigeon.getYaw();
     }
 
     @Override
@@ -324,6 +329,7 @@ public class TherMOEDynamic extends GenericRobot{
     public void resetAttitude() {
         navx.reset();
     }
+
 ////////////////////////////////////////////////////////////////////////////////////Pigeon Commands
 
     @Override

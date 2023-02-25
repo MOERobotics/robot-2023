@@ -11,14 +11,14 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class A1CDock extends genericAutonomous {
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 40;
+    double desiredInchesPerSecond = 70;
     double ds = desiredInchesPerSecond;
     int autoStep;
-    double xPidK = 0;//3;
+    double xPidK = 7;
 
     double widthRobot = 34;
 
-    double yPidK = 0;//3;
+    double yPidK = 7;
     Point startPositionBlue = new Point(55.88+4, 200.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     //Point secondPosition = new Point(275.88,200.47);
@@ -30,7 +30,7 @@ public class A1CDock extends genericAutonomous {
     Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
     Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
-    double kP = 0.5e-1; //.5e-1
+    double kP = 0.7e-1; //.5e-1
 
     double s = 0;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -51,13 +51,10 @@ public class A1CDock extends genericAutonomous {
     double correctionPower = correctionPowerBlue;
     double climbPower = climbPowerBlue;
     double basePower = basePowerBlue;
+    Rotation2d startRot;
 
     public void autonomousInit(GenericRobot robot) {
-        m_timer.reset();
-        robot.resetStartDists();
-        robot.resetStartPivots();
-        robot.resetAttitude();
-        Rotation2d startRot = new Rotation2d(0);
+        startRot = new Rotation2d(0);
         autoStep = 0;
         robot.setPigeonYaw(0);
         if(robot.getRed()){
@@ -66,10 +63,10 @@ public class A1CDock extends genericAutonomous {
             thirdPosition.x = lengthOfField - thirdPositionBlue.x;
             fourthPosition.x = lengthOfField - fourthPositionBlue.x;
             endPosition.x = lengthOfField - endPositionBlue.x;
-            startRot = new Rotation2d(Math.PI);
             correctionPower = -correctionPowerBlue;
             climbPower = -climbPowerBlue;
             basePower = -basePowerBlue;
+            startRot = new Rotation2d(Math.PI);
             robot.setPigeonYaw(180);
         }else{
             startPosition.x = startPositionBlue.x;
@@ -82,6 +79,10 @@ public class A1CDock extends genericAutonomous {
             basePower = basePowerBlue;
         }
         robot.resetStartHeading();
+        m_timer.reset();
+        robot.resetStartDists();
+        robot.resetStartPivots();
+        robot.resetAttitude();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
         autoStep = 0;
         PID.enableContinuousInput(-180,180);
@@ -113,6 +114,7 @@ public class A1CDock extends genericAutonomous {
                 robot.resetStartDists();
                 robot.resetStartPivots();
                 robot.resetStartHeading();
+                robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
                 xspd = yspd = turnspd = 0;
                 autoStep ++;
                 break;
@@ -299,10 +301,10 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getS(secondDist, .5, desiredInchesPerSecond, time);
         }
         if (autoStep == 3){
-            return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-20, time);
+            return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-30, time);
         }
         if (autoStep == 4){
-            return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-20, time);
+            return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-30, time);
         }
         return 0;
     }
@@ -318,10 +320,10 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getdS(secondDist, .5, desiredInchesPerSecond, time);
         }
         if (autoStep == 3){
-            return AutoCodeLines.getdS(thirdDist, .2, desiredInchesPerSecond-20, time);
+            return AutoCodeLines.getdS(thirdDist, .2, desiredInchesPerSecond-30, time);
         }
         if (autoStep == 4){
-            return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond-20, time);
+            return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond-30, time);
         }
         return 0;
     }
