@@ -27,7 +27,7 @@ public class DriveCode extends GenericTeleop{
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
     double collectorRPM = 0;
     double armPower = 0;
-    boolean dropTopRoller = false;
+    boolean raiseTopRoller = true;
     boolean openGripper = true;
 
     boolean balanceCommand = false;
@@ -125,12 +125,12 @@ public class DriveCode extends GenericTeleop{
         //AxisY is 1
 
         if (xboxFuncOp.getRawButton(5) ){ //move collector up
-            dropTopRoller = false;
+            raiseTopRoller = true;
         }
         else if (xboxFuncOp.getRawButton(6)){ //move collector down
-            dropTopRoller = true;
+            raiseTopRoller = false;
         }
-        if (robot.getPotDegrees() > 0) dropTopRoller = false;
+        if (robot.getPotDegrees() > 0) raiseTopRoller = true;
 
 
         if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
@@ -175,7 +175,7 @@ public class DriveCode extends GenericTeleop{
             }
             balance.periodic();
             robot.collect(collectorRPM);
-            robot.raiseTopRoller(dropTopRoller);
+            robot.raiseTopRoller(raiseTopRoller);
             robot.moveArm(armPower);
             robot.openGripper(openGripper);
         }
@@ -190,7 +190,7 @@ public class DriveCode extends GenericTeleop{
             init = false;
             robot.setDrive(xspd, yspd, turnspd);
             robot.collect(collectorRPM);
-            robot.raiseTopRoller(dropTopRoller);
+            robot.raiseTopRoller(raiseTopRoller);
             if (armPower != 0) {
                 robot.moveArm(armPower);
             }

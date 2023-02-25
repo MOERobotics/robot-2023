@@ -581,7 +581,9 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void raiseTopRoller(boolean up) {
-        retractor.set(up);
+        boolean drop = false;
+        if (!up) drop = true;
+        retractor.set(drop);
     }
 
     @Override
