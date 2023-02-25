@@ -210,13 +210,13 @@ public class A1CDock extends genericAutonomous {
                 break;
             case 5:
                 xspd = basePower;
-                if (Math.abs(currPitch) > 11) { // driving up charge station
+                if (Math.abs(currPitch) > 11) { // driving toward and up charge station until fully pitched up.
                     autoStep ++;
                 }
                 break;
             case 6:
                 xspd = climbPower;
-                if (Math.abs(currPitch) < 10) { //flattened out
+                if (Math.abs(currPitch) < 10) { //forward until flattened out
                     autoStep++;
                 }
                 break;
