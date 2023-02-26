@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 
 public class Robot extends TimedRobot {
+  public static final GenericTeleop
+          driveCode = new DriveCode();
 
   genericAutonomous autonomous = new A1CDock();
   GenericTeleop teleop = new DriveCode();
@@ -33,6 +35,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
    robot.resetPigeon();
+
+   OurAllianceColor = DriverStation.getAlliance();
+
    if (OurAllianceColor == DriverStation.Alliance.Red)
    {
     robot.setRed(true);
