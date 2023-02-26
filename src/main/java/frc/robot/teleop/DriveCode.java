@@ -3,6 +3,7 @@ package frc.robot.teleop;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoConeCubeStack;
 import frc.robot.commands.autoBalance;
 import frc.robot.commands.autoBalanceBackward;
@@ -36,7 +37,7 @@ public class DriveCode extends GenericTeleop{
 
     double desiredYaw = 0;
     double desiredPos = -6;
-    PIDController yawControl = new PIDController(.5e-1, 0,0);
+    PIDController yawControl = new PIDController(1.0e-1, 0,0);
     double startAngle;
     boolean btnLeft = false;
     boolean btnRight = false;
@@ -46,6 +47,8 @@ public class DriveCode extends GenericTeleop{
     boolean secondTrip = false;
     boolean firstTrip = false;
     boolean autoMode = false;
+    double xPoseOfWall = 0;
+    boolean wallHit = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -69,10 +72,12 @@ public class DriveCode extends GenericTeleop{
         desiredYaw = 0;
         firstTrip = false;
         secondTrip = false;
+        wallHit = false;
     }
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
+        SmartDashboard.putBoolean("wallHit", wallHit);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
@@ -119,6 +124,34 @@ public class DriveCode extends GenericTeleop{
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
+
+///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
+
+        if (xboxDriver.getRawButton(4)){
+            desiredPos = 80;//////////////////////////////hold arm up
+        }
+        if (xboxDriver.getRawButtonPressed(3)){
+            xPoseOfWall = robotPose.getX();
+        }
+        if (xboxDriver.getRawButton(3)){
+            xspd = -10;
+            yspd = 0;
+            if (Math.abs(robot.getPitch())> .5){
+                xPoseOfWall = robotPose.getX();
+            }
+            else {
+                if (Math.abs(xPoseOfWall - robotPose.getX()) >= 3) {
+                    openGripper = false;
+                }
+                if (Math.abs(xPoseOfWall - robotPose.getX()) >= 6) {
+                    desiredPos = 86;
+                }
+                if (Math.abs(xPoseOfWall - robotPose.getX()) >= 10) {
+                    xspd = 0;
+                    yspd = 0;
+                }
+            }
+        }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////start arm code
 
@@ -173,7 +206,10 @@ public class DriveCode extends GenericTeleop{
         }
 
         armPower = -.2*robot.deadzone(xboxFuncOp.getRawAxis(1), .2); //moves arm up and down
-        if(armPower != 0) desiredPos = robot.getPotDegrees();
+        if(armPower != 0){
+            desiredPos = robot.getPotDegrees();
+            wallHit = false;
+        }
         if (robot.getPotDegrees() > 0) raiseTopRoller = true;
 
         //////////////////////////////////////////////////////////////////////////////autoStacking commands

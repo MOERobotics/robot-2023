@@ -468,7 +468,27 @@ public class TherMOEDynamic extends GenericRobot{
         rightMotorBRPM.setReference(rpm, CANSparkMax.ControlType.kVelocity);
     }
 
-////////////////////////////////////////////////////////////////////////////////////////////Pivot motor encoder commands
+    @Override
+    public double getLeftACurrent() {
+        return leftMotorA.getOutputCurrent();
+    }
+
+    @Override
+    public double getRightACurrent() {
+        return rightMotorA.getOutputCurrent();
+    }
+
+    @Override
+    public double getLeftBCurrent() {
+        return leftMotorB.getOutputCurrent();
+    }
+
+    @Override
+    public double getRightBCurrent() {
+        return rightMotorB.getOutputCurrent();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////Pivot motor encoder commands
     @Override
     public void resetPIDPivot() {
         pivotLeftAPID.reset();

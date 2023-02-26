@@ -205,6 +205,11 @@ public abstract class GenericRobot {
 
     }
 
+    public double getLeftACurrent(){return 0;}
+    public double getRightACurrent(){return 0;}
+    public double getLeftBCurrent(){return 0;}
+    public double getRightBCurrent(){return 0;}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Pivot Motor Commands
 
     ///////////////////////////////////////////////////////////////////////////drive motor

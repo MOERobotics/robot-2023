@@ -23,13 +23,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 
 public class Robot extends TimedRobot {
 
-
- // GenericRobot robot = new SwerveBot();
   genericAutonomous autonomous = new A1CDock();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();
-
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
@@ -51,38 +48,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-   SmartDashboard.putNumber("armPotDegrees", robot.getPotDegrees());
-   SmartDashboard.putNumber("armInches", robot.getArmPosition());
 
-   SmartDashboard.putNumber("yaw", robot.getYaw());
-   SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
-   SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
-   SmartDashboard.putNumber("rightApivot", robot.getPivotRightMotorA());
-   SmartDashboard.putNumber("rightBpivot", robot.getPivotRightMotorB());
-
-   SmartDashboard.putNumber("leftApivotRaw", robot.rawEncoderLeftA());
-   SmartDashboard.putNumber("leftBpivotRaw", robot.rawEncoderLeftB());
-   SmartDashboard.putNumber("rightApivotRaw", robot.rawEncoderRightA());
-   SmartDashboard.putNumber("rightBpivotRaw", robot.rawEncoderRightB());
-   SmartDashboard.putNumber("pitch", robot.getPitch());
-   SmartDashboard.putNumber("roll", robot.getRoll());
-   SmartDashboard.putNumber("pigeonYaw", robot.getPigeonYaw());
-   SmartDashboard.putNumber("pigeonPitch", robot.getPigeonPitch());
-   SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
-   SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
-
-   SmartDashboard.putBoolean("Red Robot", robot.getRed());
-
-   SmartDashboard.putNumber("armPosition", robot.getArmPosition());
-   SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
-   SmartDashboard.putBoolean("cargoDetected", robot.cargoDetected());
-   SmartDashboard.putBoolean("armHitLimit", robot.armHitLimit());
-
-
-   robot.getDriveDistanceInchesLeftA();
-   robot.getDriveDistanceInchesLeftB();
-   robot.getDriveDistanceInchesRightB();
-   robot.getDriveDistanceInchesRightA();
+   SmartDash.Dashboard(robot);
 
    OurAllianceColor = DriverStation.getAlliance();
 
