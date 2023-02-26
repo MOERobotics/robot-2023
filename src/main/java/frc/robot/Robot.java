@@ -24,9 +24,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Robot extends TimedRobot {
 
 
- // GenericRobot robot = new SwerveBot();
+ //GenericRobot robot = new swerveBot();
   genericAutonomous autonomous = new A1CDock();
   GenericTeleop teleop = new DriveCode();
+
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();
 

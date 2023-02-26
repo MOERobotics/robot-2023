@@ -3,14 +3,21 @@ package frc.robot.teleop;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoConeCubeStack;
 import frc.robot.commands.autoBalance;
 import frc.robot.commands.autoBalanceBackward;
 import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
+import frc.robot.generic.TherMOEDynamic;
 
 
 public class DriveCode extends GenericTeleop{
+
+    public static final genericCommand
+        balance = new autoBalance(),
+        autoStack = new AutoConeCubeStack();
+
 
     boolean resetting = false;
     Joystick xboxDriver = new Joystick(1);
@@ -20,9 +27,8 @@ public class DriveCode extends GenericTeleop{
 
     double xspd, yspd, turnspd;
 
-    genericCommand balance = new autoBalance();
-    genericCommand balanceBack = new autoBalanceBackward();
-    genericCommand autoStack = new AutoConeCubeStack();
+    genericCommand command = balance;
+    //genericCommand balanceBack = new autoBalanceBackward();
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
     double collectorRPM = 0;
@@ -32,6 +38,7 @@ public class DriveCode extends GenericTeleop{
 
     boolean balanceCommand = false;
     boolean init = false;
+    boolean balanceInit  = false;
     boolean autoStackCommand = false;
 
     double desiredYaw = 0;
@@ -49,6 +56,7 @@ public class DriveCode extends GenericTeleop{
 
     @Override
     public void teleopInit(GenericRobot robot) {
+        balanceInit = false;
         yawControl.enableContinuousInput(-180,180);
 
         resetting = false;
@@ -73,8 +81,8 @@ public class DriveCode extends GenericTeleop{
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
-
-
+        SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
+        SmartDashboard.putBoolean("balancecommand init", balanceInit);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
         Pose2d robotPose = robot.getPose();
 
@@ -86,7 +94,12 @@ public class DriveCode extends GenericTeleop{
         if (xspd != 0 || yspd != 0 || turnspd != 0){
             autoStackCommand = false;
         }
-
+        if(xboxDriver.getRawButton(8)){
+            balanceCommand = true;
+        }
+        else{
+            balanceCommand = false;
+        }
 
         if (xboxDriver.getRawButton(5)) { // speed boosters
             turnspd *= 2;
@@ -183,13 +196,13 @@ public class DriveCode extends GenericTeleop{
          */
         ///////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
-            if (!init){
-                balance.init();
-                init = true;
+            if (!balanceInit){
+                balance.init(robot);
+                balanceInit = true;
             }
-            balance.periodic();
             robot.collect(collectorRPM, autoMode);
             robot.raiseTopRoller(raiseTopRoller);
+            balance.periodic(robot);
             if (armPower != 0) {
                 robot.moveArm(armPower);
             }
@@ -200,10 +213,10 @@ public class DriveCode extends GenericTeleop{
         }
         else if (autoStackCommand){
             if (!init){
-                autoStack.init();
+                command.init();
                 init = true;
             }
-            autoStack.periodic();
+            command.periodic();
         }
         else {
             init = false;
