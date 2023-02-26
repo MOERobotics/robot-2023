@@ -3,6 +3,7 @@ package frc.robot.autonomous;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
@@ -10,19 +11,24 @@ import frc.robot.vision.MoeNetVision;
 public class ObjectDetectionTest extends genericAutonomous {
     final double TARGET_DISTANCE = 12.;
     MoeNetVision vision;
-    double xPosStar, yPosStar, xspd, yspd, turnspd;
-    double defaultSpeed = 10;
+    double defaultSpeed = 20;
     Pose2d currPose = null;
     Pose2d desiredPose;
     @Override
     public void autonomousInit(GenericRobot robot) {
         vision = new MoeNetVision(robot);
-        if (vision.poseFound()){
-            currPose = new Pose2d();
-        }
-        xPosStar = currPose.getX();
-        yPosStar = currPose.getY();
+        currPose = new Pose2d();
 
+        robot.resetAttitude();
+        robot.resetPIDPivot();
+        robot.resetStartHeading();
+        robot.resetStartDists();
+        robot.resetStartPivots();
+        robot.setPose();
+
+        SmartDashboard.putString("detautoTarget", "none yet");
+        desiredPose = null;
+        autonomousStep = 0;
     }
 
     @Override
@@ -32,10 +38,15 @@ public class ObjectDetectionTest extends genericAutonomous {
         double xPos = currPose.getX();
         double yPos = currPose.getY();
 
+        double xspd = 0, yspd = 0, turnspd = 0;
+
+        SmartDashboard.putString("detautoPosition", String.format("%f, %f", this.currPose.getX(), this.currPose.getY()));
+
         switch (autonomousStep){
             case 0: {
                 Detection firstDetection = vision.firstObjectDetection();
-                Pose2d robotTargetPosition = null;
+
+                SmartDashboard.putBoolean("detautoHasFirstDetection", firstDetection != null);
 
                 if(firstDetection != null){
                     var objOffset = firstDetection.location.getTranslation().toTranslation2d()
@@ -44,6 +55,7 @@ public class ObjectDetectionTest extends genericAutonomous {
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
 
                     this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                     autonomousStep = 1;
                 }
 
