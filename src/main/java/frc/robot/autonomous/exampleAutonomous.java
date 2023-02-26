@@ -52,9 +52,9 @@ public class exampleAutonomous extends genericAutonomous{
                 break;
             case 1:
                 s = getS(m_timer.get());
-                xspd = velocityFunctionX(s) + xPidK*(positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s) + yPidK*(positionFunctionY(s) - currPose.getY());
-                turnspd = velocityFunctionTheta(s);
+                xspd = velocityFunctionX(s, m_timer.get()) + xPidK*(positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, m_timer.get()) + yPidK*(positionFunctionY(s) - currPose.getY());
+                turnspd = velocityFunctionTheta(s, m_timer.get());
                 if (s >= distanceOne){
                     m_timer.reset();
                     m_timer.start();
@@ -63,9 +63,9 @@ public class exampleAutonomous extends genericAutonomous{
                 break;
             case 2:
                 s = getS(m_timer.get());
-                xspd = velocityFunctionX(s) + xPidK*(positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s) + yPidK*(positionFunctionY(s) - currPose.getY());
-                turnspd = velocityFunctionTheta(s);
+                xspd = velocityFunctionX(s, m_timer.get()) + xPidK*(positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, m_timer.get()) + yPidK*(positionFunctionY(s) - currPose.getY());
+                turnspd = velocityFunctionTheta(s, m_timer.get());
                 if (s >= distanceTwo){
                     m_timer.reset();
                     m_timer.start();
@@ -74,9 +74,9 @@ public class exampleAutonomous extends genericAutonomous{
                 break;
             case 3:
                 s = getS(m_timer.get());
-                xspd = velocityFunctionX(s) + xPidK*(positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s) + yPidK*(positionFunctionY(s) - currPose.getY());
-                turnspd = velocityFunctionTheta(s);
+                xspd = velocityFunctionX(s, m_timer.get()) + xPidK*(positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, m_timer.get()) + yPidK*(positionFunctionY(s) - currPose.getY());
+                turnspd = velocityFunctionTheta(s, m_timer.get());
                 if (s >= distanceThree){
                     m_timer.reset();
                     m_timer.start();
@@ -131,7 +131,7 @@ public class exampleAutonomous extends genericAutonomous{
     }
 
     @Override
-    public double velocityFunctionX(double s) {
+    public double velocityFunctionX(double s, double time) {
         if (autonomousStep == 0){
             return 0;
         }
@@ -148,7 +148,7 @@ public class exampleAutonomous extends genericAutonomous{
     }
 
     @Override
-    public double velocityFunctionY(double s) {
+    public double velocityFunctionY(double s, double time) {
         if (autonomousStep == 0){
             return 0;
         }
@@ -165,7 +165,7 @@ public class exampleAutonomous extends genericAutonomous{
     }
 
     @Override
-    public double velocityFunctionTheta(double s) {
+    public double velocityFunctionTheta(double s, double time) {
         return 0;
     }
 

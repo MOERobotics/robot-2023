@@ -24,9 +24,10 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Robot extends TimedRobot {
 
 
- // GenericRobot robot = new SwerveBot();
-  genericAutonomous autonomous = new baseAuto();
+ //GenericRobot robot = new swerveBot();
+  genericAutonomous autonomous = new ExitAndEngage();
   GenericTeleop teleop = new DriveCode();
+
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();
 
@@ -36,11 +37,24 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
    robot.resetPigeon();
+   if (OurAllianceColor == DriverStation.Alliance.Red)
+   {
+    robot.setRed(true);
+   }
+   else {
+    robot.setRed(false);
+   }
+   if (robot.getRed()){
+    robot.setPigeonYaw(180);
+   }
   }
 
 
   @Override
   public void robotPeriodic() {
+   SmartDashboard.putNumber("armPotDegrees", robot.getPotDegrees());
+   SmartDashboard.putNumber("armInches", robot.getArmPosition());
+
    SmartDashboard.putNumber("yaw", robot.getYaw());
    SmartDashboard.putNumber("leftApivot", robot.getPivotLeftMotorA());
    SmartDashboard.putNumber("leftBpivot", robot.getPivotLeftMotorB());
@@ -58,16 +72,28 @@ public class Robot extends TimedRobot {
    SmartDashboard.putNumber("pigeonRoll", robot.getPigeonRoll());
    SmartDashboard.putNumber("pigeonCompass", robot.getAbsoluteCompassHeadingPigeon());
 
-  SmartDashboard.putBoolean("Red Robot", robot.getRed());
+   SmartDashboard.putBoolean("Red Robot", robot.getRed());
 
    SmartDashboard.putNumber("armPosition", robot.getArmPosition());
    SmartDashboard.putBoolean("cargoInCollect", robot.cargoInCollector());
+   SmartDashboard.putBoolean("cargoDetected", robot.cargoDetected());
+   SmartDashboard.putBoolean("armHitLimit", robot.armHitLimit());
 
 
-  robot.getDriveDistanceInchesLeftA();
-  robot.getDriveDistanceInchesLeftB();
-  robot.getDriveDistanceInchesRightB();
-  robot.getDriveDistanceInchesRightA();
+   robot.getDriveDistanceInchesLeftA();
+   robot.getDriveDistanceInchesLeftB();
+   robot.getDriveDistanceInchesRightB();
+   robot.getDriveDistanceInchesRightA();
+
+   OurAllianceColor = DriverStation.getAlliance();
+
+   if (OurAllianceColor == DriverStation.Alliance.Red) {
+     robot.setRed(true);
+   }
+   else {
+     robot.setRed(false);
+   }
+
  }
 
 

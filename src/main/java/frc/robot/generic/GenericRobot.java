@@ -298,7 +298,10 @@ public abstract class GenericRobot {
     public void setBottomRollerPower(double power){}
     public void setTopRollerPower(double power){}
 
-    public void collect(double rpm){}
+    public void collect(double rpm, boolean autoMode){}
+    public void collect(double rpm){
+        this.collect(rpm, false);
+    }
     public void setBottomRollerRPM(double rpm){}
     public void setTopRollerRPM(double rpm){}
 
@@ -308,6 +311,9 @@ public abstract class GenericRobot {
 
     public boolean cargoInCollector(){return false;}
 
+    public boolean cargoDetected(){return false;}
+    public boolean armHitLimit(){return false;}
+
     ////////////////////////////////////////////////////////////////////////////////////Arm Code
 
     public void rightArmPower(double power){}
@@ -315,7 +321,13 @@ public abstract class GenericRobot {
     public void moveArm(double power){}
     public double getArmPosition(){return 0;}
 
+    public double getPotDegrees(){return 0;}
+    public double getPotRadians(){return 0;}
+
     public void stackCargo(double zPos){
+
+    }
+    public void holdArmPosition(double pos){
 
     }
 
