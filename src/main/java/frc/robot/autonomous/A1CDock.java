@@ -2,28 +2,32 @@ package frc.robot.autonomous;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
+import frc.robot.vision.Detection;
+import frc.robot.vision.MoeNetVision;
 import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class A1CDock extends genericAutonomous {
+    double TARGET_DISTANCE = 0; //this is distance of camera
     double xspd, yspd, turnspd;
     double desiredInchesPerSecond = 70;
-    double ds = desiredInchesPerSecond;
-    int autoStep;
+    int autoStep = 0;
     double xPidK = 7;
-
-    double widthRobot = 34;
-
     double yPidK = 7;
+
+    double defaultSpeed = 20;
     boolean autoMode = false;
+////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
-    //Point secondPosition = new Point(275.88,200.47);
-    Point secondPositionBlue = new Point(275.88, 186.235); //269.3,180.8
+    Point secondPositionBlue = new Point(250.88, 190.235); //275.88, 186.235
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88+10, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
@@ -31,34 +35,35 @@ public class A1CDock extends genericAutonomous {
     Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
     Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
-    double kP = 1.0e-1; //.5e-1
-
-    double s = 0;
-    PIDController PID = new PIDController(kP, 0, 0);
 
     double firstDist = AutoCodeLines.getDistance(startPosition,secondPosition);
     double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
     double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    double kP = 1.0e-1; //.5e-1
 
+    double s = 0;
+    PIDController PID = new PIDController(kP, 0, 0);
     private final Timer m_timer = new Timer();
-
     double lengthOfField = 650.7;
-
     double correctionPowerBlue = 19.0;
     double climbPowerBlue = 30.0;
     double basePowerBlue = 35.0;
-
     double correctionPower = correctionPowerBlue;
     double climbPower = climbPowerBlue;
     double basePower = basePowerBlue;
-
     boolean collectorUp = true;
     double collectorRPM = 0;
     boolean openGripper = true;
     Rotation2d startRot;
+    MoeNetVision vision;
+    Pose2d desiredPoseBlue = new Pose2d(275.88, 186.235, new Rotation2d(0)); //default pos
+    Pose2d desiredPose = new Pose2d(desiredPoseBlue.getX(), desiredPoseBlue.getY(), desiredPoseBlue.getRotation());
+
 
     public void autonomousInit(GenericRobot robot) {
+        vision = new MoeNetVision(robot);
         startRot = new Rotation2d(0);
         autoStep = 0;
         autoMode = false;
@@ -69,6 +74,8 @@ public class A1CDock extends genericAutonomous {
             thirdPosition.x = lengthOfField - thirdPositionBlue.x;
             fourthPosition.x = lengthOfField - fourthPositionBlue.x;
             endPosition.x = lengthOfField - endPositionBlue.x;
+            desiredPose = new Pose2d(lengthOfField - desiredPoseBlue.getX(),
+                    desiredPoseBlue.getY(), desiredPoseBlue.getRotation());
             correctionPower = -correctionPowerBlue;
             climbPower = -climbPowerBlue;
             basePower = -basePowerBlue;
@@ -92,6 +99,7 @@ public class A1CDock extends genericAutonomous {
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
         autoStep = 0;
         PID.enableContinuousInput(-180,180);
+        desiredPose = null;
         xspd = yspd = 0;
         openGripper = true;
         m_timer.reset();
@@ -142,14 +150,52 @@ public class A1CDock extends genericAutonomous {
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 if (robot.cargoDetected()) collectorRPM = 4000;
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                Detection firstDetection = vision.firstObjectDetection();
+                if(firstDetection != null){
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
+                            .times(Units.metersToInches(1));
+                    double distance = objOffset.getNorm();
+                    var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
+                    if (robot.getRed()) targetPosition = new Translation2d(-targetPosition.getX(), targetPosition.getY());
+                    this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
+                }
+/////////////////////////////////////////////////////////////////////////////////vision detection code
                 if (s >= firstDist) {
                     xspd = 0;
                     yspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autoStep = 8;
+                    autoStep = 14;
                 }
                 break;
+            case 14: ///object detection step
+                firstDetection = vision.firstObjectDetection();
+                if(firstDetection != null){
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
+                            .times(Units.metersToInches(1));
+                    double distance = objOffset.getNorm();
+                    var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
+                    if (robot.getRed()) targetPosition = new Translation2d(-targetPosition.getX(), targetPosition.getY());
+                    this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
+                }
+
+                double xDiff = desiredPose.getX()-currPose.getX();
+                double yDiff = desiredPose.getY()-currPose.getY();
+                double totDiff = Math.hypot(xDiff, yDiff);
+                xspd = yspd = 0;
+                if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
+                if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
+                if (robot.cargoDetected() || m_timer.get() > 1){
+                    secondPosition = new Point(currPose.getX(), currPose.getY());
+                    collectorRPM = 4000;
+                    xspd = yspd = 0;
+                    autonomousStep = 2;
+                }
+                break;
+
             case 2:
                 t = m_timer.get();
                 s = getS(m_timer.get());
