@@ -7,28 +7,14 @@ public class ButtonBox {
     public ButtonBox(Joystick joystick) {
         this.joystick = joystick;
     }
-    public enum height {
-        NONE,
-        LOW,
-        MIDDLE,
-        HIGH
+    public static int heightIndex = 0;
+    public static int getHeight() {
+        setHeight();
+        return heightIndex;
     }
-    static height currentHeight;
-    static int currentRow;
-    public static height getHeight() {
-        return currentHeight;
-        /*if(!joystick.getRawButtonPressed(10) && !joystick.getRawButtonPressed(11)) {
-            return height.MIDDLE;
-        }
-        if(!joystick.getRawButtonPressed(10) && joystick.getRawButtonPressed(11)) {
-            return height.LOW;
-        }
-        if(joystick.getRawButtonPressed(10) && !joystick.getRawButtonPressed(11)) {
-            return height.HIGH;
-        }
-        return height.NONE;*/
-    }
-    public static int getRow() {
+    public static boolean pressed = false;
+    /*public static int getRow() {
+        set();
         return currentRow;
         /*if(joystick.getRawButtonPressed(1)) {
             return 1;
@@ -59,8 +45,8 @@ public class ButtonBox {
         }
         return 0;
 
-         */
-    }
+
+    }*/
     /*public static void setRow() {
         if(joystick.getRawButtonPressed(1)) {
             currentRow = 1;
@@ -90,20 +76,22 @@ public class ButtonBox {
             currentRow = 9;
         }
         currentRow = 0;
-    }
-    public static void setHeight() {
-        if(!joystick.getRawButtonPressed(10) && !joystick.getRawButtonPressed(11)) {
-            currentHeight = height.MIDDLE;
-        }
-        if(!joystick.getRawButtonPressed(10) && joystick.getRawButtonPressed(11)) {
-            currentHeight = height.LOW;
-        }
-        if(joystick.getRawButtonPressed(10) && !joystick.getRawButtonPressed(11)) {
-            currentHeight = height.HIGH;
-        }
-        currentHeight = height.NONE;
     }*/
-    public static void set() {
+    public static void setHeight() {
+        if(joystick.getRawButtonPressed(1) || joystick.getRawButton(2) || joystick.getRawButton(3)) {
+            heightIndex = 0;
+            pressed = true;
+        }
+        else if(joystick.getRawButtonPressed(1) || joystick.getRawButton(2) || joystick.getRawButton(3)) {
+            heightIndex = 1;
+            pressed = true;
+        }
+        else if(joystick.getRawButtonPressed(1) || joystick.getRawButton(2) || joystick.getRawButton(3)) {
+            heightIndex = 2;
+            pressed = true;
+        }
+    }
+    /*public static void set() {
         if(joystick.getRawButtonPressed(1)) {
             currentRow = 1;
         }
@@ -140,5 +128,5 @@ public class ButtonBox {
         if(joystick.getRawButtonPressed(10) && !joystick.getRawButtonPressed(11)) {
             currentHeight = height.HIGH;
         }
-    }
+    }*/
 }

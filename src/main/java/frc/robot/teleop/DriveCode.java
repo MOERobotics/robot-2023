@@ -10,6 +10,7 @@ import frc.robot.commands.autoBalanceBackward;
 import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.TherMOEDynamic;
+import frc.robot.helpers.ButtonBox;
 
 
 public class DriveCode extends GenericTeleop{
@@ -24,8 +25,11 @@ public class DriveCode extends GenericTeleop{
 
     //currently this is the joystick
     Joystick xboxFuncOp = new Joystick(2);
+    Joystick box = new Joystick(0);
+    ButtonBox buttonBox = new ButtonBox(box);
 
     double xspd, yspd, turnspd;
+    double HeightsDeg[] = new double[] {33.4, 81.8, 98.1};
 
     genericCommand command = balance;
     //genericCommand balanceBack = new autoBalanceBackward();
@@ -226,12 +230,16 @@ public class DriveCode extends GenericTeleop{
         }
         if (robot.getPotDegrees() > 0) raiseTopRoller = true;
 
-        //////////////////////////////////////////////////////////////////////////////autoStacking commands
+//////////////////////////////////////////////////////////////////////////////////////autoStacking commands
         /*
         if button box buttons pressed, autoStackCommand = true;
         only canceled if driver moves joystick
          */
-        ///////////////////////////////////////////////////////////////////////////Power setters
+        if (ButtonBox.pressed){
+            desiredPos = HeightsDeg[ButtonBox.getHeight()];
+            ButtonBox.pressed = false;
+        }
+/////////////////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
             if (!balanceInit){
                 balance.init(robot);
