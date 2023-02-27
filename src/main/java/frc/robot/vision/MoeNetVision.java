@@ -161,4 +161,17 @@ public final class MoeNetVision {
         }
         return scalePose(pose, INCHES_PER_METER);
     }
+
+    public Detection firstObjectDetection(){
+        for(NetworkCamera camera : cameras){
+            List<Detection> klad = camera.getDetections();
+            if(klad != null){
+                for (Detection detection : klad){
+                    if (detection.objectType == Detection.Cargo.CONE_BOTTOM)
+                        return klad.get(0);
+                }
+            }
+        }
+        return null;
+    }
 }
