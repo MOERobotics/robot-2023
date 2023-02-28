@@ -3,6 +3,7 @@ package frc.robot.vision;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
@@ -63,8 +64,13 @@ public class OakCamera implements NetworkCamera{
             var x= detections[i];
             var y= detections[i+1];
             var z= detections[i+2];
+
+            if (Math.abs(x) < 0.001 && Math.abs(y) < 0.001 && Math.abs(z) < 0.001 )
+                continue;
+
             Detection.Cargo cargoType = Detection.Cargo.values()[(int)detections[i+3]];
-            Detection newDebt = new Detection(z,-x,y,cargoType);
+            //10.5 is our offset for hatboro will need to change
+            Detection newDebt = new Detection(z,-x- Units.inchesToMeters(10.5),y,cargoType);
             debt.add(newDebt);
         }
 
