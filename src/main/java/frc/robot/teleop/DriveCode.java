@@ -31,7 +31,6 @@ public class DriveCode extends GenericTeleop{
     double armPower = 0;
     boolean raiseTopRoller = true;
     boolean openGripper = true;
-
     boolean balanceCommand = false;
     boolean init = false;
     boolean balanceInit  = false;
