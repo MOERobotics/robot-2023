@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -162,8 +164,13 @@ public final class MoeNetVision {
         return scalePose(pose, INCHES_PER_METER);
     }
 
+    /**
+     * Loops through all the cameras to find detections. Returns the first detection found.
+     * @return Detection of object
+     */
     public Detection firstObjectDetection(){
         for(NetworkCamera camera : cameras){
+            //I was upsetty spagetti when I named this variable and I am not sorry
             List<Detection> klad = camera.getDetections();
             if(klad != null){
                 for (Detection detection : klad){
@@ -174,4 +181,47 @@ public final class MoeNetVision {
         }
         return null;
     }
+
+    /**
+     * Program selects an object type and location to search for. Loops through all the
+     * cameras to find detections. This function uses vision to return the closest Detection
+     * of that object type.
+     *
+     * @param type Object type being looked for
+     * @param xSelected The X location of the selected object
+     * @param ySelected The Y location of the selected Object
+     * @param radius The tolerated distance error from the estimated location
+     * @return Detection that is closest to the object that is being looked for
+     */
+    public Detection selectedObjectDetection(Detection.Cargo type, double xSelected, double ySelected, double radius){
+        Detection closestDetection = null;
+        double closestDistance = radius;
+
+        for(NetworkCamera camera : cameras){
+            //I was upsetty spagetti when I named this variable and I am not sorry
+            List<Detection> klad = camera.getDetections();
+            if(klad != null){
+                for (Detection detection : klad){
+                    if (detection.objectType == type){
+                        double detectedX = detection.location.getX();
+                        double detectedY = detection.location.getY();
+
+                        double distance = Math.sqrt(
+                                (Math.abs(detectedX- xSelected) * Math.abs(detectedX- xSelected))
+                                +(Math.abs(detectedY- ySelected) * Math.abs(detectedY - ySelected))
+                        );
+
+                        if(distance < closestDistance){
+                            closestDistance = distance;
+                            closestDetection = detection;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        return closestDetection;
+    }
+
 }
