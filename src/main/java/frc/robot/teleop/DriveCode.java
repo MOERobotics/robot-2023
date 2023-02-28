@@ -18,9 +18,9 @@ public class DriveCode extends GenericTeleop{
         balance = new autoBalance(),
         autoStack = new AutoConeCubeStack();
     boolean resetting = false;
+    Joystick buttonBox = new Joystick(0);
     Joystick xboxDriver = new Joystick(1);
     Joystick xboxFuncOp = new Joystick(2);
-    Joystick buttonBox = new Joystick(3);
     Timer m_timer = new Timer();
     double xspd, yspd, turnspd;
     double HeightsDeg[] = new double[] {33.4, 81.8, 98.1};
