@@ -1,6 +1,8 @@
 package frc.robot.helpers;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.SmartDash;
 
 public class ButtonBox {
     static Joystick joystick;
@@ -78,15 +80,16 @@ public class ButtonBox {
         currentRow = 0;
     }*/
     public static void setHeight() {
-        if(joystick.getRawButtonPressed(1) || joystick.getRawButton(2) || joystick.getRawButton(3)) {
+        SmartDashboard.putNumber("height Index", heightIndex);
+        if(joystick.getRawButtonPressed(1) || joystick.getRawButton(4) || joystick.getRawButton(7)) {
             heightIndex = 0;
             pressed = true;
         }
-        else if(joystick.getRawButtonPressed(1) || joystick.getRawButton(2) || joystick.getRawButton(3)) {
+        else if(joystick.getRawButtonPressed(2) || joystick.getRawButton(5) || joystick.getRawButton(8)) {
             heightIndex = 1;
             pressed = true;
         }
-        else if(joystick.getRawButtonPressed(1) || joystick.getRawButton(2) || joystick.getRawButton(3)) {
+        else if(joystick.getRawButtonPressed(1) || joystick.getRawButton(4) || joystick.getRawButton(7)) {
             heightIndex = 2;
             pressed = true;
         }

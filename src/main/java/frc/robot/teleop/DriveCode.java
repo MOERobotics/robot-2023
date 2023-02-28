@@ -3,6 +3,7 @@ package frc.robot.teleop;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.commands.AutoConeCubeStack;
 import frc.robot.commands.autoBalance;
@@ -27,9 +28,10 @@ public class DriveCode extends GenericTeleop{
     Joystick xboxFuncOp = new Joystick(2);
     Joystick box = new Joystick(0);
     ButtonBox buttonBox = new ButtonBox(box);
-
+    Timer m_timer = new Timer();
     double xspd, yspd, turnspd;
     double HeightsDeg[] = new double[] {33.4, 81.8, 98.1};
+    int autoStep = 0;
 
     genericCommand command = balance;
     //genericCommand balanceBack = new autoBalanceBackward();
@@ -145,30 +147,50 @@ public class DriveCode extends GenericTeleop{
 
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
-        if (xboxDriver.getRawButton(4)){
-            desiredPos = 80;//////////////////////////////hold arm up
-        }
         if (xboxDriver.getRawButtonPressed(3)){
+            autoStep = 0;
             xPoseOfWall = robotPose.getX();
         }
         if (xboxDriver.getRawButton(3)){
-            xspd = -10;
+            xspd = -12;
             yspd = 0;
-            if (Math.abs(robot.getPitch())> .5){
-                xPoseOfWall = robotPose.getX();
-            }
-            else {
-                if (Math.abs(xPoseOfWall - robotPose.getX()) >= 3) {
-                    openGripper = false;
-                }
-                if (Math.abs(xPoseOfWall - robotPose.getX()) >= 6) {
-                    desiredPos = 86;
-                }
-                if (Math.abs(xPoseOfWall - robotPose.getX()) >= 10) {
-                    xspd = 0;
+
+            switch (autoStep){
+                case 0:
+                    xspd = -12;
                     yspd = 0;
-                }
+                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 50){
+                        xspd = yspd = 0;
+                        desiredPos = 78;
+                        xPoseOfWall = robotPose.getX();
+                        autoStep ++;
+                    }
+                    break;
+                case 1:
+                    xspd = 12;
+                    if (Math.abs(xPoseOfWall) - robotPose.getX() >= 8){
+                        xspd = yspd = 0;
+                        openGripper = false;
+                        m_timer.reset();
+                        m_timer.start();
+                        autoStep ++;
+                    }
+                    break;
+                case 2:
+                    if(m_timer.get() <= .2){
+                        autoStep++;
+                        xPoseOfWall = robotPose.getX();
+                    }
+                    break;
+                case 3:
+                    xspd = -12;
+                    desiredPos = 84;
+                    if (Math.abs(xPoseOfWall) - robotPose.getX() >= 10){
+                        xspd = yspd = 0;
+                    }
+                    break;
             }
+
         }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////start arm code
@@ -195,19 +217,22 @@ public class DriveCode extends GenericTeleop{
         if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
             raiseTopRoller = false;
             openGripper = true;
-            desiredPos = -6;
+            desiredPos = -4;
             if(robot.cargoInCollector()) secondTrip = true;
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip) collectorRPM = 3000;
-            if(secondTrip) collectorRPM = 0;
+            if(secondTrip){
+                collectorRPM = 0;
+                openGripper = false;
+            }
             if (autoMode) collectorRPM = 7500;
 
 
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
-            desiredPos = -6;
+            desiredPos = -4;
             collectorRPM = -7500;
         }
         else{ //no more collecting :(

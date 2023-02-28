@@ -157,7 +157,8 @@ public class A1CDock extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    if (robot.getRed()) targetPosition = new Translation2d(-targetPosition.getX(), targetPosition.getY());
+                    targetPosition = new Translation2d(targetPosition.getX(), targetPosition.getY()-10.5);
+                    if (robot.getRed()) targetPosition = new Translation2d(-targetPosition.getX(), -targetPosition.getY());
                     this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
@@ -177,7 +178,8 @@ public class A1CDock extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    if (robot.getRed()) targetPosition = new Translation2d(-targetPosition.getX(), targetPosition.getY());
+                    targetPosition = new Translation2d(targetPosition.getX(), targetPosition.getY()-10.5);
+                    if (robot.getRed()) targetPosition = new Translation2d(-targetPosition.getX(), -targetPosition.getY());
                     this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
@@ -280,7 +282,7 @@ public class A1CDock extends genericAutonomous {
                 break;
 
         }
-        if (autoStep > 0 && autoStep < 5) turnspd = PID.calculate(-robot.getYaw());
+        if ((autoStep > 0 && autoStep < 5) || autoStep > 13) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true);
         robot.collect(collectorRPM, autoMode);

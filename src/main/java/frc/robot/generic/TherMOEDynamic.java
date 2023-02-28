@@ -488,6 +488,7 @@ public class TherMOEDynamic extends GenericRobot{
         return rightMotorB.getOutputCurrent();
     }
 
+
     ////////////////////////////////////////////////////////////////////////////////////////////Pivot motor encoder commands
     @Override
     public void resetPIDPivot() {
