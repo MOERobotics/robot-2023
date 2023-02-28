@@ -125,7 +125,7 @@ public class DriveCode extends GenericTeleop{
             desiredYaw = robot.getYaw();
         }
         else {
-            if (xspd != 0 || yspd != 0) {
+            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3)) {
                 turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
             }
         }
@@ -152,8 +152,8 @@ public class DriveCode extends GenericTeleop{
             xPoseOfWall = robotPose.getX();
         }
         if (xboxDriver.getRawButton(3)){
-            xspd = -12;
-            yspd = 0;
+            SmartDashboard.putNumber("autoStep", autoStep);
+            xspd = yspd = 0;
 
             switch (autoStep){
                 case 0:
@@ -167,8 +167,15 @@ public class DriveCode extends GenericTeleop{
                     }
                     break;
                 case 1:
+                    xspd = 0;
+                    yspd = 0;
+                    if (Math.abs(robot.getPotDegrees() - desiredPos) <= 2){
+                        autoStep ++;
+                    }
+                    break;
+                case 2:
                     xspd = 12;
-                    if (Math.abs(xPoseOfWall) - robotPose.getX() >= 8){
+                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 21){
                         xspd = yspd = 0;
                         openGripper = false;
                         m_timer.reset();
@@ -176,13 +183,13 @@ public class DriveCode extends GenericTeleop{
                         autoStep ++;
                     }
                     break;
-                case 2:
+                case 3:
                     if(m_timer.get() <= .2){
                         autoStep++;
                         xPoseOfWall = robotPose.getX();
                     }
                     break;
-                case 3:
+                case 4:
                     xspd = -12;
                     desiredPos = 84;
                     if (Math.abs(xPoseOfWall) - robotPose.getX() >= 10){
