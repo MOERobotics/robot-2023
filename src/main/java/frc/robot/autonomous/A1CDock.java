@@ -69,17 +69,17 @@ public class A1CDock extends genericAutonomous {
         autoMode = false;
         robot.setPigeonYaw(0);
         if(robot.getRed()){
+            startRot = new Rotation2d(Math.PI);
             startPosition.x = lengthOfField - startPositionBlue.x;
             secondPosition.x = lengthOfField - secondPositionBlue.x;
             thirdPosition.x = lengthOfField - thirdPositionBlue.x;
             fourthPosition.x = lengthOfField - fourthPositionBlue.x;
             endPosition.x = lengthOfField - endPositionBlue.x;
             desiredPose = new Pose2d(lengthOfField - desiredPoseBlue.getX(),
-                    desiredPoseBlue.getY(), desiredPoseBlue.getRotation());
+                    desiredPoseBlue.getY(), startRot);
             correctionPower = -correctionPowerBlue;
             climbPower = -climbPowerBlue;
             basePower = -basePowerBlue;
-            startRot = new Rotation2d(Math.PI);
             robot.setPigeonYaw(180);
         }else{
             startPosition.x = startPositionBlue.x;
@@ -89,7 +89,7 @@ public class A1CDock extends genericAutonomous {
             endPosition.x = endPositionBlue.x;
             correctionPower = correctionPowerBlue;
             desiredPose = new Pose2d(desiredPoseBlue.getX(),
-                    desiredPoseBlue.getY(), desiredPoseBlue.getRotation());
+                    desiredPoseBlue.getY(), startRot);
             climbPower = climbPowerBlue;
             basePower = basePowerBlue;
         }
@@ -168,10 +168,10 @@ public class A1CDock extends genericAutonomous {
                     yspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autonomousStep = 14;
+                    autonomousStep += 1;
                 }
                 break;
-            case 14: ///object detection step
+            case 2: ///object detection step
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
                     var objOffset = firstDetection.location.getTranslation().toTranslation2d()
@@ -195,11 +195,11 @@ public class A1CDock extends genericAutonomous {
                     xspd = yspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autonomousStep = 2;
+                    autonomousStep += 1;
                 }
                 break;
 
-            case 2:
+            case 3:
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
@@ -214,7 +214,7 @@ public class A1CDock extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 3:
+            case 4:
                 collectorUp = true;
                 collectorRPM = 0;
                 t = m_timer.get();
@@ -227,12 +227,12 @@ public class A1CDock extends genericAutonomous {
                     turnspd = 0;
                     m_timer.reset();
                     m_timer.start();
-                    autonomousStep = 15;
+                    autonomousStep += 1;
                     autoMode = true;
                     collectorRPM = 9000;
                 }
                 break;
-            case 15:
+            case 5:
                 xspd = yspd = turnspd = 0;
                 autoMode = true;
                 collectorRPM = 9000;
@@ -243,7 +243,7 @@ public class A1CDock extends genericAutonomous {
                     m_timer.start();
                 }
                 break;
-            case 4:
+            case 6:
                 collectorRPM = 0;
                 armPos = -4;
                 t = m_timer.get();
@@ -259,19 +259,19 @@ public class A1CDock extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 5:
+            case 7:
                 xspd = basePower;
                 if (Math.abs(currPitch) > 11) { // driving toward and up charge station until fully pitched up.
                     autonomousStep++;
                 }
                 break;
-            case 6:
+            case 8:
                 xspd = climbPower;
                 if (Math.abs(currPitch) < 10) { //forward until flattened out
                     autonomousStep++;
                 }
                 break;
-            case 7:
+            case 9:
                 if (currPitch < -desiredPitch) { //correcting begins
                     xspd = -correctionPower; //backward
                 } else if (currPitch > desiredPitch) {
@@ -280,12 +280,12 @@ public class A1CDock extends genericAutonomous {
                     xspd = 0;
                 }
                 break;
-            case 8:
+            case 10:
                 xspd = yspd = 0;
                 break;
 
         }
-        if ((autonomousStep > 0 && autonomousStep < 5) || autonomousStep > 13) turnspd = PID.calculate(-robot.getYaw());
+        if ((autonomousStep > 0 && autonomousStep < 7)) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true);
         robot.collect(collectorRPM, autoMode);
@@ -302,13 +302,13 @@ public class A1CDock extends genericAutonomous {
         if (autonomousStep == 1) {
             return AutoCodeLines.getPositionX(startPosition, secondPosition, s);
         }
-        if (autonomousStep == 2) {
+        if (autonomousStep == 3) {
             return AutoCodeLines.getPositionX(secondPosition, thirdPosition, s);
         }
-        if (autonomousStep == 3) {
+        if (autonomousStep == 4) {
             return AutoCodeLines.getPositionX(thirdPosition, fourthPosition, s);
         }
-        if (autonomousStep == 4) {
+        if (autonomousStep == 6) {
             return AutoCodeLines.getPositionX(fourthPosition, endPosition, s);
         }
         return endPosition.x;
@@ -322,13 +322,13 @@ public class A1CDock extends genericAutonomous {
         if (autonomousStep == 1) {
             return AutoCodeLines.getPositionY(startPosition, secondPosition, s);
         }
-        if (autonomousStep == 2) {
+        if (autonomousStep == 3) {
             return AutoCodeLines.getPositionY(secondPosition, thirdPosition, s);
         }
-        if (autonomousStep == 3) {
+        if (autonomousStep == 4) {
             return AutoCodeLines.getPositionY(thirdPosition, fourthPosition, s);
         }
-        if (autonomousStep == 4) {
+        if (autonomousStep == 6) {
             return AutoCodeLines.getPositionY(fourthPosition, endPosition, s);
         }
         return endPosition.y;
@@ -341,13 +341,13 @@ public class A1CDock extends genericAutonomous {
         if (autonomousStep == 1){
             return AutoCodeLines.getVelocityX(startPosition, secondPosition, s) * getdS(time);
         }
-        if (autonomousStep == 2){
+        if (autonomousStep == 3){
             return AutoCodeLines.getVelocityX(secondPosition, thirdPosition, s)* getdS(time);
         }
-        if (autonomousStep == 3){
+        if (autonomousStep == 4){
             return AutoCodeLines.getVelocityX(thirdPosition, fourthPosition, s)* getdS(time);
         }
-        if (autonomousStep == 4){
+        if (autonomousStep == 6){
             return AutoCodeLines.getVelocityX(fourthPosition, endPosition, s)* getdS(time);
         }
         return 0;
@@ -363,13 +363,13 @@ public class A1CDock extends genericAutonomous {
         if (autonomousStep == 1){
             return AutoCodeLines.getVelocityY(startPosition, secondPosition, s)* getdS(time);
         }
-        if (autonomousStep == 2){
+        if (autonomousStep == 3){
             return AutoCodeLines.getVelocityY(secondPosition, thirdPosition, s)* getdS(time);
         }
-        if (autonomousStep == 3){
+        if (autonomousStep == 4){
             return AutoCodeLines.getVelocityY(thirdPosition, fourthPosition, s)* getdS(time);
         }
-        if (autonomousStep == 4){
+        if (autonomousStep == 6){
             return AutoCodeLines.getVelocityY(fourthPosition, endPosition, s)* getdS(time);
         }
         return 0;
@@ -383,13 +383,13 @@ public class A1CDock extends genericAutonomous {
         if (autonomousStep == 1){
             return AutoCodeLines.getS(firstDist, .5, desiredInchesPerSecond, time);
         }
-        if (autonomousStep == 2){
+        if (autonomousStep == 3){
             return AutoCodeLines.getS(secondDist, .5, desiredInchesPerSecond, time);
         }
-        if (autonomousStep == 3){
+        if (autonomousStep == 4){
             return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-30, time);
         }
-        if (autonomousStep == 4){
+        if (autonomousStep == 6){
             return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-30, time);
         }
         return 0;
@@ -402,13 +402,13 @@ public class A1CDock extends genericAutonomous {
         if (autonomousStep == 1){
             return AutoCodeLines.getdS(firstDist, .5, desiredInchesPerSecond, time);
         }
-        if (autonomousStep == 2){
+        if (autonomousStep == 3){
             return AutoCodeLines.getdS(secondDist, .5, desiredInchesPerSecond, time);
         }
-        if (autonomousStep == 3){
+        if (autonomousStep == 4){
             return AutoCodeLines.getdS(thirdDist, .2, desiredInchesPerSecond-30, time);
         }
-        if (autonomousStep == 4){
+        if (autonomousStep == 6){
             return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond-30, time);
         }
         return 0;
