@@ -56,6 +56,7 @@ public class A1CDock extends genericAutonomous {
     boolean collectorUp = true;
     double collectorRPM = 0;
     boolean openGripper = true;
+    double armPos = 0;
     Rotation2d startRot;
     MoeNetVision vision;
     Pose2d desiredPoseBlue = new Pose2d(275.88, 186.235, new Rotation2d(0)); //default pos
@@ -126,7 +127,7 @@ public class A1CDock extends genericAutonomous {
 
         switch (autoStep) {
             case 0: //resets everything
-
+                armPos = 20;
                 robot.resetStartDists();
                 robot.resetStartPivots();
                 robot.resetStartHeading();
@@ -144,6 +145,7 @@ public class A1CDock extends genericAutonomous {
                 }
                 break;
             case 1:
+                armPos = -4;
                 autoMode = false;
                 double t = m_timer.get();
                 s = getS(t);
@@ -190,8 +192,9 @@ public class A1CDock extends genericAutonomous {
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 1){
+                if (robot.cargoDetected() || m_timer.get() > 2){
                     secondPosition = new Point(currPose.getX(), currPose.getY());
+                    secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
                     collectorRPM = 4000;
                     xspd = yspd = 0;
                     autonomousStep = 2;
@@ -287,7 +290,7 @@ public class A1CDock extends genericAutonomous {
         robot.setDrive(xspd, yspd, turnspd, true);
         robot.collect(collectorRPM, autoMode);
         robot.openGripper(openGripper);
-        robot.holdArmPosition(-6);
+        robot.holdArmPosition(armPos);
 
 
     }
