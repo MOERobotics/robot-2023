@@ -21,16 +21,16 @@ public class A1CDock extends genericAutonomous {
     double xPidK = 7;
     double yPidK = 7;
 
-    double defaultSpeed = 20;
+    double defaultSpeed = 30;
     boolean autoMode = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
-    Point secondPositionBlue = new Point(250.88, 190.235); //275.88, 186.235
+    Point secondPositionBlue = new Point(247.88, 190.735); //275.88, 186.235
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
-    Point thirdPositionBlue = new Point(55.88+10, 195.47); //55.8,199.43
+    Point thirdPositionBlue = new Point(55.88+15, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
-    Point fourthPositionBlue = new Point(55.8+10, 148.37); //54.5,154.89
+    Point fourthPositionBlue = new Point(55.8+15, 148.37); //54.5,154.89
     Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
     Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
@@ -137,7 +137,7 @@ public class A1CDock extends genericAutonomous {
                 autoMode = true;
                 robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
                 xspd = yspd = turnspd = 0;
-                if (m_timer.get() > 1){
+                if (m_timer.get() > .5){
                     autonomousStep++;
                     autoMode = false;
                     m_timer.reset();
@@ -236,16 +236,14 @@ public class A1CDock extends genericAutonomous {
                 xspd = yspd = turnspd = 0;
                 autoMode = true;
                 collectorRPM = 9000;
-                armPos = 20;
                 if (m_timer.get() >= 1){
-                    autonomousStep = 4;
+                    autonomousStep ++;
                     m_timer.reset();
                     m_timer.start();
                 }
                 break;
             case 6:
                 collectorRPM = 0;
-                armPos = -4;
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
@@ -387,10 +385,10 @@ public class A1CDock extends genericAutonomous {
             return AutoCodeLines.getS(secondDist, .5, desiredInchesPerSecond, time);
         }
         if (autonomousStep == 4){
-            return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getS(thirdDist, .2, desiredInchesPerSecond-20, time);
         }
         if (autonomousStep == 6){
-            return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getS(fourthDist, .2, desiredInchesPerSecond-20, time);
         }
         return 0;
     }
@@ -400,16 +398,16 @@ public class A1CDock extends genericAutonomous {
             return 0;
         }
         if (autonomousStep == 1){
-            return AutoCodeLines.getdS(firstDist, .5, desiredInchesPerSecond, time);
+            return AutoCodeLines.getdS(firstDist, .55, desiredInchesPerSecond, time);
         }
         if (autonomousStep == 3){
-            return AutoCodeLines.getdS(secondDist, .5, desiredInchesPerSecond, time);
+            return AutoCodeLines.getdS(secondDist, .55, desiredInchesPerSecond, time);
         }
         if (autonomousStep == 4){
-            return AutoCodeLines.getdS(thirdDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getdS(thirdDist, .25, desiredInchesPerSecond-20, time);
         }
         if (autonomousStep == 6){
-            return AutoCodeLines.getdS(fourthDist, .2, desiredInchesPerSecond-30, time);
+            return AutoCodeLines.getdS(fourthDist, .25, desiredInchesPerSecond-20, time);
         }
         return 0;
     }

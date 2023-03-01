@@ -25,7 +25,7 @@ public class DriveCode extends GenericTeleop{
     Joystick buttonBox = new Joystick(0);
     Timer m_timer = new Timer();
     double xspd, yspd, turnspd;
-    double HeightsDeg[] = new double[] {33.4, 81.8, 98.1};
+    double HeightsDeg[] = new double[] {33.4, 84.8, 101.1};
     int autoStep = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
@@ -33,6 +33,7 @@ public class DriveCode extends GenericTeleop{
     double armPower = 0;
     boolean raiseTopRoller = true;
     boolean openGripper = true;
+    boolean pressed = false;
 
     boolean balanceCommand = false;
     boolean init = false;
@@ -45,7 +46,6 @@ public class DriveCode extends GenericTeleop{
     boolean firstTrip = false;
     boolean autoMode = false;
     double xPoseOfWall = 0;
-    boolean wallHit = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -70,14 +70,14 @@ public class DriveCode extends GenericTeleop{
         desiredYaw = 0;
         firstTrip = false;
         secondTrip = false;
-        wallHit = false;
+        pressed = false;
     }
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
         SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
-        SmartDashboard.putBoolean("wallHit", wallHit);
+        SmartDashboard.putNumber("desiredArmPos", desiredPos);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
@@ -138,7 +138,7 @@ public class DriveCode extends GenericTeleop{
 
             switch (autoStep){
                 case 0:
-                    xspd = -12;
+                    xspd = -30;
                     yspd = 0;
                     if (Math.abs(xPoseOfWall - robotPose.getX()) >= 50){
                         xspd = yspd = 0;
@@ -207,7 +207,10 @@ public class DriveCode extends GenericTeleop{
                 collectorRPM = 0;
                 openGripper = false;
             }
-            if (autoMode) collectorRPM = 7500;
+            if (autoMode) {
+                openGripper = true;
+                collectorRPM = 7500;
+            }
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
@@ -238,12 +241,14 @@ public class DriveCode extends GenericTeleop{
         if button box buttons pressed, autoStackCommand = true;
         only canceled if driver moves joystick
          */
-        if (ButtonBox.pressed){
-            desiredPos = HeightsDeg[ButtonBox.getHeight(buttonBox)];
-            ButtonBox.pressed = false;
+        int height = heightIndex();
+        if (pressed){
+            desiredPos = HeightsDeg[height];
+            pressed = false;
         }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
+            raiseTopRoller = true;
             if (!balanceInit){
                 balance.init(robot);
                 balanceInit = true;
@@ -263,5 +268,22 @@ public class DriveCode extends GenericTeleop{
         else{
             robot.holdArmPosition(desiredPos);
         }
+    }
+
+    public int heightIndex(){
+        int heightIndex = 0;
+        if(buttonBox.getRawButtonPressed(1) || buttonBox.getRawButtonPressed(4) || buttonBox.getRawButtonPressed(7)) {
+            heightIndex = 0;
+            pressed = true;
+        }
+        if(buttonBox.getRawButtonPressed(2) || buttonBox.getRawButtonPressed(5) || buttonBox.getRawButtonPressed(8)) {
+            heightIndex = 1;
+            pressed = true;
+        }
+        if(buttonBox.getRawButtonPressed(3) || buttonBox.getRawButtonPressed(6) || buttonBox.getRawButtonPressed(9)) {
+            heightIndex = 2;
+            pressed = true;
+        }
+        return heightIndex;
     }
 }
