@@ -19,8 +19,6 @@ public class DriveCode extends GenericTeleop{
         autoStack = new AutoConeCubeStack();
     boolean resetting = false;
     Joystick xboxDriver = new Joystick(1);
-
-    //currently this is the joystick
     Joystick xboxFuncOp = new Joystick(2);
     Joystick buttonBox = new Joystick(0);
     Timer m_timer = new Timer();
