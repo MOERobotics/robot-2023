@@ -21,12 +21,12 @@ public class A1CDock extends genericAutonomous {
     double xPidK = 7;
     double yPidK = 7;
 
-    double defaultSpeed = 30;
+    double defaultSpeed = 20;
     boolean autoMode = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
-    Point secondPositionBlue = new Point(247.88, 190.735); //275.88, 186.235
+    Point secondPositionBlue = new Point(247.88, 192.735); //275.88, 186.235
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88+15, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
@@ -58,7 +58,7 @@ public class A1CDock extends genericAutonomous {
     double armPos = 0;
     Rotation2d startRot;
     MoeNetVision vision;
-    Pose2d desiredPoseBlue = new Pose2d(275.88, 186.235, new Rotation2d(0)); //default pos
+    Pose2d desiredPoseBlue = new Pose2d(275.88, 189.235, new Rotation2d(0)); //default pos
     Pose2d desiredPose = new Pose2d(desiredPoseBlue.getX(), desiredPoseBlue.getY(), desiredPoseBlue.getRotation());
 
 
