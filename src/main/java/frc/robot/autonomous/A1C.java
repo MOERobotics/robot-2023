@@ -14,16 +14,16 @@ import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class A1CDock extends genericAutonomous {
+public class A1C extends genericAutonomous {
     double TARGET_DISTANCE = 0; //this is distance of camera
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 70;
+    double desiredInchesPerSecond = 60;
     double xPidK = 7;
     double yPidK = 7;
 
     double defaultSpeed = 20;
     boolean autoMode = false;
-////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
+    ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     Point secondPositionBlue = new Point(247.88, 192.735); //275.88, 186.235
@@ -39,7 +39,7 @@ public class A1CDock extends genericAutonomous {
     double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
     double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     double kP = 1.0e-1; //.5e-1
 
     double s = 0;
@@ -245,48 +245,12 @@ public class A1CDock extends genericAutonomous {
                 break;
             case 6:
                 collectorRPM = 0;
-                t = m_timer.get();
-                s = getS(m_timer.get());
-                xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-                if (s >= fourthDist) {
-                    armPos = -4;
-                    xspd = 0;
-                    yspd = 0;
-                    turnspd = 0;
-                    m_timer.reset();
-                    m_timer.start();
-                    autonomousStep++;
-                }
-                break;
-            case 7:
-                xspd = basePower;
-                if (Math.abs(currPitch) > 11) { // driving toward and up charge station until fully pitched up.
-                    autonomousStep++;
-                }
-                break;
-            case 8:
-                xspd = climbPower;
-                collectorRPM = 0;
-                if (Math.abs(currPitch) < 10) { //forward until flattened out
-                    autonomousStep++;
-                }
-                break;
-            case 9:
-                if (currPitch < -desiredPitch) { //correcting begins
-                    xspd = -correctionPower; //backward
-                } else if (currPitch > desiredPitch) {
-                    xspd = correctionPower; //forward
-                } else {
-                    xspd = 0;
-                }
-                break;
-            case 10:
+                armPos = -4;
                 xspd = yspd = 0;
                 break;
 
         }
-        if ((autonomousStep > 0 && autonomousStep < 7)) turnspd = PID.calculate(-robot.getYaw());
+        if (autonomousStep > 0 && autonomousStep < 6) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true);
         robot.collect(collectorRPM, autoMode);

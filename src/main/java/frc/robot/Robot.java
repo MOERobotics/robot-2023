@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.TherMOEDynamic;
+import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
@@ -21,13 +22,13 @@ public class Robot extends TimedRobot {
   Joystick autoSelect = new Joystick(0);
   public static final genericAutonomous
         A1CDock = new A1CDock(),
-        A1B2C = new A1B2C(),
+        A1C = new A1C(),
         ExitAndEngage = new ExitAndEngage();
 
   genericAutonomous autonomous = new A1CDock();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
-  GenericRobot robot = new TherMOEDynamic();
+  GenericRobot robot = new swerveBot();
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
@@ -100,7 +101,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
    if (autoSelect.getRawButtonPressed(1)) autonomous = A1CDock;
-   if (autoSelect.getRawButtonPressed(2)) autonomous = A1B2C;
+   if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
    if (autoSelect.getRawButtonPressed(3)) autonomous = ExitAndEngage;
    vision.disabledPeriodic();
   }

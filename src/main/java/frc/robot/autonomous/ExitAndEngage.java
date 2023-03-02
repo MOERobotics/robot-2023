@@ -92,24 +92,32 @@ public class ExitAndEngage extends genericAutonomous{
                 break;
             case 4:
                 xspd = baseSpd;
-                if (currPose.getX() - xPose >= 10) {// make sure you fully exit community
+                if (Math.abs(currPose.getX() - xPose) >= 10) {// make sure you fully exit community
                     xspd = 0;
                     autonomousStep++;
+                    m_timer.reset();
+                    m_timer.start();
                 }
                 break;
             case 5:
+                if (m_timer.get() > 1.5){
+                    xspd = yspd = turnspd = 0;
+                    autonomousStep ++;
+                }
+                break;
+            case 6:
                 xspd = basePower;
                 if (Math.abs(currPitch) > 11) { // driving back up charge station
                     autonomousStep += 1;
                 }
                 break;
-            case 6:
+            case 7:
                 xspd = climbPower;
                 if (Math.abs(currPitch) < 10) { //flattened out
                     autonomousStep++;
                 }
                 break;
-            case 7:
+            case 8:
                 if (currPitch < -desiredPitch) { //correcting begins
                     xspd = correctionPower; //backward
                 } else if (currPitch > desiredPitch) {

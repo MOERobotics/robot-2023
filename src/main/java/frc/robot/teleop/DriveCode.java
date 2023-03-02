@@ -80,7 +80,7 @@ public class DriveCode extends GenericTeleop{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
         Pose2d robotPose = robot.getPose();
-
+        armPower = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
         xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
         yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
@@ -196,13 +196,19 @@ public class DriveCode extends GenericTeleop{
         if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
             raiseTopRoller = false;
             openGripper = true;
+            armPower = -.1;
             desiredPos = -4;
             if(robot.cargoInCollector()) secondTrip = true;
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
-            if (firstTrip) collectorRPM = 3000;
+            if (firstTrip){
+                collectorRPM = 3000;
+                desiredPos = -4;
+                armPower = 0;
+            }
             if(secondTrip){
                 collectorRPM = 0;
+
                 openGripper = false;
             }
             if (autoMode) {
@@ -228,7 +234,10 @@ public class DriveCode extends GenericTeleop{
             openGripper = false;
         }
 
-        armPower = -.2*robot.deadzone(xboxFuncOp.getRawAxis(1), .2); //moves arm up and down
+        double powerForArm = -.2*robot.deadzone(xboxFuncOp.getRawAxis(1), .2); //moves arm up and down
+        if (powerForArm != 0){
+            armPower = powerForArm;
+        }
         if(armPower != 0){
             desiredPos = robot.getPotDegrees();
         }
