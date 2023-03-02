@@ -39,6 +39,9 @@ public class A1C extends genericAutonomous {
     double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
     double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
+
+    double centerLineBlue = 300;
+    double centerLine = centerLineBlue;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     double kP = 1.0e-1; //.5e-1
 
@@ -46,12 +49,6 @@ public class A1C extends genericAutonomous {
     PIDController PID = new PIDController(kP, 0, 0);
     private final Timer m_timer = new Timer();
     double lengthOfField = 650.7;
-    double correctionPowerBlue = 20.0;
-    double climbPowerBlue = 35.0;
-    double basePowerBlue = 35.0;
-    double correctionPower = correctionPowerBlue;
-    double climbPower = climbPowerBlue;
-    double basePower = basePowerBlue;
     boolean collectorUp = true;
     double collectorRPM = 0;
     boolean openGripper = true;
@@ -77,9 +74,7 @@ public class A1C extends genericAutonomous {
             endPosition.x = lengthOfField - endPositionBlue.x;
             desiredPose = new Pose2d(lengthOfField - desiredPoseBlue.getX(),
                     desiredPoseBlue.getY(), startRot);
-            correctionPower = -correctionPowerBlue;
-            climbPower = -climbPowerBlue;
-            basePower = -basePowerBlue;
+            centerLine = lengthOfField - centerLineBlue;
             robot.setPigeonYaw(180);
         }else{
             startPosition.x = startPositionBlue.x;
@@ -87,11 +82,8 @@ public class A1C extends genericAutonomous {
             thirdPosition.x = thirdPositionBlue.x;
             fourthPosition.x = fourthPositionBlue.x;
             endPosition.x = endPositionBlue.x;
-            correctionPower = correctionPowerBlue;
             desiredPose = new Pose2d(desiredPoseBlue.getX(),
                     desiredPoseBlue.getY(), startRot);
-            climbPower = climbPowerBlue;
-            basePower = basePowerBlue;
         }
         robot.resetStartHeading();
         m_timer.reset();
@@ -109,9 +101,6 @@ public class A1C extends genericAutonomous {
 
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
-        double currPitch = robot.getPitch();
-
-        double desiredPitch = 9.0;
         Pose2d currPose = robot.getPose();
         SmartDashboard.putNumber("s", s);
         SmartDashboard.putNumber("autostep", autonomousStep);
@@ -159,7 +148,13 @@ public class A1C extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
@@ -178,7 +173,13 @@ public class A1C extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
 
