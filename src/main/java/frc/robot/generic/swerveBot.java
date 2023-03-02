@@ -1,5 +1,6 @@
 package frc.robot.generic;
 
+import com.ctre.phoenix.motorcontrol.FollowerType;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -13,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -72,6 +74,10 @@ public class    swerveBot extends GenericRobot{
 
     SwerveDriveOdometry m_odometry;
 
+    /////////////////////////////////////////////////////////////Light Sensors
+    DigitalInput leftLightSensor = new DigitalInput(0);
+    DigitalInput rightLightSensor = new DigitalInput(1);
+
     Pose2d startingPoseOdom = defaultPose;
 
 
@@ -118,6 +124,11 @@ public class    swerveBot extends GenericRobot{
         pivotLeftMotorB.setInverted(true);
         pivotRightMotorA.setInverted(true);
         pivotRightMotorB.setInverted(true);
+
+        pivotLeftMotorA.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
+        pivotLeftMotorB.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
+        pivotRightMotorA.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
+        pivotRightMotorB.follow(CANSparkMax.ExternalFollower.kFollowerDisabled, 0);
 
         leftMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         leftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
@@ -638,4 +649,12 @@ public class    swerveBot extends GenericRobot{
     public boolean gripperIsOpen() {
         return super.gripperIsOpen();
     }
+
+    /////////////////////////////////////////////////////////////////////////////Light Sensor Code
+
+    @Override
+    public boolean getLeftLightSensor(){return leftLightSensor.get();}
+
+    @Override
+    public boolean getRightLightSensor(){return rightLightSensor.get();}
 }

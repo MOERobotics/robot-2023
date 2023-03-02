@@ -18,7 +18,6 @@ import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
 
 public class TherMOEDynamic extends GenericRobot{
-
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     public final double MAX_ARM_HEIGHT = 51.75;
     public final double armRadius = 44;
@@ -70,7 +69,7 @@ public class TherMOEDynamic extends GenericRobot{
     SparkMaxPIDController topCollectorRollerRPM = topCollectorRoller.getPIDController();
     SparkMaxPIDController bottomCollectorRollerRPM = bottomCollectorRoller.getPIDController();
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
+/////////////////////////////////////////////////////////////////////////////////////////////////////////PID Controllers
 
     SparkMaxPIDController leftMotorARPM = leftMotorA.getPIDController();
     SparkMaxPIDController leftMotorBRPM = leftMotorB.getPIDController();
@@ -748,5 +747,4 @@ public class TherMOEDynamic extends GenericRobot{
     public boolean gripperIsOpen() {
         return gripper.get();
     }
-
 }
