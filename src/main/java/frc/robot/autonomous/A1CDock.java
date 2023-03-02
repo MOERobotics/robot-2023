@@ -39,6 +39,9 @@ public class A1CDock extends genericAutonomous {
     double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
     double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
+
+    double centerLineBlue = 300;
+    double centerLine = centerLineBlue;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     double kP = 1.0e-1; //.5e-1
 
@@ -80,6 +83,7 @@ public class A1CDock extends genericAutonomous {
             correctionPower = -correctionPowerBlue;
             climbPower = -climbPowerBlue;
             basePower = -basePowerBlue;
+            centerLine = lengthOfField - centerLineBlue;
             robot.setPigeonYaw(180);
         }else{
             startPosition.x = startPositionBlue.x;
@@ -92,6 +96,7 @@ public class A1CDock extends genericAutonomous {
                     desiredPoseBlue.getY(), startRot);
             climbPower = climbPowerBlue;
             basePower = basePowerBlue;
+            centerLine = centerLineBlue;
         }
         robot.resetStartHeading();
         m_timer.reset();
@@ -159,7 +164,13 @@ public class A1CDock extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
@@ -178,7 +189,13 @@ public class A1CDock extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
 
