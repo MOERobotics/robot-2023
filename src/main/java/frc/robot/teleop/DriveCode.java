@@ -2,6 +2,10 @@ package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,6 +14,9 @@ import frc.robot.commands.autoBalance;
 import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.ButtonBox;
+import frc.robot.vision.Detection;
+import frc.robot.vision.MoeNetVision;
+import org.opencv.core.Point;
 
 
 public class DriveCode extends GenericTeleop{
@@ -17,6 +24,7 @@ public class DriveCode extends GenericTeleop{
     public static final genericCommand
         balance = new autoBalance(),
         autoStack = new AutoConeCubeStack();
+    MoeNetVision vision;
     boolean resetting = false;
     Joystick xboxDriver = new Joystick(1);
     Joystick xboxFuncOp = new Joystick(2);
@@ -44,10 +52,13 @@ public class DriveCode extends GenericTeleop{
     boolean firstTrip = false;
     boolean autoMode = false;
     double xPoseOfWall = 0;
+    Pose2d desPos = null;
 
     @Override
     public void teleopInit(GenericRobot robot) {
+
         balanceInit = false;
+        vision = new MoeNetVision(robot);
         yawControl.enableContinuousInput(-180,180);
 
         resetting = false;
@@ -69,6 +80,7 @@ public class DriveCode extends GenericTeleop{
         firstTrip = false;
         secondTrip = false;
         pressed = false;
+        desPos = null;
     }
 
     @Override
@@ -105,7 +117,7 @@ public class DriveCode extends GenericTeleop{
             desiredYaw = robot.getYaw();
         }
         else {
-            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3)) {
+            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3) || xboxFuncOp.getRawButton(3)) {
                 turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
             }
         }
@@ -215,6 +227,17 @@ public class DriveCode extends GenericTeleop{
                 openGripper = true;
                 collectorRPM = 7500;
             }
+            if (xboxFuncOp.getRawButton(3)){
+                Pose2d detectedObj = objectDetect(robotPose);
+                if (detectedObj != null){
+                    desPos = new Pose2d(detectedObj.getTranslation(), detectedObj.getRotation());
+                }
+                if (desPos != null){
+                    Point speeds = spdObj(robotPose, desPos);
+                    xspd = speeds.x;
+                    yspd = speeds.y;
+                }
+            }
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
@@ -292,5 +315,29 @@ public class DriveCode extends GenericTeleop{
             pressed = true;
         }
         return heightIndex;
+    }
+
+    public Pose2d objectDetect(Pose2d currPose){
+        Pose2d desiredPose = null;
+        var firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
+        if(firstDetection != null){
+            var objOffset = firstDetection.location.getTranslation().toTranslation2d()
+                    .times(Units.metersToInches(1));
+            double distance = objOffset.getNorm();
+            var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance)/distance);
+            desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+
+            SmartDashboard.putString("detautoTarget", String.format("%f, %f", desiredPose.getX(), desiredPose.getY()));
+        }
+        return desiredPose;
+    }
+    public Point spdObj(Pose2d currPose, Pose2d desiredPose){
+        double xDiff = desiredPose.getX()-currPose.getX() + 6;
+        double yDiff = desiredPose.getY()-currPose.getY();
+        double totDiff = Math.hypot(xDiff, yDiff);
+        xspd = yspd = 0;
+        if (totDiff > 0) xspd = 30 * xDiff/totDiff;
+        if (totDiff > 0) yspd = 30 * yDiff/totDiff;
+        return new Point(xspd, yspd);
     }
 }
