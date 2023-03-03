@@ -728,10 +728,10 @@ public class TherMOEDynamic extends GenericRobot{
     public void holdArmPosition(double pos){
         double armPower = .01*(-getPotDegrees() + pos);
         if (armPower < 0){
-            armPower = Math.max(-.1, armPower);
+            armPower = Math.max(-.3, armPower);
         }
         else{
-            armPower = Math.min(.1, armPower);
+            armPower = Math.min(.3, armPower);
         }
         moveArm(armPower);
     }
