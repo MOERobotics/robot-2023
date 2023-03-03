@@ -366,4 +366,9 @@ public abstract class GenericRobot {
 
     public boolean getRightLightSensor(){return false;}
 
+    ////////////////////////////////////////////////////////////solenoid lights
+
+    public void setLightsOn(boolean on){
+    }
+
 }

@@ -85,6 +85,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     Solenoid gripper;
     Solenoid retractor;
+    Solenoid lights;
 
     AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
     CANCoder shoulder2 = new WPI_CANCoder(35);
@@ -198,6 +199,7 @@ public class TherMOEDynamic extends GenericRobot{
 
         retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
         gripper   = new Solenoid(PneumaticsModuleType.REVPH,12);
+        lights = new Solenoid(PneumaticsModuleType.REVPH, 9);
 
     }
 
@@ -746,5 +748,11 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public boolean gripperIsOpen() {
         return gripper.get();
+    }
+    ///////////////////////////////////////////////////////////////////////////////////lights
+
+    @Override
+    public void setLightsOn(boolean on) {
+        lights.set(on);
     }
 }

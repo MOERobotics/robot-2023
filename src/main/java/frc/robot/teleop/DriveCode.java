@@ -44,6 +44,7 @@ public class DriveCode extends GenericTeleop{
     boolean firstTrip = false;
     boolean autoMode = false;
     double xPoseOfWall = 0;
+    boolean lightsOn = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -69,6 +70,7 @@ public class DriveCode extends GenericTeleop{
         firstTrip = false;
         secondTrip = false;
         pressed = false;
+        lightsOn = false;
     }
 
     @Override
@@ -253,6 +255,13 @@ public class DriveCode extends GenericTeleop{
             desiredPos = HeightsDeg[height];
             pressed = false;
         }
+//////////////////////////////////////////////////////////////////////////////////////////lights on hp command
+        if (xboxFuncOp.getRawButton(7)){
+            lightsOn = false;
+        }
+        if (xboxFuncOp.getRawButton(8)){
+            lightsOn = true;
+        }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
             raiseTopRoller = true;
@@ -269,6 +278,7 @@ public class DriveCode extends GenericTeleop{
         robot.collect(collectorRPM, autoMode);
         robot.raiseTopRoller(raiseTopRoller);
         robot.openGripper(openGripper);
+        robot.setLightsOn(lightsOn);
         if (armPower != 0) {
             robot.moveArm(armPower);
         }
