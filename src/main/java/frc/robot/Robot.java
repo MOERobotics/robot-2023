@@ -48,6 +48,7 @@ public class Robot extends TimedRobot {
    if (robot.getRed()){
     robot.setPigeonYaw(180);
    }
+   SmartDashboard.putBoolean("isAuto", false);
   }
 
 
@@ -64,18 +65,20 @@ public class Robot extends TimedRobot {
    else {
      robot.setRed(false);
    }
-
- }
+   SmartDashboard.putBoolean("isAuto", false);
+  }
 
 
   @Override
   public void autonomousInit() {
+    SmartDashboard.putBoolean("isAuto", true);
     autonomous.autonomousInit(robot);
   }
 
 
   @Override
   public void autonomousPeriodic() {
+      SmartDashboard.putBoolean("isAuto", true);
     autonomous.autonomousPeriodic(robot);
     vision.genericPeriodic();
   }
@@ -83,23 +86,26 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    SmartDashboard.putBoolean("isAuto", false);
     teleop.teleopInit(robot);
   }
 
 
   @Override
   public void teleopPeriodic() {
+    SmartDashboard.putBoolean("isAuto", false);
     teleop.teleopPeriodic(robot);
-   vision.genericPeriodic();
+    vision.genericPeriodic();
   }
 
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {SmartDashboard.putBoolean("isAuto", false);}
 
 
   @Override
   public void disabledPeriodic() {
+   SmartDashboard.putBoolean("isAuto", false);
    if (autoSelect.getRawButtonPressed(1)) autonomous = A1CDock;
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
    if (autoSelect.getRawButtonPressed(3)) autonomous = ExitAndEngage;
@@ -109,6 +115,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+   SmartDashboard.putBoolean("isAuto", false);
    SmartDashboard.putData("Field", field);
    robot.setPose();
   }
@@ -116,6 +123,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
+   SmartDashboard.putBoolean("isAuto", false);
    var pose = vision.getPose();
    if (vision.poseFound()){
       field.setRobotPose(pose.toPose2d());
