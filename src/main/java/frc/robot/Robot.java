@@ -28,9 +28,11 @@ public class Robot extends TimedRobot {
   genericAutonomous autonomous = new A1CDock();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
-  GenericRobot robot = new swerveBot();
+  GenericRobot robot = new TherMOEDynamic();
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
+
+  boolean isAuto;
 
   @Override
   public void robotInit() {
@@ -48,6 +50,7 @@ public class Robot extends TimedRobot {
    if (robot.getRed()){
     robot.setPigeonYaw(180);
    }
+   isAuto = false;
   }
 
 
@@ -64,18 +67,20 @@ public class Robot extends TimedRobot {
    else {
      robot.setRed(false);
    }
-
+   isAuto = false;
  }
 
 
   @Override
   public void autonomousInit() {
+    isAuto = true;
     autonomous.autonomousInit(robot);
   }
 
 
   @Override
   public void autonomousPeriodic() {
+    isAuto = true;
     autonomous.autonomousPeriodic(robot);
     vision.genericPeriodic();
   }
@@ -83,23 +88,26 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+      isAuto = false;
     teleop.teleopInit(robot);
   }
 
 
   @Override
   public void teleopPeriodic() {
+      isAuto = false;
     teleop.teleopPeriodic(robot);
    vision.genericPeriodic();
   }
 
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {isAuto = false;}
 
 
   @Override
   public void disabledPeriodic() {
+   isAuto = false;
    if (autoSelect.getRawButtonPressed(1)) autonomous = A1CDock;
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
    if (autoSelect.getRawButtonPressed(3)) autonomous = ExitAndEngage;
@@ -109,6 +117,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testInit() {
+   isAuto = false;
    SmartDashboard.putData("Field", field);
    robot.setPose();
   }
@@ -116,6 +125,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
+   isAuto = false;
    var pose = vision.getPose();
    if (vision.poseFound()){
       field.setRobotPose(pose.toPose2d());
