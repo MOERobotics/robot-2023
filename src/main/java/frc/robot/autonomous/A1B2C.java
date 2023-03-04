@@ -162,7 +162,13 @@ public class A1B2C extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose1 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose1 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose1 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose1.getX(), this.desiredPose1.getY()));
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
@@ -181,7 +187,13 @@ public class A1B2C extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose1 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose1 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose1 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose1.getX(), this.desiredPose1.getY()));
                 }
 
@@ -257,8 +269,13 @@ public class A1B2C extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose2 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose2.getX(), this.desiredPose2.getY()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose2 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose2 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose2.getX(), this.desiredPose2.getY()));
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
                 if (s >= distInterMedto2) {
@@ -276,8 +293,13 @@ public class A1B2C extends genericAutonomous {
                             .times(Units.metersToInches(1));
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    this.desiredPose2 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose2.getX(), this.desiredPose2.getY()));
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        this.desiredPose2 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        this.desiredPose2 = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose2.getX(), this.desiredPose2.getY()));
                 }
 
                 xDiff = desiredPose2.getX()-currPose.getX() + 6;

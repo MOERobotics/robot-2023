@@ -272,7 +272,7 @@ public class DriveCode extends GenericTeleop{
             balance.periodic(robot);
         }
         else {
-            init = false;
+            balanceInit = false;
             robot.setDrive(xspd, yspd, turnspd);
         }
         robot.collect(collectorRPM, autoMode);
