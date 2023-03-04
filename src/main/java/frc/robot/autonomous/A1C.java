@@ -28,9 +28,9 @@ public class A1C extends genericAutonomous {
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
     Point secondPositionBlue = new Point(247.88, 192.735); //275.88, 186.235
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
-    Point thirdPositionBlue = new Point(55.88+15, 195.47); //55.8,199.43
+    Point thirdPositionBlue = new Point(55.88+9, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
-    Point fourthPositionBlue = new Point(55.8+15, 148.37); //54.5,154.89
+    Point fourthPositionBlue = new Point(55.8+9, 148.37); //54.5,154.89
     Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
     Point endPositionBlue = new Point(105.17-12, 120.81); //114.67,131.96
     Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);

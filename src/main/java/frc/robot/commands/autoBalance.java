@@ -10,8 +10,8 @@ public class autoBalance extends genericCommand {
     double base = 18.0;
     double angleOfBoard = .19;
     double basePower = 35.0;
-    double climbPower = 30.0;
-    double correctionPower = 18.0;
+    double climbPower = 36.0;
+    double correctionPower = 30.0;
 
     boolean resetting = false;
     double currPitch;
@@ -25,7 +25,9 @@ public class autoBalance extends genericCommand {
     double currentpos;
     double initPos;
     double startingPose;
-    double desiredPitch = 9.0;
+    double desiredPitch = 4.0;
+    double firstBreak = 5;
+    double high = 11;
     double totalPathLength = 0;
     double initpos;
     double boundPos1;
@@ -52,7 +54,7 @@ public class autoBalance extends genericCommand {
         switch (autoStep) {
             case 0:
                 robot.setDrive(basePower, 0, 0);
-                if (Math.abs(currPitch) > 5) {
+                if (Math.abs(currPitch) > firstBreak) {
                     //Add length of the robot from front encoder to end of back wheel.
                     boundPos1 = robotPose.getX();
                     boundPos2 = boundPos1 + 29 - (totalPathLength + 56);
@@ -62,13 +64,13 @@ public class autoBalance extends genericCommand {
                 break;
             case 1:
                 robot.setDrive(basePower, 0, 0);
-                if (Math.abs(currPitch) > 11) {
+                if (Math.abs(currPitch) > high) {
                     autoStep++;
                 }
                 break;
             case 2:
                 robot.setDrive(climbPower, 0, 0);
-                if (Math.abs(currPitch) < 10) {
+                if (Math.abs(currPitch) < desiredPitch) {
                     autoStep++;
                 }
                 break;

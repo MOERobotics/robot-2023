@@ -59,6 +59,8 @@ public class A1B2C extends genericAutonomous {
     double collectorRPM = 0;
     boolean openGripper = true;
     double armPos = 0;
+    double centerlineBlue = 300;
+    double centerLine = centerlineBlue;
     Rotation2d startRot;
     MoeNetVision vision;
     Pose2d desiredPose1;
@@ -82,6 +84,7 @@ public class A1B2C extends genericAutonomous {
             position2.x = lengthOfField - position2Blue.x;
             positionInterMedBwd.x = lengthOfField - positionInterMedBwdBlue.x;
             positionC.x = lengthOfField - positionCBlue.x;
+            centerLine = lengthOfField - centerlineBlue;
             startRot = new Rotation2d(Math.PI);
             robot.setPigeonYaw(180);
         }else{
@@ -94,6 +97,7 @@ public class A1B2C extends genericAutonomous {
             position2.x = position2Blue.x;
             positionInterMedBwd.x = positionInterMedBwdBlue.x;
             positionC.x = positionCBlue.x;
+            centerLine = centerlineBlue;
 
         }
         desiredPose1 = new Pose2d(position1.x, position1.y, startRot);
