@@ -21,12 +21,13 @@ public class A1C extends genericAutonomous {
     double xPidK = 7;
     double yPidK = 7;
 
-    double defaultSpeed = 20;
+    double defaultSpeed = 40;
     boolean autoMode = false;
+    boolean lightOn = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
-    Point secondPositionBlue = new Point(247.88, 192.735); //275.88, 186.235
+    Point secondPositionBlue = new Point(188.88, 192.735); //275.88, 186.235
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88+9, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
@@ -63,6 +64,7 @@ public class A1C extends genericAutonomous {
         vision = new MoeNetVision(robot);
         startRot = new Rotation2d(0);
         autonomousStep = 0;
+        lightOn = false;
         autoMode = false;
         robot.setPigeonYaw(0);
         if(robot.getRed()){
@@ -150,9 +152,11 @@ public class A1C extends genericAutonomous {
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     if (possPose.getX() > centerLine && robot.getRed()){
+                        lightOn = true;
                         this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
                     if (possPose.getX() < centerLine && !robot.getRed()){
+                        lightOn = true;
                         this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
@@ -175,9 +179,11 @@ public class A1C extends genericAutonomous {
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     if (possPose.getX() > centerLine && robot.getRed()){
+                        lightOn = true;
                         this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
                     if (possPose.getX() < centerLine && !robot.getRed()){
+                        lightOn = true;
                         this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
@@ -189,7 +195,7 @@ public class A1C extends genericAutonomous {
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 2){
+                if (robot.cargoDetected() || m_timer.get() > 6){
                     secondPosition = new Point(currPose.getX(), currPose.getY());
                     secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
                     collectorRPM = 4000;
@@ -256,6 +262,7 @@ public class A1C extends genericAutonomous {
         robot.setDrive(xspd, yspd, turnspd, true);
         robot.collect(collectorRPM, autoMode);
         robot.openGripper(openGripper);
+        robot.setLightsOn(lightOn);
         robot.holdArmPosition(armPos);
 
 

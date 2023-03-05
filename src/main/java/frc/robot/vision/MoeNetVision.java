@@ -128,8 +128,15 @@ public final class MoeNetVision {
     private EstimatedRobotPose getVisionPose(){
         EstimatedRobotPose pose = null;
         for(NetworkCamera camera : cameras){
-            if(camera.getPose() != null){
-                pose = camera.getPose();
+            EstimatedRobotPose camPose;
+            try {
+                camPose = camera.getPose();
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+            if(camPose != null){
+                pose = camPose;
                 break;
             }
         }
@@ -199,7 +206,13 @@ public final class MoeNetVision {
 
         for(NetworkCamera camera : cameras){
             //I was upsetty spagetti when I named this variable and I am not sorry
-            List<Detection> klad = camera.getDetections();
+            List<Detection> klad;
+            try {
+                klad = camera.getDetections();
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
             if(klad != null){
                 for (Detection detection : klad){
                     if (detection.objectType == type){

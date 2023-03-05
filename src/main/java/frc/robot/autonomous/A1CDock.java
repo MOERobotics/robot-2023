@@ -21,12 +21,12 @@ public class A1CDock extends genericAutonomous {
     double xPidK = 7;
     double yPidK = 7;
 
-    double defaultSpeed = 20;
+    double defaultSpeed = 40;
     boolean autoMode = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point startPositionBlue = new Point(55.88+4, 195.47);
     Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
-    Point secondPositionBlue = new Point(247.88, 192.735); //275.88, 186.235
+    Point secondPositionBlue = new Point(188.88, 192.735); //275.88, 186.235
     Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
     Point thirdPositionBlue = new Point(55.88+9, 195.47); //55.8,199.43
     Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
@@ -205,7 +205,7 @@ public class A1CDock extends genericAutonomous {
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 2){
+                if (robot.cargoDetected() || m_timer.get() > 6){
                     secondPosition = new Point(currPose.getX(), currPose.getY());
                     secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
                     collectorRPM = 4000;
