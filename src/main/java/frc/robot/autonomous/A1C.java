@@ -41,7 +41,7 @@ public class A1C extends genericAutonomous {
     double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
     double fourthDist = AutoCodeLines.getDistance(fourthPosition, endPosition);
 
-    double centerLineBlue = 300;
+    double centerLineBlue = 295;
     double centerLine = centerLineBlue;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     double kP = 1.0e-1; //.5e-1
@@ -254,10 +254,22 @@ public class A1C extends genericAutonomous {
                 collectorRPM = 0;
                 armPos = -4;
                 xspd = yspd = 0;
+                if (robot.getArmPosition() < 0){
+                    m_timer.reset();
+                    m_timer.start();
+                    autonomousStep ++;
+                }
+                break;
+            case 7:
+                xspd = -12;
+                if (robot.getRed()) xspd = -xspd;
+                if (m_timer.get() >= .8){
+                    xspd = yspd = 0;
+                }
                 break;
 
         }
-        if (autonomousStep > 0 && autonomousStep < 6) turnspd = PID.calculate(-robot.getYaw());
+        if (autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true);
         robot.collect(collectorRPM, autoMode);

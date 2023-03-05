@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
 
-public class ExitAndEngageSideways extends genericAutonomous{
+public class mobilityEngage extends genericAutonomous{
     double basePower = 35.0;
     double high = 13.5;
     double climbPower = 30.0;
@@ -22,6 +22,8 @@ public class ExitAndEngageSideways extends genericAutonomous{
         autonomousStep = 0;
         timerDelta = 0;
         climbPower = 30;
+        basePower = 35.0;
+        correctionPower = 13.0;
         robot.setPigeonYaw(-90);
         robot.resetStartDists();
         robot.resetAttitude();
@@ -46,28 +48,67 @@ public class ExitAndEngageSideways extends genericAutonomous{
                 break;
             case 1:
                 xspd = basePower;
-                if (Math.abs(currPitch) > high) {
+                if (currPitch > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
                 }
                 break;
             case 2:
-                if(robot.getPose().getX() - xPos >= 32){
-                    climbPower = 13;
-                }
                 xspd = climbPower;
                 if (Math.abs(currPitch) < dropping) {
                     autonomousStep++;
                 }
                 break;
             case 3:
+                xspd = climbPower;
+                if (Math.abs(currPitch) > high){
+                    autonomousStep ++;
+                }
+                break;
+            case 4:
+                xspd = climbPower;
+                if (Math.abs(currPitch) < desiredPitch){
+                    xPos = robot.getPose().getX();
+                    autonomousStep ++;
+                }
+                break;
+            case 5:
+                xspd = climbPower;
+                if (Math.abs(robot.getPose().getX() - xPos) > 36){
+                    xspd = 0;
+                    autonomousStep ++;
+                }
+                break;
+            case 6:
+                climbPower = -30;
+                basePower = -35.0;
+                correctionPower = -13.0;
+                autonomousStep ++;
+                break;
+            case 7:
+                xspd = basePower;
+                if (Math.abs(currPitch) > high) {
+                    xPos = robot.getPose().getX();
+                    autonomousStep++;
+                }
+                break;
+            case 8:
+                if(Math.abs(robot.getPose().getX() - xPos) >= 32){
+                    climbPower = -13;
+                }
+                xspd = climbPower;
+                if (Math.abs(currPitch) < dropping) {
+                    autonomousStep++;
+                }
+                break;
+            case 9:
                 xspd = -correctionPower;
                 m_timer.reset();
                 m_timer.start();
                 //This is a future feature to stop and let others get on before autobalancing.
                 autonomousStep++;
                 break;
-            case 4:
+            case 10:
                 if ((currPitch < -desiredPitch) && (m_timer.get() <1)) { //correcting begins
                     timerDelta = m_timer.get();
                     xspd = -correctionPower; //backward
@@ -82,7 +123,7 @@ public class ExitAndEngageSideways extends genericAutonomous{
                     }
                 }
                 break;
-            }
-            robot.setDrive(xspd, 0, 0, true);
+        }
+        robot.setDrive(xspd, 0, 0, true);
     }
 }

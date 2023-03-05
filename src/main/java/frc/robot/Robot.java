@@ -26,7 +26,7 @@ public class Robot extends TimedRobot {
         ExitAndEngage = new ExitAndEngageSideways(),
         A1B2C = new A1B2C();
 
-  genericAutonomous autonomous = new A1CDock();
+  genericAutonomous autonomous = A1C;
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();
