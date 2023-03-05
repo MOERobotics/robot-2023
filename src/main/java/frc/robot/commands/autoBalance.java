@@ -11,7 +11,7 @@ public class autoBalance extends genericCommand {
     double base = 18.0;
     double angleOfBoard = .19;
     double basePower = 35.0;
-    double climbPower = 25.0;
+    double climbPower = 20.0;
     double correctionPower = 13.0;
 
     boolean resetting = false;
@@ -30,7 +30,7 @@ public class autoBalance extends genericCommand {
     double firstBreak = 5;
     double high = 13.5;
 
-    double dropping = 10;
+    double dropping = 9;
     double totalPathLength = 0;
     double initpos;
     double boundPos1;

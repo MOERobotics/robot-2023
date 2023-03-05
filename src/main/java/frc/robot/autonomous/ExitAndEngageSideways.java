@@ -8,18 +8,20 @@ import frc.robot.generic.GenericRobot;
 public class ExitAndEngageSideways extends genericAutonomous{
     double basePower = 35.0;
     double high = 13.5;
-    double climbPower = 25.0;
+    double climbPower = 20.0;
     double correctionPower = 13.0;
     double desiredPitch = 9.0;
     double firstBreak = 5;
-    double dropping = 10;
+    double dropping = 9;
     double xspd;
     double timerDelta;
     Timer m_timer = new Timer();
+    
     @Override
     public void autonomousInit(GenericRobot robot) {
         autonomousStep = 0;
         timerDelta = 0;
+        climbPower = 20;
         robot.setPigeonYaw(-90);
     }
 
