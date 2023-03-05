@@ -60,21 +60,21 @@ public class mobilityEngage extends genericAutonomous{
                 }
                 break;
             case 3:
-                xspd = climbPower;
+                xspd = climbPower+4;
                 if (Math.abs(currPitch) > high){
                     autonomousStep ++;
                 }
                 break;
             case 4:
-                xspd = climbPower;
+                xspd = climbPower+4;
                 if (Math.abs(currPitch) < desiredPitch){
                     xPos = robot.getPose().getX();
                     autonomousStep ++;
                 }
                 break;
             case 5:
-                xspd = climbPower;
-                if (Math.abs(robot.getPose().getX() - xPos) > 36){
+                xspd = climbPower+4;
+                if (Math.abs(robot.getPose().getX() - xPos) > 20){
                     xspd = 0;
                     autonomousStep ++;
                 }
@@ -82,7 +82,7 @@ public class mobilityEngage extends genericAutonomous{
             case 6:
                 climbPower = -30;
                 basePower = -35.0;
-                correctionPower = -13.0;
+                correctionPower = 13.0;
                 autonomousStep ++;
                 break;
             case 7:
@@ -102,7 +102,7 @@ public class mobilityEngage extends genericAutonomous{
                 }
                 break;
             case 9:
-                xspd = -correctionPower;
+                xspd = correctionPower;
                 m_timer.reset();
                 m_timer.start();
                 //This is a future feature to stop and let others get on before autobalancing.
@@ -123,6 +123,9 @@ public class mobilityEngage extends genericAutonomous{
                     }
                 }
                 break;
+        }
+        if (robot.getPose().getX() > 200){
+            xspd = 0;
         }
         robot.setDrive(xspd, 0, 0, true);
     }

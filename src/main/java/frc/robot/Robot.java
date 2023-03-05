@@ -24,7 +24,9 @@ public class Robot extends TimedRobot {
         A1CDock = new A1CDock(),
         A1C = new A1C(),
         ExitAndEngage = new ExitAndEngageSideways(),
-        A1B2C = new A1B2C();
+        mobilityEngage = new mobilityEngage(),
+        A1B2C = new A1B2C(),
+        A1 = new A1();
 
   genericAutonomous autonomous = A1C;
   GenericTeleop teleop = new DriveCode();
@@ -109,6 +111,8 @@ public class Robot extends TimedRobot {
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
    if (autoSelect.getRawButtonPressed(3)) autonomous = ExitAndEngage;
    if (autoSelect.getRawButtonPressed(4)) autonomous = A1B2C;
+   if (autoSelect.getRawButtonPressed(5)) autonomous = mobilityEngage;
+   if (autoSelect.getRawButtonPressed(6)) autonomous = A1;
   }
 
 
