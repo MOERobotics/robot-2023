@@ -205,12 +205,12 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public double getMaxInchesPerSecond() {
-        return 120;
+        return 174;
     }
 
     @Override
     public double getMaxRadPerSec() {
-        return 120/14;
+        return 96/14;
     }
 
     @Override
