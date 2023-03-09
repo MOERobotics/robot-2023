@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.playingwithfusion.TimeOfFlight;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
