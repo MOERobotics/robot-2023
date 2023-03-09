@@ -84,9 +84,9 @@ public class DriveCode extends GenericTeleop{
         Pose2d robotPose = robot.getPose();
         armPower = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
-        xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
-        yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
-        turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
+        xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
+        yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
+        turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec();
 
         if(xboxDriver.getRawButton(8)){
             balanceCommand = true;
@@ -96,11 +96,11 @@ public class DriveCode extends GenericTeleop{
         }
 
         if (xboxDriver.getRawButton(5)) { // speed boosters
-            turnspd *= 2;
+            turnspd /= 2;
         }
         if (xboxDriver.getRawButton(6)) {
-            xspd *= 2;
-            yspd *= 2;
+            xspd /= 2;
+            yspd /= 2;
         }
 
         if (turnspd != 0){
