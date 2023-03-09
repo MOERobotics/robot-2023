@@ -228,14 +228,15 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
-        this.setDrive(xspd,yspd,turnspd,false);
+        this.setDrive(xspd,yspd,turnspd,false, true);
     }
     @Override
-    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto, boolean fieldCentric){
         double m_yaw = getYaw();
         if (auto){
             m_yaw = -getPigeonYaw();
         }
+        if (!fieldCentric){m_yaw = 0;}
         ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xspd,
                 yspd, turnspd, Rotation2d.fromDegrees(-m_yaw));
         SwerveModuleState[] moduleStates = kinematics().toSwerveModuleStates(chassisSpeeds);

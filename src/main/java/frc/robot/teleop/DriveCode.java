@@ -46,13 +46,14 @@ public class DriveCode extends GenericTeleop{
     double desiredYaw = 0;
     double desiredPos = -6;
     PIDController yawControl = new PIDController(1.0e-1, 0,0);
-    PIDController inPlacePID = new PIDController(2.5e-2, 2.5e-3, 0);
+    PIDController inPlacePID = new PIDController(3.0e-2, 3.0e-3, 0);
     MoeNetVision vision;
     boolean secondTrip = false;
     boolean firstTrip = false;
     boolean autoMode = false;
     double xPoseOfWall = 0;
     boolean lightsOn = false;
+    boolean fieldCentric = true;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -80,6 +81,7 @@ public class DriveCode extends GenericTeleop{
         secondTrip = false;
         pressed = false;
         lightsOn = false;
+        fieldCentric = true;
     }
 
     @Override
@@ -91,6 +93,7 @@ public class DriveCode extends GenericTeleop{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
         Pose2d robotPose = robot.getPose();
+        fieldCentric = true;
         armPower = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
         xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
@@ -150,6 +153,7 @@ public class DriveCode extends GenericTeleop{
                 double xDiff = targetPosition.getX();
                 desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff)*180/Math.PI;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
+                fieldCentric = false;
             }
         }
 
@@ -300,7 +304,7 @@ public class DriveCode extends GenericTeleop{
         }
         else {
             balanceInit = false;
-            robot.setDrive(xspd, yspd, turnspd);
+            robot.setDrive(xspd, yspd, turnspd, false, fieldCentric);
         }
         robot.collect(collectorRPM, autoMode);
         robot.raiseTopRoller(raiseTopRoller);
