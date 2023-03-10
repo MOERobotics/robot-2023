@@ -25,29 +25,30 @@ public class A1B2C extends genericAutonomous {
     boolean autoMode = false;
     boolean lightOn = false;
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
-    Point startPositionBlue = new Point(59.88, 195.47);
-    Point secondPositionBlue = new Point(188.88, 192.735);
-    Point thirdPositionBlue = new Point(64.88, 195.47);
-    Point fourthPositionBlue = new Point(64.88, 170.47);
-    Point fifthPositionBlue = new Point(210.88, 170.47);
-    Point sixthPositionBlue = new Point(130.88,170.47);
-    Point endPositionBlue = new Point(64.88, 148.37);
-    Point startPosition = new Point(startPositionBlue.x, startPositionBlue.y);
-    Point secondPosition = new Point(secondPositionBlue.x, secondPositionBlue.y);
-    Point thirdPosition = new Point(thirdPositionBlue.x, thirdPositionBlue.y);
-    Point fourthPosition = new Point(fourthPositionBlue.x, fourthPositionBlue.y);
-    Point fifthPosition = new Point(fifthPositionBlue.x, fifthPositionBlue.y);
-    Point sixthPosition = new Point(sixthPositionBlue.x, sixthPositionBlue.y);
-    Point endPosition = new Point(endPositionBlue.x, endPositionBlue.y);
+    Point positionABlue = new Point(59.88, 195.47);
+    Point position1Blue = new Point(188.88, 192.735);
+    Point positionARevisitedBlue = new Point(64.88, 195.47);
+    Point positionBBlue = new Point(64.88, 170.47);
+    Point position2Blue = new Point(210.88, 170.47);
+    Point positionFrogBlue = new Point(130.88,170.47); //this is an arbitrary point to avoid charging station
+    Point positionCBlue = new Point(64.88, 148.37);
 
-    double firstDist = AutoCodeLines.getDistance(startPosition,secondPosition);
-    double secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
-    double thirdDist = AutoCodeLines.getDistance(thirdPosition, fourthPosition);
-    double fourthDist = AutoCodeLines.getDistance(fourthPosition, fifthPosition);
-    double fifthDist = AutoCodeLines.getDistance(fifthPosition,sixthPosition);
-    double sixthDist = AutoCodeLines.getDistance(sixthPosition, endPosition);
+    //TODO: Not sure if this needs to be fixed but, our positions B and C do not align with position A
 
-    //TODO: Only added the new points. Still need to add them to autoPerodic and other auto methods
+    Point positionA = new Point(positionABlue.x, positionABlue.y);
+    Point position1 = new Point(position1Blue.x, position1Blue.y);
+    Point positionARevisited = new Point(positionARevisitedBlue.x, positionARevisitedBlue.y);
+    Point positionB = new Point(positionBBlue.x, positionBBlue.y);
+    Point position2 = new Point(position2Blue.x, position2Blue.y);
+    Point positionFrog = new Point(positionFrogBlue.x, positionFrogBlue.y);
+    Point positionC = new Point(positionCBlue.x, positionCBlue.y);
+
+    double distAto1 = AutoCodeLines.getDistance(positionA, position1);
+    double dist1toARevisted = AutoCodeLines.getDistance(position1, positionARevisited);
+    double distARevisitedtoB = AutoCodeLines.getDistance(positionARevisited, positionB);
+    double distBto2 = AutoCodeLines.getDistance(positionB, position2);
+    double dist2toFrog = AutoCodeLines.getDistance(position2, positionFrog);
+    double distFrogtoC = AutoCodeLines.getDistance(positionFrog, positionC);
 
     double centerLineBlue = 295;
     double centerLine = centerLineBlue;
@@ -76,21 +77,25 @@ public class A1B2C extends genericAutonomous {
         robot.setPigeonYaw(0);
         if(robot.getRed()){
             startRot = new Rotation2d(Math.PI);
-            startPosition.x = lengthOfField - startPositionBlue.x;
-            secondPosition.x = lengthOfField - secondPositionBlue.x;
-            thirdPosition.x = lengthOfField - thirdPositionBlue.x;
-            fourthPosition.x = lengthOfField - fourthPositionBlue.x;
-            endPosition.x = lengthOfField - endPositionBlue.x;
+            positionA.x = lengthOfField - positionABlue.x;
+            position1.x = lengthOfField - position1Blue.x;
+            positionARevisited.x = lengthOfField - positionARevisitedBlue.x;
+            positionB.x = lengthOfField - positionBBlue.x;
+            position2.x = lengthOfField - position2Blue.x;
+            positionFrog.x = lengthOfField - positionFrogBlue.x;
+            positionC.x = lengthOfField - positionCBlue.x;
             desiredPose = new Pose2d(lengthOfField - desiredPoseBlue.getX(),
                     desiredPoseBlue.getY(), startRot);
             centerLine = lengthOfField - centerLineBlue;
             robot.setPigeonYaw(180);
         }else{
-            startPosition.x = startPositionBlue.x;
-            secondPosition.x = secondPositionBlue.x;
-            thirdPosition.x = thirdPositionBlue.x;
-            fourthPosition.x = fourthPositionBlue.x;
-            endPosition.x = endPositionBlue.x;
+            positionA.x = positionABlue.x;
+            position1.x = position1Blue.x;
+            positionARevisited.x = positionARevisitedBlue.x;
+            positionB.x = positionBBlue.x;
+            position2.x = position2Blue.x;
+            positionFrog.x = positionFrogBlue.x;
+            positionC.x = positionCBlue.x;
             desiredPose = new Pose2d(desiredPoseBlue.getX(),
                     desiredPoseBlue.getY(), startRot);
         }
@@ -99,7 +104,7 @@ public class A1B2C extends genericAutonomous {
         robot.resetStartDists();
         robot.resetStartPivots();
         robot.resetAttitude();
-        robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
+        robot.setPose(new Pose2d(positionA.x, positionA.y, startRot));
         autonomousStep = 0;
         PID.enableContinuousInput(-180,180);
         xspd = yspd = 0;
@@ -116,10 +121,10 @@ public class A1B2C extends genericAutonomous {
         SmartDashboard.putNumber("xpsd", xspd);
         SmartDashboard.putNumber("yspd", yspd);
         SmartDashboard.putNumber("turn speed", turnspd);
-        SmartDashboard.putNumber("first distance", firstDist);
+        SmartDashboard.putNumber("first distance", distAto1);
         SmartDashboard.putBoolean("do I think im red?", robot.getRed());
-        SmartDashboard.putNumber("startPosition", startPosition.x);
-        SmartDashboard.putNumber("startBlue", startPositionBlue.x);
+        SmartDashboard.putNumber("startPosition", positionA.x);
+        SmartDashboard.putNumber("startBlue", positionABlue.x);
         SmartDashboard.putNumber("x correction", xPidK * (positionFunctionX(s) - currPose.getX()));
         SmartDashboard.putNumber("y correction", yPidK * (positionFunctionY(s) - currPose.getY()));
 
@@ -133,7 +138,7 @@ public class A1B2C extends genericAutonomous {
                 collectorUp = false;
                 openGripper = true;
                 autoMode = true;
-                robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
+                robot.setPose(new Pose2d(positionA.x, positionA.y, startRot));
                 xspd = yspd = turnspd = 0;
                 if (m_timer.get() > .5){
                     autonomousStep++;
@@ -169,7 +174,7 @@ public class A1B2C extends genericAutonomous {
                     SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
-                if (s >= firstDist) {
+                if (s >= distAto1) {
                     xspd = 0;
                     yspd = 0;
                     m_timer.reset();
@@ -203,8 +208,9 @@ public class A1B2C extends genericAutonomous {
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
                 if (robot.cargoDetected() || m_timer.get() > 6){
-                    secondPosition = new Point(currPose.getX(), currPose.getY());
-                    secondDist = AutoCodeLines.getDistance(secondPosition, thirdPosition);
+                    //reads new currPose and creates new path based on it
+                    position1 = new Point(currPose.getX(), currPose.getY());
+                    dist1toARevisted = AutoCodeLines.getDistance(position1, positionARevisited);
                     collectorRPM = 4000;
                     xspd = yspd = 0;
                     m_timer.reset();
@@ -212,14 +218,13 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep += 1;
                 }
                 break;
-
             case 3:
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 if (robot.cargoDetected()) collectorRPM = 4000;
-                if (s >= secondDist) {
+                if (s >= dist1toARevisted) {
                     xspd = 0;
                     yspd = 0;
                     turnspd = 0;
@@ -229,13 +234,11 @@ public class A1B2C extends genericAutonomous {
                 }
                 break;
             case 4:
-                collectorUp = true;
-                collectorRPM = 0;
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX()) ;
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-                if (s >= thirdDist) {
+                if (s >= distARevisitedtoB) {
                     xspd = 0;
                     yspd = 0;
                     turnspd = 0;
@@ -257,7 +260,7 @@ public class A1B2C extends genericAutonomous {
                     m_timer.start();
                 }
                 break;
-            case 6:
+            case 6: //wait for arm to go back into position
                 collectorRPM = 0;
                 armPos = -4;
                 xspd = yspd = 0;
@@ -268,6 +271,114 @@ public class A1B2C extends genericAutonomous {
                 }
                 break;
             case 7:
+                armPos = -4;
+                autoMode = false;
+                t = m_timer.get();
+                s = getS(t);
+                xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (robot.cargoDetected()) collectorRPM = 4000;
+                firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
+                if(firstDetection != null){
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
+                            .times(Units.metersToInches(1));
+                    double distance = objOffset.getNorm();
+                    var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        lightOn = true;
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        lightOn = true;
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                }
+                if (s >= distBto2) {
+                    xspd = 0;
+                    yspd = 0;
+                    m_timer.reset();
+                    m_timer.start();
+                    autonomousStep += 1;
+                }
+                break;
+            case 8:
+                firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
+                if(firstDetection != null){
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
+                            .times(Units.metersToInches(1));
+                    double distance = objOffset.getNorm();
+                    var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
+                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    if (possPose.getX() > centerLine && robot.getRed()){
+                        lightOn = true;
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    if (possPose.getX() < centerLine && !robot.getRed()){
+                        lightOn = true;
+                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                    }
+                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
+                }
+
+                xDiff = desiredPose.getX()-currPose.getX() + 6;
+                yDiff = desiredPose.getY()-currPose.getY();
+                totDiff = Math.hypot(xDiff, yDiff);
+                xspd = yspd = 0;
+                if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
+                if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
+                if (robot.cargoDetected() || m_timer.get() > 6){
+                    position2 = new Point(currPose.getX(), currPose.getY());
+                    dist2toFrog = AutoCodeLines.getDistance(position2, positionFrog);
+                    collectorRPM = 4000;
+                    xspd = yspd = 0;
+                    m_timer.reset();
+                    m_timer.start();
+                    autonomousStep += 1;
+                }
+                break;
+            case 9:
+                t = m_timer.get();
+                s = getS(m_timer.get());
+                xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (robot.cargoDetected()) collectorRPM = 4000;
+                if (s >= dist2toFrog) {
+                    xspd = 0;
+                    yspd = 0;
+                    turnspd = 0;
+                    m_timer.reset();
+                    m_timer.start();
+                    autonomousStep++;
+                }
+                break;
+            case 10:
+                t = m_timer.get();
+                s = getS(m_timer.get());
+                xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (robot.cargoDetected()) collectorRPM = 4000;
+                if (s >= distFrogtoC) {
+                    xspd = 0;
+                    yspd = 0;
+                    turnspd = 0;
+                    m_timer.reset();
+                    m_timer.start();
+                    autonomousStep++;
+                }
+                break;
+            case 11:
+                xspd = yspd = turnspd = 0;
+                autoMode = true;
+                armPos = 45;
+                collectorRPM = 9000;
+                if (m_timer.get() >= 1.0){
+                    autonomousStep ++;
+                    m_timer.reset();
+                    m_timer.start();
+                }
+                break;
+            case 12: //I genuniely have no clue what this does, yes I know I spelt genueniely wrong but thats what I code and not write papers
                 xspd = -12;
                 if (robot.getRed()) xspd = -xspd;
                 if (m_timer.get() >= .8){
@@ -278,7 +389,7 @@ public class A1B2C extends genericAutonomous {
         }
         if (autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
-        robot.setDrive(xspd, yspd, turnspd, true);
+        robot.setDrive(xspd, yspd, turnspd, true, true);
         robot.collect(collectorRPM, autoMode);
         robot.openGripper(openGripper);
         robot.setLightsOn(lightOn);
@@ -288,60 +399,36 @@ public class A1B2C extends genericAutonomous {
     }
 
     public double positionFunctionX(double s) {
-        if (autonomousStep == 0) {
-            return startPosition.x;
-        }
-        if (autonomousStep == 1) {
-            return AutoCodeLines.getPositionX(startPosition, secondPosition, s);
-        }
-        if (autonomousStep == 3) {
-            return AutoCodeLines.getPositionX(secondPosition, thirdPosition, s);
-        }
-        if (autonomousStep == 4) {
-            return AutoCodeLines.getPositionX(thirdPosition, fourthPosition, s);
-        }
-        if (autonomousStep == 6) {
-            return AutoCodeLines.getPositionX(fourthPosition, endPosition, s);
-        }
-        return endPosition.x;
+        if (autonomousStep == 0)   return positionA.x;
+        if (autonomousStep == 1)   return AutoCodeLines.getPositionX(positionA, position1, s);
+        if (autonomousStep == 3)   return AutoCodeLines.getPositionX(position1, positionARevisited, s);
+        if (autonomousStep == 4)   return AutoCodeLines.getPositionX(positionARevisited, positionB, s);
+        if (autonomousStep == 7)   return AutoCodeLines.getPositionX(positionB, position2, s);
+        if (autonomousStep == 9) return AutoCodeLines.getPositionX(position2, positionFrog, s);
+        if (autonomousStep == 10) return AutoCodeLines.getPositionX(positionFrog, positionC, s);
+        return positionC.x;
     }
 
     @Override
     public double positionFunctionY(double s) {
-        if (autonomousStep == 0) {
-            return startPosition.y;
-        }
-        if (autonomousStep == 1) {
-            return AutoCodeLines.getPositionY(startPosition, secondPosition, s);
-        }
-        if (autonomousStep == 3) {
-            return AutoCodeLines.getPositionY(secondPosition, thirdPosition, s);
-        }
-        if (autonomousStep == 4) {
-            return AutoCodeLines.getPositionY(thirdPosition, fourthPosition, s);
-        }
-        if (autonomousStep == 6) {
-            return AutoCodeLines.getPositionY(fourthPosition, endPosition, s);
-        }
-        return endPosition.y;
+        if (autonomousStep == 0) return positionA.y;
+        if (autonomousStep == 1) return AutoCodeLines.getPositionY(positionA, position1, s);
+        if (autonomousStep == 3) return AutoCodeLines.getPositionY(position1, positionARevisited, s);
+        if (autonomousStep == 4) return AutoCodeLines.getPositionY(positionARevisited, positionB, s);
+        if (autonomousStep == 7) return AutoCodeLines.getPositionY(positionB, position2, s);
+        if (autonomousStep == 9) return AutoCodeLines.getPositionY(position2, positionFrog, s);
+        if (autonomousStep == 10) return AutoCodeLines.getPositionY(positionFrog, positionC, s);
+        return positionC.y;
     }
 
     public double velocityFunctionX(double s, double time) {
-        if (autonomousStep == 0){
-            return 0;
-        }
-        if (autonomousStep == 1){
-            return AutoCodeLines.getVelocityX(startPosition, secondPosition, s) * getdS(time);
-        }
-        if (autonomousStep == 3){
-            return AutoCodeLines.getVelocityX(secondPosition, thirdPosition, s)* getdS(time);
-        }
-        if (autonomousStep == 4){
-            return AutoCodeLines.getVelocityX(thirdPosition, fourthPosition, s)* getdS(time);
-        }
-        if (autonomousStep == 6){
-            return AutoCodeLines.getVelocityX(fourthPosition, endPosition, s)* getdS(time);
-        }
+        if (autonomousStep == 0) return 0;
+        if (autonomousStep == 1) return AutoCodeLines.getVelocityX(positionA, position1, s) * getdS(time);
+        if (autonomousStep == 3) return AutoCodeLines.getVelocityX(position1, positionARevisited, s) * getdS(time);
+        if (autonomousStep == 4) return AutoCodeLines.getVelocityX(positionARevisited, positionB, s) * getdS(time);
+        if (autonomousStep == 7) return AutoCodeLines.getVelocityX(positionB, position2, s) * getdS(time);
+        if (autonomousStep == 9) return AutoCodeLines.getVelocityX(position2, positionFrog, s) * getdS(time);
+        if (autonomousStep == 10) return AutoCodeLines.getVelocityX(positionFrog, positionC, s) * getdS(time);
         return 0;
     }
 
@@ -349,60 +436,36 @@ public class A1B2C extends genericAutonomous {
 
     @Override
     public double velocityFunctionY(double s, double time) {
-        if (autonomousStep == 0){
-            return 0;
-        }
-        if (autonomousStep == 1){
-            return AutoCodeLines.getVelocityY(startPosition, secondPosition, s)* getdS(time);
-        }
-        if (autonomousStep == 3){
-            return AutoCodeLines.getVelocityY(secondPosition, thirdPosition, s)* getdS(time);
-        }
-        if (autonomousStep == 4){
-            return AutoCodeLines.getVelocityY(thirdPosition, fourthPosition, s)* getdS(time);
-        }
-        if (autonomousStep == 6){
-            return AutoCodeLines.getVelocityY(fourthPosition, endPosition, s)* getdS(time);
-        }
+        if (autonomousStep == 0) return 0;
+        if (autonomousStep == 1)return AutoCodeLines.getVelocityY(positionA, position1, s)* getdS(time);
+        if (autonomousStep == 3)return AutoCodeLines.getVelocityY(position1, positionARevisited, s)* getdS(time);
+        if (autonomousStep == 4) return AutoCodeLines.getVelocityY(positionARevisited, positionB, s)* getdS(time);
+        if (autonomousStep == 7) return AutoCodeLines.getVelocityY(positionB, position2, s)* getdS(time);
+        if (autonomousStep == 9) return AutoCodeLines.getVelocityY(position2, positionFrog, s)* getdS(time);
+        if (autonomousStep == 10) return AutoCodeLines.getVelocityY(positionFrog, positionC, s)* getdS(time);
         return 0;
     }
 
     @Override
     public double getS(double time){
-        if (autonomousStep == 0){
-            return 0;
-        }
-        if (autonomousStep == 1){
-            return AutoCodeLines.getS(firstDist, .55, desiredInchesPerSecond, time);
-        }
-        if (autonomousStep == 3){
-            return AutoCodeLines.getS(secondDist, .55, desiredInchesPerSecond, time);
-        }
-        if (autonomousStep == 4){
-            return AutoCodeLines.getS(thirdDist, .25, desiredInchesPerSecond-20, time);
-        }
-        if (autonomousStep == 6){
-            return AutoCodeLines.getS(fourthDist, .25, desiredInchesPerSecond-20, time);
-        }
+        if (autonomousStep == 0)return 0;
+        if (autonomousStep == 1) return AutoCodeLines.getS(distAto1, .55, desiredInchesPerSecond, time);
+        if (autonomousStep == 3) return AutoCodeLines.getS(dist1toARevisted, .55, desiredInchesPerSecond, time);
+        if (autonomousStep == 4) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 7) return AutoCodeLines.getS(distBto2, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 9) return AutoCodeLines.getS(dist2toFrog, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 10) return AutoCodeLines.getS(distFrogtoC, .25, desiredInchesPerSecond-20, time);
         return 0;
     }
     @Override
     public double getdS(double time){
-        if (autonomousStep == 0){
-            return 0;
-        }
-        if (autonomousStep == 1){
-            return AutoCodeLines.getdS(firstDist, .55, desiredInchesPerSecond, time);
-        }
-        if (autonomousStep == 3){
-            return AutoCodeLines.getdS(secondDist, .55, desiredInchesPerSecond, time);
-        }
-        if (autonomousStep == 4){
-            return AutoCodeLines.getdS(thirdDist, .25, desiredInchesPerSecond-20, time);
-        }
-        if (autonomousStep == 6){
-            return AutoCodeLines.getdS(fourthDist, .25, desiredInchesPerSecond-20, time);
-        }
+        if (autonomousStep == 0) return 0;
+        if (autonomousStep == 1) return AutoCodeLines.getdS(distAto1, .55, desiredInchesPerSecond, time);
+        if (autonomousStep == 3) return AutoCodeLines.getdS(dist1toARevisted, .55, desiredInchesPerSecond, time);
+        if (autonomousStep == 4) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 7) return AutoCodeLines.getdS(distBto2, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 9) return AutoCodeLines.getdS(dist2toFrog, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 10) return AutoCodeLines.getdS(distFrogtoC, .25, desiredInchesPerSecond-20, time);
         return 0;
     }
 }
