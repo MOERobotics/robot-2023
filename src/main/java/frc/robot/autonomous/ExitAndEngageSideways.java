@@ -83,6 +83,6 @@ public class ExitAndEngageSideways extends genericAutonomous{
                 }
                 break;
             }
-            robot.setDrive(xspd, 0, 0, true);
+        robot.setDrive(xspd, 0, 0, true, true);
     }
 }

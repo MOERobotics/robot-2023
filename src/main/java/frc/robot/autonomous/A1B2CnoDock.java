@@ -190,7 +190,7 @@ public class A1B2CnoDock extends genericAutonomous{
         if(autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(dropTopRoller);
         robot.collect(collectorRPM);
-        robot.setDrive(xspd, yspd, turnspd);
+        robot.setDrive(xspd, yspd, turnspd, true, true);
     }
 
     @Override

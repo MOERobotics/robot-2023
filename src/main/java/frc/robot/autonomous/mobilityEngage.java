@@ -13,7 +13,7 @@ public class mobilityEngage extends genericAutonomous{
     double desiredPitch = 9.0;
     double firstBreak = 5;
     double dropping = 9;
-    double xspd;
+    double xspd, yspd, turnspd;
     double timerDelta;
     Timer m_timer = new Timer();
     double xPos;
@@ -40,6 +40,7 @@ public class mobilityEngage extends genericAutonomous{
         switch (autonomousStep) {
             case 0:
                 xspd = basePower;
+                yspd = turnspd = 0;
                 if (Math.abs(currPitch) > firstBreak) {
 
                     //Add length of the robot from front encoder to end of back wheel.
@@ -127,6 +128,6 @@ public class mobilityEngage extends genericAutonomous{
         if (robot.getPose().getX() > 200){
             xspd = 0;
         }
-        robot.setDrive(xspd, 0, 0, true);
+        robot.setDrive(xspd, yspd, turnspd, true, true);
     }
 }

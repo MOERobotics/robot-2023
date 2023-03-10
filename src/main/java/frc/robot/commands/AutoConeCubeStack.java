@@ -92,7 +92,7 @@ public class AutoConeCubeStack extends genericCommand {
             robot.stackCargo(armPositions[nodeZPos]);
         }
 
-        robot.setDrive(xspd,yspd,turnspd,true);
+        robot.setDrive(xspd,yspd,turnspd,true, true);
         robot.openGripper(openGripper);
 
     }
