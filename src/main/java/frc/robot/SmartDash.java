@@ -37,6 +37,8 @@ public class SmartDash {
         SmartDashboard.putNumber("rightACurrent", robot.getRightACurrent());
         SmartDashboard.putNumber("rightBCurrent", robot.getRightBCurrent());
 
+        SmartDashboard.putNumber("TimeOfFlight Range", robot.getTOFDistance());
+        SmartDashboard.putNumber("TimeOfFlight AmbientLightLevel", robot.getTOFAmbientLightLevel());
 
         robot.getDriveDistanceInchesLeftA();
         robot.getDriveDistanceInchesLeftB();

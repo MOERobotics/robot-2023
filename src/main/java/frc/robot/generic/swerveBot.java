@@ -8,6 +8,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -72,6 +73,7 @@ public class    swerveBot extends GenericRobot{
     PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
+    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(0);
     SwerveDriveOdometry m_odometry;
 
     /////////////////////////////////////////////////////////////Light Sensors
@@ -139,7 +141,6 @@ public class    swerveBot extends GenericRobot{
         pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
 
         leftMotorARPM.setP(1.5e-4);
         leftMotorARPM.setI(0);
@@ -218,6 +219,7 @@ public class    swerveBot extends GenericRobot{
         SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
         SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
         SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
+
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
@@ -657,4 +659,16 @@ public class    swerveBot extends GenericRobot{
 
     @Override
     public boolean getRightLightSensor(){return rightLightSensor.get();}
+
+    ///////////////////////////////////////////////////////////////////////////////////TimeOfFlight Code
+
+    @Override
+    public double getTOFDistance(){
+        return timeOfFlightSensor.getRange();
+    }
+
+    @Override
+    public double getTOFAmbientLightLevel(){
+        return timeOfFlightSensor.getAmbientLightLevel();
+    }
 }
