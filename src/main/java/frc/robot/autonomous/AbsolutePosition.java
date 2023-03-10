@@ -61,6 +61,6 @@ public class AbsolutePosition extends genericAutonomous {
                 yspd = 0;
                 turnspd = 0;
         }
-        robot.setDrive(xspd, yspd, turnspd);
+        robot.setDrive(xspd, yspd, turnspd, true, true);
     }
 }
