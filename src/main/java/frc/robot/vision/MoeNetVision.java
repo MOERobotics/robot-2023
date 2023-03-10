@@ -39,15 +39,15 @@ public final class MoeNetVision {
             new LimelightCamera(),
             new OakCamera()
     );
-    GenericRobot gr;
+    GenericRobot robot;
     double currentYaw = 0;
     LinkedList<Pose3d> staticPoses = new LinkedList<>();
 
     Pose3d initialPose;
     Transform3d autoToFieldSpace = new Transform3d();
 
-    public MoeNetVision(GenericRobot gr){
-        this.gr = gr;
+    public MoeNetVision(GenericRobot robot){
+        this.robot = robot;
     }
 
     /**
@@ -55,7 +55,7 @@ public final class MoeNetVision {
      * robot is steady.
      */
     public void disabledPeriodic(){
-        double nextYaw = gr.getPigeonYaw();
+        double nextYaw = robot.getPigeonYaw();
         if(Math.abs(nextYaw-currentYaw)>ROTATING_THRESHOLD){
             staticPoses.clear();
         }else{
@@ -112,7 +112,7 @@ public final class MoeNetVision {
     }
 
     public void genericPeriodic() {
-        Pose3d odometryPose = new Pose3d(gr.getPose());
+        Pose3d odometryPose = new Pose3d(robot.getPose());
         odometryPose = scalePose(odometryPose, METERS_PER_INCH);
         Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
 
@@ -148,7 +148,7 @@ public final class MoeNetVision {
      * @return Pose3d in meters
      */
     public Pose3d getPose(){
-        Pose3d odometryPose = new Pose3d(gr.getPose());
+        Pose3d odometryPose = new Pose3d(robot.getPose());
         odometryPose = scalePose(odometryPose, METERS_PER_INCH);
         Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
         return odometryPoseFS;
