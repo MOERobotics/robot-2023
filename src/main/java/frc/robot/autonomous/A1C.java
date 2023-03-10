@@ -271,7 +271,7 @@ public class A1C extends genericAutonomous {
         }
         if (autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
-        robot.setDrive(xspd, yspd, turnspd, true);
+        robot.setDrive(xspd, yspd, turnspd, true, true);
         robot.collect(collectorRPM, autoMode);
         robot.openGripper(openGripper);
         robot.setLightsOn(lightOn);

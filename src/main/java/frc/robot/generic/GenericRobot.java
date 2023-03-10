@@ -275,7 +275,7 @@ public abstract class GenericRobot {
 
     }
 
-    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto, boolean fieldCentric){
 
     }
 

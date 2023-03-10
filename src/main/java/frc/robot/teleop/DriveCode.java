@@ -2,6 +2,10 @@ package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -10,6 +14,8 @@ import frc.robot.commands.autoBalance;
 import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.ButtonBox;
+import frc.robot.vision.Detection;
+import frc.robot.vision.MoeNetVision;
 
 
 public class DriveCode extends GenericTeleop{
@@ -40,17 +46,21 @@ public class DriveCode extends GenericTeleop{
     double desiredYaw = 0;
     double desiredPos = -6;
     PIDController yawControl = new PIDController(1.0e-1, 0,0);
+    PIDController inPlacePID = new PIDController(3.0e-2, 3.0e-3, 0);
+    MoeNetVision vision;
     boolean secondTrip = false;
     boolean firstTrip = false;
     boolean autoMode = false;
     double xPoseOfWall = 0;
     boolean lightsOn = false;
+    boolean fieldCentric = true;
 
     @Override
     public void teleopInit(GenericRobot robot) {
         balanceInit = false;
         yawControl.enableContinuousInput(-180,180);
-
+        inPlacePID.enableContinuousInput(-180,180);
+        vision = new MoeNetVision(robot);
         resetting = false;
         robot.setOffsetLeftA();
         robot.setOffsetLeftB();
@@ -71,6 +81,7 @@ public class DriveCode extends GenericTeleop{
         secondTrip = false;
         pressed = false;
         lightsOn = false;
+        fieldCentric = true;
     }
 
     @Override
@@ -82,11 +93,12 @@ public class DriveCode extends GenericTeleop{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
         Pose2d robotPose = robot.getPose();
+        fieldCentric = true;
         armPower = 0;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
-        xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond() / 2;
-        yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond() / 2;
-        turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec() / 2;
+        xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
+        yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
+        turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec();
 
         if(xboxDriver.getRawButton(8)){
             balanceCommand = true;
@@ -96,11 +108,11 @@ public class DriveCode extends GenericTeleop{
         }
 
         if (xboxDriver.getRawButton(5)) { // speed boosters
-            turnspd *= 2;
+            turnspd /= 2;
         }
         if (xboxDriver.getRawButton(6)) {
-            xspd *= 2;
-            yspd *= 2;
+            xspd /= 2;
+            yspd /= 2;
         }
 
         if (turnspd != 0){
@@ -125,6 +137,25 @@ public class DriveCode extends GenericTeleop{
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
+
+////////////////////////////////////////////////////////////////////////////////////////////////////Point robot to object
+
+        if (xboxDriver.getRawAxis(3) >.1) {
+            SmartDashboard.putNumber("desiredYaw", desiredYaw);
+            Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
+            if (firstDetection != null) {
+                var objOffset = firstDetection.location.getTranslation().toTranslation2d()
+                        .times(Units.metersToInches(1));
+                double distance = objOffset.getNorm();
+                var targetPosition = objOffset.interpolate(new Translation2d(), 1 - (distance) / distance);
+                //Pose2d desiredPose = robotPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                double yDiff = targetPosition.getY();
+                double xDiff = targetPosition.getX();
+                desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff)*180/Math.PI;
+                turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
+                fieldCentric = false;
+            }
+        }
 
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
@@ -273,7 +304,7 @@ public class DriveCode extends GenericTeleop{
         }
         else {
             balanceInit = false;
-            robot.setDrive(xspd, yspd, turnspd);
+            robot.setDrive(xspd, yspd, turnspd, false, fieldCentric);
         }
         robot.collect(collectorRPM, autoMode);
         robot.raiseTopRoller(raiseTopRoller);

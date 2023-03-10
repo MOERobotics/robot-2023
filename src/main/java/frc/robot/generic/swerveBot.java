@@ -408,10 +408,10 @@ public class    swerveBot extends GenericRobot{
 ///////////////////////////////////////////////////////////////////////////drive motor
     @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
-        this.setDrive(xspd,yspd,turnspd,false);
+        this.setDrive(xspd,yspd,turnspd,false, false);
     }
     @Override
-    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto, boolean fieldCentric){
         double m_yaw = getYaw();
         if (auto){
             m_yaw = -getPigeonYaw();

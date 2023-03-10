@@ -128,7 +128,7 @@ public class ExitAndEngage extends genericAutonomous{
                 break;
         }
         turnspd = PID.calculate(-robot.getYaw());
-        robot.setDrive(xspd, yspd, turnspd);
+        robot.setDrive(xspd, yspd, turnspd, true, true);
         robot.collect(collectorRPM, true);
         robot.holdArmPosition(armPos);
         robot.openGripper(false);
