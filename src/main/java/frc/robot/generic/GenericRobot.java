@@ -279,6 +279,8 @@ public abstract class GenericRobot {
 
     }
 
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){}
+
     static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
     public Pose2d getPose() {
         return defaultPose;

@@ -407,6 +407,8 @@ public class    swerveBot extends GenericRobot{
 
 ///////////////////////////////////////////////////////////////////////////drive motor
     @Override
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){this.setDrive(xspd,yspd,turnspd,auto,true);}
+    @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
         this.setDrive(xspd,yspd,turnspd,false, false);
     }
