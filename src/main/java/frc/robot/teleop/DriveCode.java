@@ -17,7 +17,6 @@ import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.ButtonBox;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
-import frc.robot.helpers.AutoCodeLines;
 import org.opencv.core.Point;
 
 
@@ -49,7 +48,7 @@ public class DriveCode extends GenericTeleop{
 
     double desiredYaw = 0;
     double desiredArmPos = -6;
-    PIDController yawControl = new PIDController(1.0e-1, 0,0);
+    PIDController yawControl = new PIDController(8.0e-2, 0,6e-3);
     PIDController inPlacePID = new PIDController(3.0e-2, 3.0e-3, 0);
     MoeNetVision vision;
     boolean secondTrip = false;
@@ -67,11 +66,7 @@ public class DriveCode extends GenericTeleop{
     Point startingPos;
     Point shelfStation = new Point (12.87+armLength,240.7);
     Rotation2d startRot = new Rotation2d(0);
-    double dist = AutoCodeLines.getDistance(startingPos, shelfStation);
 
-    double s;
-    double xPidK = 0;
-    double yPidK = 0;
     double startX = 0;
 
     double visStartingX = 92.87;
@@ -105,6 +100,12 @@ public class DriveCode extends GenericTeleop{
         pressed = false;
         lightsOn = false;
         fieldCentric = true;
+        if (robot.getRed()){
+            startRot = new Rotation2d(Math.PI);
+        }
+        else{
+            startRot = new Rotation2d(0);
+        }
     }
 
     @Override
@@ -191,54 +192,60 @@ public class DriveCode extends GenericTeleop{
         if (xboxDriver.getRawButton(3)){
             SmartDashboard.putNumber("autoStep", autoStep);
 
+
             x = visStartingX;
             y = visStartingY;
             startingPos = new Point(x, y);
             double shelfCollectSpeed = 48;
 
-            if(xboxDriver.getRawButton(7)){
-                switch(autoStep) {
-                    case 0:
-                        robot.resetStartDists();
-                        robot.resetStartPivots();
-                        robot.resetStartHeading();
-                        robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
-                        openGripper = true;
+            switch(autoStep) {
+                case 0:
+                    robot.resetStartDists();
+                    robot.resetStartPivots();
+                    robot.resetStartHeading();
+                    robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                    openGripper = true;
 
-                        //desiredArmPos = 87;
-                        autoStep++;
-                        break;
-                    case 1:
-                        double xDiff = shelfStation.x - robotPose.getX();
-                        double yDiff = shelfStation.y - robotPose.getY();
-                        double totDiff = Math.hypot(xDiff, yDiff);
-                        xspd = shelfCollectSpeed * xDiff/totDiff;
-                        yspd = shelfCollectSpeed * xDiff/totDiff;
-                        if (xDiff <= 3) {
-                            xspd = 0;
-                            yspd = 0;
-                            m_timer.restart();
-                            autoStep++;
-                        }
-                        break;
-                    case 2:
-                        xspd = yspd = 0;
-                        openGripper = false;
-                        if (m_timer.get() >= .1){
-                         //   desiredArmPos = 90;
-                            autoStep ++;
-                            startX = robotPose.getX();
-                        }
-                        break;
-                    case 3:
-                        xspd = -shelfCollectSpeed;
+                    //desiredArmPos = 87;
+                    autoStep++;
+                    break;
+                case 1:
+                    double xDiff = shelfStation.x - robotPose.getX();
+                    double yDiff = shelfStation.y - robotPose.getY();
+                    double totDiff = Math.hypot(xDiff, yDiff);
+                    SmartDashboard.putNumber("totalDiff", totDiff);
+                    xspd = shelfCollectSpeed * xDiff/totDiff;
+                    yspd = shelfCollectSpeed * yDiff/totDiff;
+                    if (robot.getRed()){
+                        xspd *= -1;
+                        yspd *= -1;
+                    }
+                    if (totDiff <= 2) {
+                        xspd = 0;
                         yspd = 0;
-                        if (robotPose.getX() - startX >= 30){
-                            xspd = yspd = 0;
-                        }
-                        break;
-                }
+                        m_timer.reset();
+                        m_timer.start();
+                        autoStep++;
+                    }
+                    break;
+                case 2:
+                    xspd = yspd = 0;
+                    openGripper = false;
+                    if (m_timer.get() >= 1){
+                     //   desiredArmPos = 90;
+                        autoStep ++;
+                        startX = robotPose.getX();
+                    }
+                    break;
+                case 3:
+                    xspd = -shelfCollectSpeed;
+                    yspd = 0;
+                    if (robotPose.getX() - startX >= 30){
+                        xspd = yspd = 0;
+                    }
+                    break;
             }
+            turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
 
         }
 
@@ -333,6 +340,7 @@ public class DriveCode extends GenericTeleop{
             balance.periodic(robot);
         }
         else {
+            SmartDashboard.putNumber("turnspd", turnspd);
             balanceInit = false;
             robot.setDrive(xspd, yspd, turnspd, false, fieldCentric);
         }
