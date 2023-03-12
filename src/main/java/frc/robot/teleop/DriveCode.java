@@ -3,6 +3,7 @@ package frc.robot.teleop;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -16,6 +17,9 @@ import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.ButtonBox;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
+import frc.robot.helpers.AutoCodeLines;
+import org.opencv.core.Point;
+
 
 
 public class DriveCode extends GenericTeleop{
@@ -44,7 +48,7 @@ public class DriveCode extends GenericTeleop{
     boolean balanceInit  = false;
 
     double desiredYaw = 0;
-    double desiredPos = -6;
+    double desiredArmPos = -6;
     PIDController yawControl = new PIDController(1.0e-1, 0,0);
     PIDController inPlacePID = new PIDController(3.0e-2, 3.0e-3, 0);
     MoeNetVision vision;
@@ -54,6 +58,25 @@ public class DriveCode extends GenericTeleop{
     double xPoseOfWall = 0;
     boolean lightsOn = false;
     boolean fieldCentric = true;
+
+
+
+    double x = 0;
+    double y = 0;
+    double armLength = 40;
+    Point startingPos;
+    Point shelfStation = new Point (12.87+armLength,240.7);
+    Rotation2d startRot = new Rotation2d(0);
+    double dist = AutoCodeLines.getDistance(startingPos, shelfStation);
+
+    double s;
+    double xPidK = 0;
+    double yPidK = 0;
+    double startX = 0;
+
+    double visStartingX = 92.87;
+    double visStartingY = 220.7;
+
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -88,7 +111,9 @@ public class DriveCode extends GenericTeleop{
     public void teleopPeriodic(GenericRobot robot) {
         SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
-        SmartDashboard.putNumber("desiredArmPos", desiredPos);
+        SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
+        Pose2d currPose = robot.getPose();
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
@@ -165,49 +190,54 @@ public class DriveCode extends GenericTeleop{
         }
         if (xboxDriver.getRawButton(3)){
             SmartDashboard.putNumber("autoStep", autoStep);
-            xspd = yspd = 0;
 
-            switch (autoStep){
-                case 0:
-                    xspd = -30;
-                    yspd = 0;
-                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 50){
-                        xspd = yspd = 0;
-                        desiredPos = 78;
-                        xPoseOfWall = robotPose.getX();
-                        autoStep ++;
-                    }
-                    break;
-                case 1:
-                    xspd = 0;
-                    yspd = 0;
-                    if (Math.abs(robot.getPotDegrees() - desiredPos) <= 2){
-                        autoStep ++;
-                    }
-                    break;
-                case 2:
-                    xspd = 12;
-                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 21){
+            x = visStartingX;
+            y = visStartingY;
+            startingPos = new Point(x, y);
+            double shelfCollectSpeed = 48;
+
+            if(xboxDriver.getRawButton(7)){
+                switch(autoStep) {
+                    case 0:
+                        robot.resetStartDists();
+                        robot.resetStartPivots();
+                        robot.resetStartHeading();
+                        robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                        openGripper = true;
+
+                        //desiredArmPos = 87;
+                        autoStep++;
+                        break;
+                    case 1:
+                        double xDiff = shelfStation.x - robotPose.getX();
+                        double yDiff = shelfStation.y - robotPose.getY();
+                        double totDiff = Math.hypot(xDiff, yDiff);
+                        xspd = shelfCollectSpeed * xDiff/totDiff;
+                        yspd = shelfCollectSpeed * xDiff/totDiff;
+                        if (xDiff <= 3) {
+                            xspd = 0;
+                            yspd = 0;
+                            m_timer.restart();
+                            autoStep++;
+                        }
+                        break;
+                    case 2:
                         xspd = yspd = 0;
                         openGripper = false;
-                        m_timer.reset();
-                        m_timer.start();
-                        autoStep ++;
-                    }
-                    break;
-                case 3:
-                    if(m_timer.get() <= .2){
-                        autoStep++;
-                        xPoseOfWall = robotPose.getX();
-                    }
-                    break;
-                case 4:
-                    xspd = -12;
-                    desiredPos = 84;
-                    if (Math.abs(xPoseOfWall) - robotPose.getX() >= 10){
-                        xspd = yspd = 0;
-                    }
-                    break;
+                        if (m_timer.get() >= .1){
+                         //   desiredArmPos = 90;
+                            autoStep ++;
+                            startX = robotPose.getX();
+                        }
+                        break;
+                    case 3:
+                        xspd = -shelfCollectSpeed;
+                        yspd = 0;
+                        if (robotPose.getX() - startX >= 30){
+                            xspd = yspd = 0;
+                        }
+                        break;
+                }
             }
 
         }
@@ -230,13 +260,13 @@ public class DriveCode extends GenericTeleop{
             raiseTopRoller = false;
             openGripper = true;
             armPower = -.1;
-            desiredPos = -4;
+            desiredArmPos = -4;
             if(robot.cargoInCollector()) secondTrip = true;
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip){
-                collectorRPM = 9500;
-                desiredPos = -4;
+                collectorRPM = 3000;
+                desiredArmPos = -4;
                 armPower = 0;
             }
             if(secondTrip){
@@ -251,7 +281,7 @@ public class DriveCode extends GenericTeleop{
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
-            desiredPos = -4; //tuck arm in
+            desiredArmPos = -4; //tuck arm in
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
@@ -272,7 +302,7 @@ public class DriveCode extends GenericTeleop{
             armPower = powerForArm;
         }
         if(armPower != 0){
-            desiredPos = robot.getPotDegrees();
+            desiredArmPos = robot.getPotDegrees();
         }
         if (robot.getPotDegrees() > 0) raiseTopRoller = true; //arm fail-safes to obey the rules
 
@@ -283,7 +313,7 @@ public class DriveCode extends GenericTeleop{
          */
         int height = heightIndex();
         if (pressed){
-            desiredPos = HeightsDeg[height];
+            desiredArmPos = HeightsDeg[height];
             pressed = false;
         }
 //////////////////////////////////////////////////////////////////////////////////////////lights on hp command
@@ -314,9 +344,10 @@ public class DriveCode extends GenericTeleop{
             robot.moveArm(armPower);
         }
         else{
-            robot.holdArmPosition(desiredPos);
+            robot.holdArmPosition(desiredArmPos);
         }
     }
+
 
     public int heightIndex(){
         int heightIndex = 0;
