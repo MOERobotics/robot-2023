@@ -2,8 +2,6 @@ package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,7 +11,6 @@ import frc.robot.commands.AutoConeCubeStack;
 import frc.robot.commands.autoBalance;
 import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
-import frc.robot.helpers.ButtonBox;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
 
@@ -43,10 +40,12 @@ public class DriveCode extends GenericTeleop{
     boolean init = false;
     boolean balanceInit  = false;
 
+    boolean notSeenObjectYet = true;
+
     double desiredYaw = 0;
     double desiredPos = -6;
     PIDController yawControl = new PIDController(1.0e-1, 0,0);
-    PIDController inPlacePID = new PIDController(3.0e-2, 3.0e-3, 0);
+    PIDController inPlacePID = new PIDController(1e-1, 0*3e-3, 4e-3);
     MoeNetVision vision;
     boolean secondTrip = false;
     boolean firstTrip = false;
@@ -143,7 +142,8 @@ public class DriveCode extends GenericTeleop{
         if (xboxDriver.getRawAxis(3) >.1) {
             SmartDashboard.putNumber("desiredYaw", desiredYaw);
             Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
-            if (firstDetection != null) {
+            if ((notSeenObjectYet) && (firstDetection != null) ){
+
                 var objOffset = firstDetection.location.getTranslation().toTranslation2d()
                         .times(Units.metersToInches(1));
                 double distance = objOffset.getNorm();
@@ -151,10 +151,17 @@ public class DriveCode extends GenericTeleop{
                 //Pose2d desiredPose = robotPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                 double yDiff = targetPosition.getY();
                 double xDiff = targetPosition.getX();
-                desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff)*180/Math.PI;
+                desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff) * 180 / Math.PI;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
                 fieldCentric = false;
+                notSeenObjectYet = false;
+            } else {
+                fieldCentric = false;
+                turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
             }
+        }
+        else {
+            inPlacePID.reset();
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
@@ -266,6 +273,7 @@ public class DriveCode extends GenericTeleop{
         else if (xboxFuncOp.getRawButton(1)) { //close gripper
             openGripper = false;
         }
+
 
         double powerForArm = -.2*robot.deadzone(xboxFuncOp.getRawAxis(1), .2); //moves arm up and down
         if (powerForArm != 0){
