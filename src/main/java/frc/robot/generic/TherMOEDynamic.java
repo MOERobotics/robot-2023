@@ -100,7 +100,7 @@ public class TherMOEDynamic extends GenericRobot{
     SparkMaxLimitSwitch armLimitSwitchForward = leftArmMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch armLimitSwitchReverse = leftArmMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
-    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(0);
+    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
 
     // Robot chassic dimensions, shaft to shaft.
     static final double w = 13.875;

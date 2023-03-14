@@ -31,7 +31,8 @@ public class Robot extends TimedRobot {
   genericAutonomous autonomous = A1C;
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
-  GenericRobot robot = new TherMOEDynamic();
+//    GenericRobot robot = new TherMOEDynamic();
+    GenericRobot robot = new swerveBot();
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
