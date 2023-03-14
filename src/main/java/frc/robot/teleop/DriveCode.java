@@ -1,11 +1,8 @@
 package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
@@ -192,9 +189,14 @@ public class DriveCode extends GenericTeleop{
         if (xboxDriver.getRawButton(3)){
             SmartDashboard.putNumber("autoStep", autoStep);
 
+            boolean poseNull = true;
+            Pose3d visPose = vision.getPose();
+            if (visPose != null){
+                poseNull = false;
+                x = visPose.getX();
+                y = visPose.getY();
+            }
 
-            x = visStartingX;
-            y = visStartingY;
             startingPos = new Point(x, y);
             double shelfCollectSpeed = 48;
 
@@ -203,11 +205,12 @@ public class DriveCode extends GenericTeleop{
                     robot.resetStartDists();
                     robot.resetStartPivots();
                     robot.resetStartHeading();
+                    if (robot.getRed()) startRot = new Rotation2d(Math.PI);
                     robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
                     openGripper = true;
 
-                    //desiredArmPos = 87;
-                    autoStep++;
+                    desiredArmPos = 87;
+                    if (!poseNull)autoStep++;
                     break;
                 case 1:
                     double xDiff = shelfStation.x - robotPose.getX();
@@ -232,7 +235,7 @@ public class DriveCode extends GenericTeleop{
                     xspd = yspd = 0;
                     openGripper = false;
                     if (m_timer.get() >= 1){
-                     //   desiredArmPos = 90;
+                        desiredArmPos = 90;
                         autoStep ++;
                         startX = robotPose.getX();
                     }

@@ -148,10 +148,11 @@ public final class MoeNetVision {
      * @return Pose3d in meters
      */
     public Pose3d getPose(){
-        Pose3d odometryPose = new Pose3d(robot.getPose());
-        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
-        Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
-        return odometryPoseFS;
+        return scalePose(getVisionPose().estimatedPose, INCHES_PER_METER);
+//        Pose3d odometryPose = new Pose3d(robot.getPose());
+//        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
+//        Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
+//        return odometryPoseFS;
     }
 
     public boolean poseFound(){
