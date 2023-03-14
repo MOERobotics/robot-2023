@@ -607,5 +607,6 @@ public class A1B2C extends genericAutonomous {
         if(autonomousStep == 21) return AutoCodeLines.getdS(distAtoScoreA,0,20,time);
         if(autonomousStep == 22) return AutoCodeLines.getdS(distScoreAtoA,0,20,time);
         return 0;
+
     }
 }
