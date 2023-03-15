@@ -290,6 +290,12 @@ public abstract class GenericRobot {
     public void setPose(Pose2d startPose){}
     public void setPose(){}
 
+    public void resetPose(){
+        resetStartPivots();
+        resetStartHeading();
+        resetStartDists();
+    }
+
 
     public void resetStartHeading() {
         startHeading = getPigeonYaw();

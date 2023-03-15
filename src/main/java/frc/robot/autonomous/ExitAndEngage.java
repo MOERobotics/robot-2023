@@ -1,4 +1,4 @@
-//THE FALLBACK AUTO - AUTO1
+//THE FALLBACK AUTO - AUTO1 or SIMPLE ACCORDING TO DANIEL
 
 package frc.robot.autonomous;
 
