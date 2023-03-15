@@ -1,10 +1,7 @@
 package frc.robot.autonomous;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -51,6 +48,7 @@ public class E2Engage extends genericAutonomous{
     double yPidK = 7;
     double centerLine = 295;
     double collectorRPM = 9000;
+    Pose3d visionPose;
     PIDController PID = new PIDController(1.0e-1, 0, 0);
     @Override
     public void autonomousInit(GenericRobot robot) {
@@ -80,6 +78,7 @@ public class E2Engage extends genericAutonomous{
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
         Pose2d currPose = robot.getPose();
+        visionPose = vision.getPose();
         switch(autonomousStep){
             case 0:
                 robot.resetPose();
