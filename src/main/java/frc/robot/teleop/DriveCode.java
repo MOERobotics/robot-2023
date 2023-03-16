@@ -158,7 +158,7 @@ public class DriveCode extends GenericTeleop{
                 fieldCentric = false;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
                 xspd = 36;
-                if (robot.cargoInCollector()){
+                if (robot.cargoDetected()){
                     xspd = 0;
                 }
             }
