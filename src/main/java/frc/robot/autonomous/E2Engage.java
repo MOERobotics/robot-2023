@@ -148,8 +148,7 @@ public class E2Engage extends genericAutonomous{
             case 8:
                 Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d();
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 0);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));

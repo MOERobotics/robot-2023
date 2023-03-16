@@ -16,35 +16,43 @@ public class OakCamera implements NetworkCamera{
     NetworkTableEntry detectionsEntry;
     double[] lastPose;
 
-    OakCamera(){
+    double CAMERA_Y_OFFSET;
+
+    OakCamera(double offset){
         var nt = NetworkTableInstance.getDefault();
         var sd = nt.getTable("SmartDashboard");
         poseEntry = sd.getEntry("pose");
         detectionsEntry = sd.getEntry("detections");
+        CAMERA_Y_OFFSET = offset;
     }
     @Override
     public EstimatedRobotPose getPose() {
 
         var pose = poseEntry.getDoubleArray(new double[0]);
-        if (pose.length == 0){
-            return null;
-        }
+
         // This checks whether lastPose and pose are equal
         // If they are equal, that means the pose hasn't changed
         if(Arrays.equals(lastPose, pose)) {
             return null;
         }
+
+        if(pose.length != 7 && pose.length != 9) {
+            return null;
+        }
+
         lastPose = pose;
 
-        double x = pose[0];
-        double y = pose[1];
-        double z = pose[2];
+        double x = Units.metersToInches(pose[0]);
+        double y = Units.metersToInches(pose[1]);
+        double z = Units.metersToInches(pose[2]);
         double w = pose[3];
         double i = pose[4];
         double j = pose[5];
         double k = pose[6];
+
         double latency = 0;
         double accuracy = 1;
+
         if(pose.length == 9) {
             latency = pose[7];
             accuracy = pose[8];
@@ -60,18 +68,37 @@ public class OakCamera implements NetworkCamera{
 
         List<Detection> debt = new ArrayList<>();
 
+        if(detections.length%4 != 0)
+            return debt;
+
         for(int i =0; i<detections.length; i+=4){
-            var x= detections[i];
-            var y= detections[i+1];
-            var z= detections[i+2];
+            var x= Units.metersToInches(detections[i]);
+            var y= Units.metersToInches(detections[i+1]);
+            var z= Units.metersToInches(detections[i+2]);
 
             if (Math.abs(x) < 0.001 && Math.abs(y) < 0.001 && Math.abs(z) < 0.001 )
                 continue;
 
-            Detection.Cargo cargoType = Detection.Cargo.values()[(int)detections[i+3]];
+            Detection.Cargo cargoType = null;
+
+            switch((int)detections[i+3]) {
+                case 0:
+                    cargoType = Detection.Cargo.values()[0];
+                    break;
+                case 1:
+                    cargoType = Detection.Cargo.values()[1];
+                    break;
+                case 2:
+                    cargoType = Detection.Cargo.values()[2];
+                    break;
+                default:
+                    continue;
+            }
+
             //10.5 is our offset for hatboro will need to change
-            Detection newDebt = new Detection(z,-x- Units.inchesToMeters(10.5),y,cargoType);
+            Detection newDebt = new Detection(z, -x - CAMERA_Y_OFFSET, y, cargoType);
             debt.add(newDebt);
+
         }
 
         return debt;

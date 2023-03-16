@@ -29,15 +29,15 @@ public final class MoeNetVision {
      * @param scale The scale we adjust the Pose3D by (meters to inches or inches to meters)
      * @return adjusted Pose3d
      */
-    private static Pose3d scalePose(Pose3d initial, double scale) {
+    /*private static Pose3d scalePose(Pose3d initial, double scale) {
         Pose3d inches = new Pose3d(
                 new Translation3d(scale*initial.getX(), scale*initial.getY(), scale*initial.getZ()),
                 initial.getRotation());
         return inches;
-    }
+    }*/
+
     List<NetworkCamera> cameras = List.of(
-            new LimelightCamera(),
-            new OakCamera()
+            new OakCamera(10.5)
     );
     GenericRobot robot;
     double currentYaw = 0;
@@ -113,7 +113,6 @@ public final class MoeNetVision {
 
     public void genericPeriodic() {
         Pose3d odometryPose = new Pose3d(robot.getPose());
-        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
         Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
 
         //Mapping the odometry Pose to hte odometry pose in field space, shifted by Vision pose
@@ -149,26 +148,12 @@ public final class MoeNetVision {
      */
     public Pose3d getPose(){
         Pose3d odometryPose = new Pose3d(robot.getPose());
-        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
         Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
         return odometryPoseFS;
     }
 
     public boolean poseFound(){
         return getPose() == null;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Pose3d robotFieldPoseInches() {
-        var pose = getPose();
-
-        if (pose ==null){
-            return null;
-        }
-        return scalePose(pose, INCHES_PER_METER);
     }
 
     /**
