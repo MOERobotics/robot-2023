@@ -139,11 +139,11 @@ public class DriveCode extends GenericTeleop{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////Point robot to object
 
+        SmartDashboard.putBoolean("Do you see object yet?", notSeenObjectYet);
         if (xboxDriver.getRawAxis(3) >.1) {
             SmartDashboard.putNumber("desiredYaw", desiredYaw);
             Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
             if ((notSeenObjectYet) && (firstDetection != null) ){
-
                 var objOffset = firstDetection.location.getTranslation().toTranslation2d()
                         .times(Units.metersToInches(1));
                 double distance = objOffset.getNorm();
@@ -156,12 +156,28 @@ public class DriveCode extends GenericTeleop{
                 fieldCentric = false;
                 notSeenObjectYet = false;
             } else {
+                SmartDashboard.putString("Am I here?", "Hello, I'm here!");
                 fieldCentric = false;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
+                xspd = 36;
+                if (robot.cargoInCollector()){
+                    xspd = 0;
+                }
+                /*
+                m_timer.reset();
+                m_timer.start();
+                if(m_timer.get() >= 0.5){
+                    xspd = 24;
+                    if(robot.cargoInCollector()){
+                        xspd = 0;
+                    }
+                }
+                */
             }
         }
         else {
             inPlacePID.reset();
+            notSeenObjectYet = true;
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
@@ -233,7 +249,7 @@ public class DriveCode extends GenericTeleop{
             autoMode = false;
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////collector rolls
-        if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
+        if (xboxFuncOp.getRawAxis(3) > 0.10 || xboxDriver.getRawAxis(3) > 0.1){ //collect in
             raiseTopRoller = false;
             openGripper = true;
             armPower = -.1;
