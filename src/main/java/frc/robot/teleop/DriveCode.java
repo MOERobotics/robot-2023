@@ -53,6 +53,7 @@ public class DriveCode extends GenericTeleop{
     double xPoseOfWall = 0;
     boolean lightsOn = false;
     boolean fieldCentric = true;
+    boolean autoCollectStopDriving = false;
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -157,14 +158,18 @@ public class DriveCode extends GenericTeleop{
             } else {
                 fieldCentric = false;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
-                xspd = 36;
+                xspd = 60;
                 if (robot.cargoDetected()){
+                    autoCollectStopDriving = true;
+                }
+                if (autoCollectStopDriving){
                     xspd = 0;
                 }
             }
         }
         else {
             inPlacePID.reset();
+            autoCollectStopDriving = false;
             notSeenObjectYet = true;
         }
 
