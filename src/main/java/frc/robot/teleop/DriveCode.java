@@ -160,6 +160,7 @@ public class DriveCode extends GenericTeleop{
                 xspd = turnspd = 0;
             }
             else {
+                lightsOn = true;
                 fieldCentric = false;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
                 xspd = 84;
@@ -173,6 +174,7 @@ public class DriveCode extends GenericTeleop{
             }
         }
         else {
+            lightsOn = false;
             inPlacePID.reset();
             autoCollectStopDriving = false;
             notSeenObjectYet = true;
