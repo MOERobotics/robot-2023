@@ -140,15 +140,14 @@ public class DriveCode extends GenericTeleop{
 ////////////////////////////////////////////////////////////////////////////////////////////////////Point robot to object
 
         SmartDashboard.putBoolean("Do you see object yet?", notSeenObjectYet);
+        SmartDashboard.putNumber("desiredYaw", desiredYaw);
         if (xboxDriver.getRawAxis(3) >.1) {
             SmartDashboard.putNumber("desiredYaw", desiredYaw);
             Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
             if ((notSeenObjectYet) && (firstDetection != null) ){
                 var objOffset = firstDetection.location.getTranslation().toTranslation2d()
                         .times(Units.metersToInches(1));
-                double distance = objOffset.getNorm();
-                var targetPosition = objOffset.interpolate(new Translation2d(), 1 - (distance) / distance);
-                //Pose2d desiredPose = robotPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                var targetPosition = objOffset.interpolate(new Translation2d(), 0);
                 double yDiff = targetPosition.getY();
                 double xDiff = targetPosition.getX();
                 desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff) * 180 / Math.PI;
@@ -156,23 +155,12 @@ public class DriveCode extends GenericTeleop{
                 fieldCentric = false;
                 notSeenObjectYet = false;
             } else {
-                SmartDashboard.putString("Am I here?", "Hello, I'm here!");
                 fieldCentric = false;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
                 xspd = 36;
                 if (robot.cargoInCollector()){
                     xspd = 0;
                 }
-                /*
-                m_timer.reset();
-                m_timer.start();
-                if(m_timer.get() >= 0.5){
-                    xspd = 24;
-                    if(robot.cargoInCollector()){
-                        xspd = 0;
-                    }
-                }
-                */
             }
         }
         else {
