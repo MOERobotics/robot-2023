@@ -60,7 +60,7 @@ public class DriveCode extends GenericTeleop{
     double x = 0;
     double y = 0;
     double armLength = 40;
-    Point startingPos;
+    Point startingPos = new Point(0,0);
     Point shelfStation = new Point (12.87+armLength,240.7);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -188,10 +188,12 @@ public class DriveCode extends GenericTeleop{
         }
         if (xboxDriver.getRawButton(3)){
             SmartDashboard.putNumber("autoStep", autoStep);
+            SmartDashboard.putNumber("startPosX", startingPos.x);
+            SmartDashboard.putNumber("startPosY", startingPos.y);
 
             boolean poseNull = true;
             Pose3d visPose = vision.getPose();
-            if (visPose != null){
+            if (visPose.getX() != -1){
                 poseNull = false;
                 x = visPose.getX();
                 y = visPose.getY();
