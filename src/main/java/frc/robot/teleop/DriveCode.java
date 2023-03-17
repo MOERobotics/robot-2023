@@ -1,6 +1,8 @@
 package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.*;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
@@ -13,6 +15,8 @@ import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
+import org.opencv.core.Point;
+
 
 
 public class DriveCode extends GenericTeleop{
@@ -55,6 +59,23 @@ public class DriveCode extends GenericTeleop{
     boolean fieldCentric = true;
     boolean autoCollectStopDriving = false;
 
+
+
+    double x = 0;
+    double y = 0;
+    double armLength = 40;
+    Point startingPos = new Point(0,0);
+    Point shelfStationRedLeft = new Point (53,240.7);
+    Point shelfStationRedRight = new Point(53, 280);
+    Point shelfStationBlueLeft = new Point (650-53, 280);
+    Point shelfStationBlueRight = new Point(650-53, 240.7);
+    Point shelfStation = new Point(0,0);
+    Rotation2d startRot = new Rotation2d(0);
+
+    double startX = 0;
+
+
+
     @Override
     public void teleopInit(GenericRobot robot) {
         balanceInit = false;
@@ -82,6 +103,14 @@ public class DriveCode extends GenericTeleop{
         pressed = false;
         lightsOn = false;
         fieldCentric = true;
+        if (robot.getRed()){
+            startRot = new Rotation2d(Math.PI);
+        }
+        else{
+            startRot = new Rotation2d(0);
+        }
+        if (robot.getRed()) robot.setPigeonYaw(180);
+        if (!robot.getRed()) robot.setPigeonYaw(0);
     }
 
     @Override
@@ -89,6 +118,8 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
         SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
+        Pose2d currPose = robot.getPose();
+
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
@@ -119,7 +150,7 @@ public class DriveCode extends GenericTeleop{
             desiredYaw = robot.getYaw();
         }
         else {
-            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3)) {
+            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)) {
                 turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
             }
         }
@@ -134,6 +165,8 @@ public class DriveCode extends GenericTeleop{
             robot.setPose(m_pose);
             yawControl.reset();
             desiredYaw = 0;
+            if (robot.getRed()) robot.setPigeonYaw(180);
+            if (!robot.getRed()) robot.setPigeonYaw(0);
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
@@ -185,53 +218,105 @@ public class DriveCode extends GenericTeleop{
         if (xboxDriver.getRawButtonPressed(3)){
             autoStep = 0;
             xPoseOfWall = robotPose.getX();
+            shelfStation = new Point(shelfStationBlueLeft.x, shelfStationBlueLeft.y);
+            if (robot.getRed()){
+                shelfStation = new Point(shelfStationRedLeft.x, shelfStationRedLeft.y);
+            }
         }
-        if (xboxDriver.getRawButton(3)){
+        if (xboxDriver.getRawButtonPressed(2)){
+            autoStep = 0;
+            xPoseOfWall = robotPose.getX();
+            shelfStation = new Point(shelfStationBlueRight.x, shelfStationBlueRight.y);
+            if (robot.getRed()){
+                shelfStation = new Point(shelfStationRedRight.x, shelfStationRedRight.y);
+            }
+        }
+        if (xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)){
             SmartDashboard.putNumber("autoStep", autoStep);
-            xspd = yspd = 0;
+            SmartDashboard.putNumber("startPosX", startingPos.x);
+            SmartDashboard.putNumber("startPosY", startingPos.y);
+            SmartDashboard.putNumber("desiredPoseShelfX", shelfStation.x);
+            SmartDashboard.putNumber("desiredPoseShelfY", shelfStation.y);
 
-            switch (autoStep){
+            boolean poseNull = true;
+            Pose3d visPose = vision.getPose();
+            if (visPose.getX() != -1){
+                poseNull = false;
+                x = visPose.getX();
+                if (robot.getRed()){
+                    y = visPose.getY() + 12;
+                }
+                else{
+                    y = visPose.getY() - 19; //TODO: check if offset shdnt be off
+                }
+            }
+
+            startingPos = new Point(x, y);
+            double shelfCollectSpeed = 48;
+
+            switch(autoStep) {
                 case 0:
-                    xspd = -30;
-                    yspd = 0;
-                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 50){
-                        xspd = yspd = 0;
-                        desiredArmPos = 78;
-                        xPoseOfWall = robotPose.getX();
-                        autoStep ++;
-                    }
+                    robot.resetStartDists();
+                    robot.resetStartPivots();
+                    robot.resetStartHeading();
+                    if (!robot.getRed()) startRot = new Rotation2d(Math.PI);
+                    if (robot.getRed()) startRot = new Rotation2d(0);
+                    robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                    openGripper = true;
+
+                    desiredArmPos = 85;
+                    if (!poseNull)autoStep++;
+                    m_timer.restart();
                     break;
                 case 1:
-                    xspd = 0;
-                    yspd = 0;
-                    if (Math.abs(robot.getPotDegrees() - desiredArmPos) <= 2){
-                        autoStep ++;
+                    double xDiff, yDiff, totDiff;
+                    xDiff = shelfStation.x - robotPose.getX();
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
+                        robot.resetStartDists();
+                        robot.resetStartHeading();
+                        robot.resetStartPivots();
+                        robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                        m_timer.restart();
+                    }
+                    xDiff = shelfStation.x - robotPose.getX();
+                    yDiff = shelfStation.y - robotPose.getY();
+                    totDiff = Math.hypot(xDiff, yDiff);
+                    SmartDashboard.putNumber("totalDiff", totDiff);
+                    xspd = shelfCollectSpeed * xDiff/totDiff;
+                    yspd = shelfCollectSpeed * yDiff/totDiff;
+                    if (robot.getRed()){
+                        xspd *= -1;
+                        yspd *= -1;
+                    }
+                    if (totDiff <= 1) {
+                        xspd = 0;
+                        yspd = 0;
+                        m_timer.reset();
+                        m_timer.start();
+                        autoStep++;
                     }
                     break;
                 case 2:
-                    xspd = 12;
-                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 21){
-                        xspd = yspd = 0;
-                        openGripper = false;
-                        m_timer.reset();
-                        m_timer.start();
+                    xspd = yspd = 0;
+                    openGripper = false;
+                    if (m_timer.get() >= 1){
+                        desiredArmPos = 90;
                         autoStep ++;
+                        startX = robotPose.getX();
                     }
                     break;
                 case 3:
-                    if(m_timer.get() <= .2){
-                        autoStep++;
-                        xPoseOfWall = robotPose.getX();
-                    }
-                    break;
-                case 4:
-                    xspd = -12;
-                    desiredArmPos = 84;
-                    if (Math.abs(xPoseOfWall) - robotPose.getX() >= 10){
+                    xspd = -shelfCollectSpeed;
+                    yspd = 0;
+                    if (Math.abs(robotPose.getX() - startX) >= 12){
                         xspd = yspd = 0;
                     }
                     break;
+                case 4:
+                    xspd = yspd = 0;
+                    break;
             }
+            turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
 
         }
 
@@ -258,7 +343,7 @@ public class DriveCode extends GenericTeleop{
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip){
-                collectorRPM = 9500;
+                collectorRPM = 3000;
                 desiredArmPos = -4;
                 armPower = 0;
             }
@@ -327,6 +412,7 @@ public class DriveCode extends GenericTeleop{
             balance.periodic(robot);
         }
         else {
+            SmartDashboard.putNumber("turnspd", turnspd);
             balanceInit = false;
             robot.setDrive(xspd, yspd, turnspd, false, fieldCentric);
         }
@@ -341,6 +427,7 @@ public class DriveCode extends GenericTeleop{
             robot.holdArmPosition(desiredArmPos);
         }
     }
+
 
     public int heightIndex(){
         int heightIndex = 0;
