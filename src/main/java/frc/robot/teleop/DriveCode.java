@@ -61,13 +61,11 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStation = new Point (12.87+armLength,240.7);
+    Point shelfStation = new Point (54.5,240.7);
     Rotation2d startRot = new Rotation2d(0);
 
     double startX = 0;
 
-    double visStartingX = 92.87;
-    double visStartingY = 220.7;
 
 
     @Override
@@ -103,6 +101,8 @@ public class DriveCode extends GenericTeleop{
         else{
             startRot = new Rotation2d(0);
         }
+        if (robot.getRed()) robot.setPigeonYaw(180);
+        if (!robot.getRed()) robot.setPigeonYaw(0);
     }
 
     @Override
@@ -157,6 +157,8 @@ public class DriveCode extends GenericTeleop{
             robot.setPose(m_pose);
             yawControl.reset();
             desiredYaw = 0;
+            if (robot.getRed()) robot.setPigeonYaw(180);
+            if (!robot.getRed()) robot.setPigeonYaw(0);
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
@@ -190,13 +192,20 @@ public class DriveCode extends GenericTeleop{
             SmartDashboard.putNumber("autoStep", autoStep);
             SmartDashboard.putNumber("startPosX", startingPos.x);
             SmartDashboard.putNumber("startPosY", startingPos.y);
+            SmartDashboard.putNumber("desiredPoseShelfX", shelfStation.x);
+            SmartDashboard.putNumber("desiredPoseShelfY", shelfStation.y);
 
             boolean poseNull = true;
             Pose3d visPose = vision.getPose();
             if (visPose.getX() != -1){
                 poseNull = false;
                 x = visPose.getX();
-                y = visPose.getY();
+                if (robot.getRed()){
+                    y = visPose.getY() + 12;
+                }
+                else{
+                    y = visPose.getY() - 12;
+                }
             }
 
             startingPos = new Point(x, y);
@@ -207,14 +216,23 @@ public class DriveCode extends GenericTeleop{
                     robot.resetStartDists();
                     robot.resetStartPivots();
                     robot.resetStartHeading();
-                    if (robot.getRed()) startRot = new Rotation2d(Math.PI);
+                    if (!robot.getRed()) startRot = new Rotation2d(Math.PI);
+                    if (robot.getRed()) startRot = new Rotation2d(0);
                     robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
                     openGripper = true;
 
-                    desiredArmPos = 87;
+                    desiredArmPos = 85;
                     if (!poseNull)autoStep++;
+                    m_timer.restart();
                     break;
                 case 1:
+                    if (!poseNull && m_timer.get() >= .1){
+                        robot.resetStartDists();
+                        robot.resetStartHeading();
+                        robot.resetStartPivots();
+                        robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                        m_timer.restart();
+                    }
                     double xDiff = shelfStation.x - robotPose.getX();
                     double yDiff = shelfStation.y - robotPose.getY();
                     double totDiff = Math.hypot(xDiff, yDiff);
@@ -225,7 +243,7 @@ public class DriveCode extends GenericTeleop{
                         xspd *= -1;
                         yspd *= -1;
                     }
-                    if (totDiff <= 2) {
+                    if (totDiff <= 1) {
                         xspd = 0;
                         yspd = 0;
                         m_timer.reset();
@@ -245,9 +263,12 @@ public class DriveCode extends GenericTeleop{
                 case 3:
                     xspd = -shelfCollectSpeed;
                     yspd = 0;
-                    if (robotPose.getX() - startX >= 30){
+                    if (robotPose.getX() - startX >= 12){
                         xspd = yspd = 0;
                     }
+                    break;
+                case 4:
+                    xspd = yspd = 0;
                     break;
             }
             turnspd = yawControl.calculate(desiredYaw - robot.getYaw());

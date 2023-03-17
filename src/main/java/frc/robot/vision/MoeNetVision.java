@@ -152,7 +152,7 @@ public final class MoeNetVision {
         if (visPose.getX() == -1){
             return visPose;
         }
-        return scalePose(getVisionPose(), INCHES_PER_METER);
+        return scalePose(visPose, INCHES_PER_METER);
 //        Pose3d odometryPose = new Pose3d(robot.getPose());
 //        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
 //        Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
