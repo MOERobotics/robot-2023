@@ -61,7 +61,11 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStation = new Point (54.5,240.7);
+    Point shelfStationRedLeft = new Point (53,240.7);
+    Point shelfStationRedRight = new Point(53, 280);
+    Point shelfStationBlueLeft = new Point (650-53, 280);
+    Point shelfStationBlueRight = new Point(650-53, 240.7);
+    Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
     double startX = 0;
@@ -142,7 +146,7 @@ public class DriveCode extends GenericTeleop{
             desiredYaw = robot.getYaw();
         }
         else {
-            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3)) {
+            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)) {
                 turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
             }
         }
@@ -187,8 +191,20 @@ public class DriveCode extends GenericTeleop{
         if (xboxDriver.getRawButtonPressed(3)){
             autoStep = 0;
             xPoseOfWall = robotPose.getX();
+            shelfStation = new Point(shelfStationBlueLeft.x, shelfStationBlueLeft.y);
+            if (robot.getRed()){
+                shelfStation = new Point(shelfStationRedLeft.x, shelfStationRedLeft.y);
+            }
         }
-        if (xboxDriver.getRawButton(3)){
+        if (xboxDriver.getRawButtonPressed(2)){
+            autoStep = 0;
+            xPoseOfWall = robotPose.getX();
+            shelfStation = new Point(shelfStationBlueRight.x, shelfStationBlueRight.y);
+            if (robot.getRed()){
+                shelfStation = new Point(shelfStationRedRight.x, shelfStationRedRight.y);
+            }
+        }
+        if (xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)){
             SmartDashboard.putNumber("autoStep", autoStep);
             SmartDashboard.putNumber("startPosX", startingPos.x);
             SmartDashboard.putNumber("startPosY", startingPos.y);
@@ -204,7 +220,7 @@ public class DriveCode extends GenericTeleop{
                     y = visPose.getY() + 12;
                 }
                 else{
-                    y = visPose.getY() - 12;
+                    y = visPose.getY() - 19; //TODO: check if offset shdnt be off
                 }
             }
 
@@ -226,16 +242,18 @@ public class DriveCode extends GenericTeleop{
                     m_timer.restart();
                     break;
                 case 1:
-                    if (!poseNull && m_timer.get() >= .1){
+                    double xDiff, yDiff, totDiff;
+                    xDiff = shelfStation.x - robotPose.getX();
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
                         robot.resetStartDists();
                         robot.resetStartHeading();
                         robot.resetStartPivots();
                         robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
                         m_timer.restart();
                     }
-                    double xDiff = shelfStation.x - robotPose.getX();
-                    double yDiff = shelfStation.y - robotPose.getY();
-                    double totDiff = Math.hypot(xDiff, yDiff);
+                    xDiff = shelfStation.x - robotPose.getX();
+                    yDiff = shelfStation.y - robotPose.getY();
+                    totDiff = Math.hypot(xDiff, yDiff);
                     SmartDashboard.putNumber("totalDiff", totDiff);
                     xspd = shelfCollectSpeed * xDiff/totDiff;
                     yspd = shelfCollectSpeed * yDiff/totDiff;
@@ -263,7 +281,7 @@ public class DriveCode extends GenericTeleop{
                 case 3:
                     xspd = -shelfCollectSpeed;
                     yspd = 0;
-                    if (robotPose.getX() - startX >= 12){
+                    if (Math.abs(robotPose.getX() - startX) >= 12){
                         xspd = yspd = 0;
                     }
                     break;
