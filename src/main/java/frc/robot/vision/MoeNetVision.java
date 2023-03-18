@@ -36,8 +36,7 @@ public final class MoeNetVision {
         return inches;
     }
     List<NetworkCamera> cameras = List.of(
-            new LimelightCamera(),
-            new OakCamera()
+            new OakCamera(-10.5)
     );
     GenericRobot robot;
     double currentYaw = 0;
@@ -176,22 +175,31 @@ public final class MoeNetVision {
         return scalePose(pose, INCHES_PER_METER);
     }
 
+
     /**
-     * Loops through all the cameras to find detections. Returns the first detection found.
-     * @return Detection of object
+     * Program selects an object type and location to search for. Loops through all the
+     * cameras to find detections. This function uses vision to return the closest Detection
+     * of that object type.
+     *
+     * @param type Object type being looked for
+     * @param xSelected The X location of the selected object
+     * @param ySelected The Y location of the selected Object
+     * @param radius The tolerated distance error from the estimated location
+     * @return Detection that is closest to the object that is being looked for
      */
-    public Detection firstObjectDetection(){
-        for(NetworkCamera camera : cameras){
-            //I was upsetty spagetti when I named this variable and I am not sorry
-            List<Detection> klad = camera.getDetections();
-            if(klad != null){
-                for (Detection detection : klad){
-                    if (detection.objectType == Detection.Cargo.CONE_BOTTOM)
-                        return klad.get(0);
-                }
-            }
+    //@Deprecated
+    public Detection selectedObjectDetection(Detection.Cargo type, double xSelected, double ySelected, double radius){
+        Detection closestDetection = selectedObjectDetectionInches
+                (type, Units.metersToInches(xSelected),  Units.metersToInches(ySelected),  Units.metersToInches(radius));
+        if(closestDetection == null){
+            return null;
+        }else{
+            Detection toMeters = new Detection
+                    (Units.inchesToMeters(closestDetection.location.getX()),
+                            Units.inchesToMeters(closestDetection.location.getY()),
+                            Units.inchesToMeters(closestDetection.location.getZ()), type);
+            return toMeters;
         }
-        return null;
     }
 
     /**
@@ -205,7 +213,7 @@ public final class MoeNetVision {
      * @param radius The tolerated distance error from the estimated location
      * @return Detection that is closest to the object that is being looked for
      */
-    public Detection selectedObjectDetection(Detection.Cargo type, double xSelected, double ySelected, double radius){
+    public Detection selectedObjectDetectionInches(Detection.Cargo type, double xSelected, double ySelected, double radius){
         Detection closestDetection = null;
         double closestDistance = radius;
 
@@ -226,7 +234,7 @@ public final class MoeNetVision {
 
                         double distance = Math.sqrt(
                                 (Math.abs(detectedX- xSelected) * Math.abs(detectedX- xSelected))
-                                +(Math.abs(detectedY- ySelected) * Math.abs(detectedY - ySelected))
+                                        +(Math.abs(detectedY- ySelected) * Math.abs(detectedY - ySelected))
                         );
 
                         if(distance < closestDistance){
@@ -241,5 +249,7 @@ public final class MoeNetVision {
 
         return closestDetection;
     }
+
+
 
 }

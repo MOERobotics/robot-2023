@@ -44,7 +44,8 @@ public class ObjectDetectionTest extends genericAutonomous {
 
         switch (autonomousStep){
             case 0: {
-                Detection firstDetection = vision.firstObjectDetection();
+                //Really bad never run
+                Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
 
                 SmartDashboard.putBoolean("detautoHasFirstDetection", firstDetection != null);
 
