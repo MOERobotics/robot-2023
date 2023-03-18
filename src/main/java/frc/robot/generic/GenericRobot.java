@@ -291,7 +291,7 @@ public abstract class GenericRobot {
         return getPose();
     }
 
-    public void addVisionPose(double latency, double error){
+    public void addVisionPose(Pose2d visionPose, double latency, double error){
 
     }
 
