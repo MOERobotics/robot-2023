@@ -177,6 +177,7 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putNumber("desiredYaw", desiredYaw);
         if (xboxDriver.getRawAxis(3) >.1) {
             SmartDashboard.putNumber("desiredYaw", desiredYaw);
+
             Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
             if ((notSeenObjectYet) && (firstDetection != null) ) {
                 var objOffset = firstDetection.location.getTranslation().toTranslation2d()
@@ -188,6 +189,9 @@ public class DriveCode extends GenericTeleop{
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
                 fieldCentric = false;
                 notSeenObjectYet = false;
+                SmartDashboard.putNumber("visionWeirdPoseX", currPose.transformBy(new Transform2d(targetPosition, new Rotation2d())).getX());
+                SmartDashboard.putNumber("visionWeirdPosey", currPose.transformBy(new Transform2d(targetPosition, new Rotation2d())).getY());
+                SmartDashboard.putNumber("visionWeirdPoseRot", currPose.transformBy(new Transform2d(targetPosition, new Rotation2d())).getRotation().getDegrees());
             }
             else if (notSeenObjectYet) {
                 xspd = turnspd = 0;
