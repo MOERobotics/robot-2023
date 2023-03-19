@@ -654,9 +654,9 @@ public class    swerveBot extends GenericRobot{
 
     /////////////////////////////////////////////////////////////////////////////Light Sensor Code
 
-    @Override
+    /*@Override
     public boolean getLeftLightSensor(){return leftLightSensor.get();}
 
     @Override
-    public boolean getRightLightSensor(){return rightLightSensor.get();}
+    public boolean getRightLightSensor(){return rightLightSensor.get();}*/
 }

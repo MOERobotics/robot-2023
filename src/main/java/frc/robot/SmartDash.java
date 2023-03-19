@@ -36,6 +36,8 @@ public class SmartDash {
         SmartDashboard.putNumber("leftBCurrent", robot.getLeftBCurrent());
         SmartDashboard.putNumber("rightACurrent", robot.getRightACurrent());
         SmartDashboard.putNumber("rightBCurrent", robot.getRightBCurrent());
+        SmartDashboard.putBoolean("floorSensorLeft", robot.getLeftFloorSensor());
+        SmartDashboard.putBoolean("floorSensorRight", robot.getRightFloorSensor());
 
 
         robot.getDriveDistanceInchesLeftA();

@@ -48,10 +48,12 @@ public class E2Engage extends genericAutonomous{
     double desiredInchesPerSecond = 60;
     double xPidK = 7;
     double yPidK = 7;
-    double centerLine = 295;
     double collectorRPM = 9000;
     Pose3d visionPose;
     PIDController PID = new PIDController(1.0e-1, 0, 0);
+    double startXPose;
+    double centerLineBlue = 295;
+    double centerLine = centerLineBlue;
     @Override
     public void autonomousInit(GenericRobot robot) {
         PID.enableContinuousInput(-180,180);
@@ -70,7 +72,9 @@ public class E2Engage extends genericAutonomous{
         correctionPower = 13;
         defaultSpeed = 40;
         xLeftChargeStation = xLeftChargeStationBlue;
+        centerLine = centerLineBlue;
         if (robot.getRed()){
+            centerLine = lengthOfField - centerLineBlue;
             startPosition.x        = lengthOfField - startPositionBlue.x;
             firstScorePosition.x   = lengthOfField - firstScorePositionBlue.x;
             estimatedCubeSpot.x    = lengthOfField - estimatedCubeSpotBlue.x;
@@ -84,46 +88,54 @@ public class E2Engage extends genericAutonomous{
             robot.setPigeonYaw(180);
         }
         desiredCubePos = new Pose2d(estimatedCubeSpot.x, estimatedCubeSpot.y, startRot);
+        robot.resetPose();
+        robot.resetAttitude();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
     }
 
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
+        SmartDashboard.putNumber("autoStep", autonomousStep);
         Pose2d currPose = robot.getPose();
+        currPitch = robot.getPitch();
         visionPose = vision.getPose();
         switch(autonomousStep){
             case 0:
+                collectorRPM = 0;
                 robot.resetPose();
                 collectorUp = true;
                 openGripper = false;
                 armPos = 101.1;
                 m_timer.restart();
                 if (Math.abs(robot.getPotDegrees() - armPos) <= 10){
+                    startXPose = currPose.getX();
                     autonomousStep ++;
                 }
                 break;
             case 1: //rollback to get ready to score
-                t = m_timer.get();
-                s = getS(t);
-                xspd = velocityFunctionX(s, t) + xPidK*(positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s, t) + yPidK*(positionFunctionY(s) - currPose.getY());
-                if (s >= dist1){
+                xspd = -30;
+                if (robot.getRed()) xspd *= -1;
+                if (Math.abs(startXPose - currPose.getX()) >= 24){
                     xspd = yspd = 0;
                     m_timer.restart();
                     autonomousStep++;
                 }
                 break;
             case 2: //score the cone
-                openGripper = false;
+                openGripper = true;
                 armPos = 85;
                 if (m_timer.get() > .2){
                     m_timer.restart();
                     autonomousStep++;
+                    startXPose = currPose.getX();
                 }
                 break;
             case 3: //drive over the charge station
                 xspd = basePower;
                 yspd = turnspd = 0;
+                if (Math.abs(currPose.getX()-startXPose) >= 20){
+                    armPos = -4;
+                }
                 if (Math.abs(currPitch) > firstBreak) {
                     armPos = -4;
                     //Add length of the robot from front encoder to end of back wheel.
@@ -154,7 +166,8 @@ public class E2Engage extends genericAutonomous{
                 if (Math.abs(currPitch) < desiredPitch){
                     collectorUp = false;
                     collectorRPM = 9000;
-                    robot.setPose(new Pose2d(205, currPose.getY(), startRot));
+                    robot.resetPose();
+                    robot.setPose(new Pose2d(xLeftChargeStation, currPose.getY(), startRot));
                     m_timer.restart();
                     autonomousStep ++;
                 }
@@ -167,11 +180,11 @@ public class E2Engage extends genericAutonomous{
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 0);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    if (possPose.getX() > centerLine && robot.getRed()){
+                    if ((possPose.getX() > centerLine) && robot.getRed()){
                         lightOn = true;
                         this.desiredCubePos = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
-                    if (possPose.getX() < centerLine && !robot.getRed()){
+                    if ((possPose.getX() < centerLine) && !robot.getRed()){
                         lightOn = true;
                         this.desiredCubePos = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
@@ -195,6 +208,7 @@ public class E2Engage extends genericAutonomous{
                 }
                 break;
             case 9: //go to spot before engage
+                collectorRPM = 0;
                 t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s, t) + xPidK*(positionFunctionX(s) - currPose.getX());
@@ -207,6 +221,7 @@ public class E2Engage extends genericAutonomous{
                 break;
             case 10: //go back up
                 xspd = basePower;
+                collectorRPM = 0;
                 if (Math.abs(currPitch) > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
@@ -245,7 +260,10 @@ public class E2Engage extends genericAutonomous{
                 }
                 break;
         }
-        if (robot.getPose().getX() > 295){
+        if (currPose.getX() < centerLine && robot.getRed()){
+            xspd = 0;
+        }
+        if (currPose.getX() > centerLine && !robot.getRed()){
             xspd = 0;
         }
         if (autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
