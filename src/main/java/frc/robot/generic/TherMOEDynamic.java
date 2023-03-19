@@ -99,6 +99,12 @@ public class TherMOEDynamic extends GenericRobot{
     SparkMaxLimitSwitch armLimitSwitchForward = leftArmMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch armLimitSwitchReverse = leftArmMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
+    SparkMaxLimitSwitch floorSensorLeftForward = leftMotorB.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch floorSensorLeftReverse = leftMotorB.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    SparkMaxLimitSwitch floorSensorRightForward = rightMotorB.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch floorSensorRightReverse = rightMotorB.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
     // Robot chassic dimensions, shaft to shaft.
     static final double w = 13.875;
     static final double d = 10.375;
@@ -115,6 +121,10 @@ public class TherMOEDynamic extends GenericRobot{
         firstCargoFinderReverse.enableLimitSwitch(false);
         armLimitSwitchForward.enableLimitSwitch(false);
         armLimitSwitchReverse.enableLimitSwitch(false);
+        floorSensorRightReverse.enableLimitSwitch(false);
+        floorSensorRightForward.enableLimitSwitch(false);
+        floorSensorLeftForward.enableLimitSwitch(false);
+        floorSensorLeftReverse.enableLimitSwitch(false);
 
         m_ph.enableCompressorAnalog(100,120);
 
@@ -756,5 +766,17 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void setLightsOn(boolean on) {
         lights.set(on);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////floor sensors
+
+    @Override
+    public boolean getLeftFloorSensor() {
+        return floorSensorLeftForward.isPressed();
+    }
+
+    @Override
+    public boolean getRightFloorSensor() {
+        return floorSensorRightForward.isPressed();
     }
 }
