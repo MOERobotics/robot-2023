@@ -67,10 +67,10 @@ public class E2EngageFast extends genericAutonomous{
         firstScorePosition.x   = firstScorePositionBlue.x;
         estimatedCubeSpot.x    = estimatedCubeSpotBlue.x;
         spotBeforeEngage.x     = spotBeforeEngageBlue.x;
-        basePower = 35;
-        climbPower = 30;
+        basePower = 80;
+        climbPower = 80;
         correctionPower = 13;
-        defaultSpeed = 40;
+        defaultSpeed = 70;
         xLeftChargeStation = xLeftChargeStationBlue;
         centerLine = centerLineBlue;
         if (robot.getRed()){
@@ -83,7 +83,6 @@ public class E2EngageFast extends genericAutonomous{
             basePower *= -1;
             climbPower *= -1;
             correctionPower *= -1;
-            defaultSpeed = 40;
             startRot = new Rotation2d(Math.PI);
             robot.setPigeonYaw(180);
         }
