@@ -158,7 +158,7 @@ public class E2EngageFast extends genericAutonomous{
                 xspd = climbPower+4;
                 if (robot.getLeftFloorSensor()) leftSensor = true;
                 if (robot.getRightFloorSensor()) rightSensor = true;
-                if (leftSensor && rightSensor){
+                if ((leftSensor && rightSensor)|| Math.abs(currPitch) < desiredPitch){
                     collectorUp = false;
                     collectorRPM = 9000;
                     robot.setPose(new Pose2d(205, currPose.getY(), startRot));
