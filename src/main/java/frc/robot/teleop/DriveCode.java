@@ -17,6 +17,10 @@ import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
 import org.opencv.core.Point;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class DriveCode extends GenericTeleop{
@@ -73,6 +77,8 @@ public class DriveCode extends GenericTeleop{
     Rotation2d startRot = new Rotation2d(0);
 
     double startX = 0;
+    boolean clockTurn = false;
+    boolean counterTurn = false;
 
 
 
@@ -103,6 +109,8 @@ public class DriveCode extends GenericTeleop{
         pressed = false;
         lightsOn = false;
         fieldCentric = true;
+        clockTurn = false;
+        counterTurn = false;
         if (robot.getRed()){
             startRot = new Rotation2d(Math.PI);
         }
@@ -216,6 +224,29 @@ public class DriveCode extends GenericTeleop{
             autoCollectStopDriving = false;
             notSeenObjectYet = true;
         }
+////////////////////////////////////////////////////////////////////////////////////////rotate 180 clockwise of 180 counterclock
+
+        if (counterTurn){
+            desiredYaw -= 90;
+            counterTurn = false;
+        }
+        if (clockTurn){
+            desiredYaw += 90;
+            clockTurn = false;
+        }
+        switch (POVDirection.getDirection(xboxDriver.getPOV())) {
+            case EAST:
+                desiredYaw -= 90;
+                counterTurn = true;
+                clockTurn = false;
+                break;
+            case WEST:
+                desiredYaw += 90;
+                clockTurn = true;
+                counterTurn = false;
+                break;
+        }
+
 
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
@@ -449,4 +480,42 @@ public class DriveCode extends GenericTeleop{
         }
         return heightIndex;
     }
+
+
+    public enum POVDirection {
+        NORTH(0),
+        NORTHEAST(45),
+        EAST(90),
+        SOUTHEAST(135),
+        SOUTH(180),
+        SOUTHWEST(225),
+        WEST(270), //best
+        NORTHWEST(315),
+        NULL(-1);
+
+        private final int angle;
+
+        POVDirection(int angle) {
+            this.angle = angle;
+        }
+
+        public int getAngle() {
+            return angle;
+        }
+
+        //Kevin voodoo to turn ints into directions
+        public static final Map<Integer, POVDirection> directionMap =
+                Arrays.stream(POVDirection.values()).collect(
+                        Collectors.toMap(
+                                POVDirection::getAngle,
+                                Function.identity()
+                        )
+                );
+
+        public static POVDirection getDirection(int angle) {
+            return directionMap.getOrDefault(angle, POVDirection.NULL);
+        }
+    }
+}
+
 }

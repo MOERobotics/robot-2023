@@ -251,29 +251,14 @@ public class A1B2C extends genericAutonomous {
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 4){
+                if (robot.cargoDetected() || m_timer.get() > 4 || robot.cargoInCollector()){
                     timeToWait = true;
                     if (robot.cargoDetected()) tripHappened = true;
+                    if (robot.cargoInCollector()) openGripper = false;
                     //reads new currPose and creates new path based on it
                     xspd = yspd = 0;
                     m_timer.restart();
-                }
-                if (timeToWait){
-                    position1 = new Point(currPose.getX(), currPose.getY());
-                    dist1toARevisted = AutoCodeLines.getDistance(position1, positionARevisited);
-                    collectorRPM = 9000;
-                    xspd = yspd = 0;
-                    if (m_timer.get() > .5) {
-                        m_timer.reset();
-                        m_timer.start();
-                        autonomousStep = 5;
-                    }
-                }
-                if (robot.cargoInCollector()){
-                    openGripper = false;
-                    collectorRPM = 0;
-                    autonomousStep = 5;
-                    m_timer.restart();
+                    autonomousStep++;
                 }
                 break;
             case 5://drive from detected spot to spot A

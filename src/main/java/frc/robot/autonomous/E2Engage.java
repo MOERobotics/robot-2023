@@ -13,12 +13,14 @@ import org.opencv.core.Point;
 
 public class E2Engage extends genericAutonomous{
 
-    Point startPosition       = new Point(85,108);
+    Point startPosition       = new Point(83,108);
     Point firstScorePosition  = new Point(69, 108);
+    double xLeftChargeStation = 200;
     Point estimatedCubeSpot   = new Point(270, 130.5);
     Point spotBeforeEngage    = new Point(220, 108);
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
+    double xLeftChargeStationBlue     = 200;
     Point estimatedCubeSpotBlue   = new Point(270, 130.5);
     Point spotBeforeEngageBlue    = new Point(220, 108);
 
@@ -63,11 +65,21 @@ public class E2Engage extends genericAutonomous{
         firstScorePosition.x   = firstScorePositionBlue.x;
         estimatedCubeSpot.x    = estimatedCubeSpotBlue.x;
         spotBeforeEngage.x     = spotBeforeEngageBlue.x;
+        basePower = 35;
+        climbPower = 30;
+        correctionPower = 13;
+        defaultSpeed = 40;
+        xLeftChargeStation = xLeftChargeStationBlue;
         if (robot.getRed()){
             startPosition.x        = lengthOfField - startPositionBlue.x;
             firstScorePosition.x   = lengthOfField - firstScorePositionBlue.x;
             estimatedCubeSpot.x    = lengthOfField - estimatedCubeSpotBlue.x;
             spotBeforeEngage.x     = lengthOfField - spotBeforeEngageBlue.x;
+            xLeftChargeStation     = lengthOfField - xLeftChargeStationBlue;
+            basePower *= -1;
+            climbPower *= -1;
+            correctionPower *= -1;
+            defaultSpeed = 40;
             startRot = new Rotation2d(Math.PI);
             robot.setPigeonYaw(180);
         }
@@ -86,7 +98,9 @@ public class E2Engage extends genericAutonomous{
                 openGripper = false;
                 armPos = 101.1;
                 m_timer.restart();
-                autonomousStep ++;
+                if (Math.abs(robot.getPotDegrees() - armPos) <= 10){
+                    autonomousStep ++;
+                }
                 break;
             case 1: //rollback to get ready to score
                 t = m_timer.get();
@@ -101,8 +115,8 @@ public class E2Engage extends genericAutonomous{
                 break;
             case 2: //score the cone
                 openGripper = false;
-                if (m_timer.get() > .25){
-                    armPos = -4;
+                armPos = 85;
+                if (m_timer.get() > .2){
                     m_timer.restart();
                     autonomousStep++;
                 }
@@ -111,31 +125,31 @@ public class E2Engage extends genericAutonomous{
                 xspd = basePower;
                 yspd = turnspd = 0;
                 if (Math.abs(currPitch) > firstBreak) {
-
+                    armPos = -4;
                     //Add length of the robot from front encoder to end of back wheel.
                     autonomousStep++;
                 }
                 break;
-            case 4:
+            case 4: //are we on the incline
                 xspd = basePower;
                 if (currPitch > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
                 }
                 break;
-            case 5:
+            case 5: //flattened
                 xspd = climbPower;
                 if (Math.abs(currPitch) < dropping) {
                     autonomousStep++;
                 }
                 break;
-            case 6:
+            case 6: //down incline
                 xspd = climbPower+4;
                 if (Math.abs(currPitch) > high){
                     autonomousStep ++;
                 }
                 break;
-            case 7:
+            case 7://on ground
                 xspd = climbPower+4;
                 if (Math.abs(currPitch) < desiredPitch){
                     collectorUp = false;
@@ -145,7 +159,7 @@ public class E2Engage extends genericAutonomous{
                     autonomousStep ++;
                 }
                 break;
-            case 8:
+            case 8: //get cube
                 Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
                     var objOffset = firstDetection.location.getTranslation().toTranslation2d()
@@ -175,36 +189,47 @@ public class E2Engage extends genericAutonomous{
                     collectorRPM = 4000;
                     xspd = yspd = 0;
                     m_timer.restart();
-                    climbPower = -30;
-                    basePower = -35.0;
-                    correctionPower = 13.0;
+                    climbPower*= -1;
+                    basePower*= -1;
                     autonomousStep += 1;
                 }
                 break;
-            case 9:
+            case 9: //go to spot before engage
+                t = m_timer.get();
+                s = getS(t);
+                xspd = velocityFunctionX(s, t) + xPidK*(positionFunctionX(s) - currPose.getX());
+                yspd = velocityFunctionY(s, t) + yPidK*(positionFunctionY(s) - currPose.getY());
+                if (s >= dist2){
+                    xspd = yspd = 0;
+                    m_timer.restart();
+                    autonomousStep++;
+                }
+                break;
+            case 10: //go back up
                 xspd = basePower;
                 if (Math.abs(currPitch) > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
                 }
                 break;
-            case 10:
+            case 11: // go up incline
                 if(Math.abs(robot.getPose().getX() - xPos) >= 32){
-                    climbPower = -13;
+                    climbPower *= 13;
+                    climbPower /= 30;
                 }
                 xspd = climbPower;
                 if (Math.abs(currPitch) < dropping) {
                     autonomousStep++;
                 }
                 break;
-            case 11:
+            case 12: // start
                 xspd = correctionPower;
                 m_timer.reset();
                 m_timer.start();
                 //This is a future feature to stop and let others get on before autobalancing.
                 autonomousStep++;
                 break;
-            case 12:
+            case 13:
                 if ((currPitch < -desiredPitch) && (m_timer.get() <1)) { //correcting begins
                     timerDelta = m_timer.get();
                     xspd = -correctionPower; //backward
@@ -220,7 +245,7 @@ public class E2Engage extends genericAutonomous{
                 }
                 break;
         }
-        if (robot.getPose().getX() > 200){
+        if (robot.getPose().getX() > 295){
             xspd = 0;
         }
         if (autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());
