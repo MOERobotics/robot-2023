@@ -158,7 +158,7 @@ public class A1B2C extends genericAutonomous {
                 m_timer.get();
                 startX = currPose.getX();
                 break;
-            case 1:
+            case 1: //lift your arm
                 xspd = 0;
                 if (robot.getRed()) xspd *= -1;
                 yspd = 0;
@@ -170,7 +170,7 @@ public class A1B2C extends genericAutonomous {
                     }
                 }
                 break;
-            case 2:
+            case 2: // go back and drop that cone!
                 xspd = -50;
                 if (robot.getRed()) xspd *= -1;
                 yspd = 0;
@@ -187,7 +187,7 @@ public class A1B2C extends genericAutonomous {
 
                 }
                 break;
-            case 3:
+            case 3: //drive to spot A and look for cube
                 collectorRPM = 9000;
                 collectorUp = false;
                 autoMode = false;
@@ -226,7 +226,7 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep += 1;
                 }
                 break;
-            case 4: ///object detection step
+            case 4: ///object detection step + pickup
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
                     var objOffset = firstDetection.location.getTranslation().toTranslation2d()
@@ -276,12 +276,13 @@ public class A1B2C extends genericAutonomous {
                     m_timer.restart();
                 }
                 break;
-            case 5:
+            case 5://drive from detected spot to spot A
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 if (robot.cargoDetected()) collectorRPM = 9000;
+                if (robot.cargoInCollector()) openGripper = false;
                 if (s >= dist1toARevisted) {
                     xspd = 0;
                     yspd = 0;
@@ -291,12 +292,13 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 6:
+            case 6: //slide from spot A to spot B
                 armPos = -4;
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX()) ;
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
+                if (robot.cargoInCollector()) openGripper = false;
                 if (s >= distARevisitedtoB) {
                     xspd = 0;
                     yspd = 0;
@@ -306,15 +308,15 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep ++;
                     autoMode = true;
                     collectorRPM = 9000;
-                    openGripper = true;
                 }
                 break;
-            case 7:
+            case 7: //spit cube out :) --> B lower zone
                 xspd = yspd = turnspd = 0;
                 autoMode = true;
                 armPos = 25;
                 collectorRPM = 9000;
-                if (m_timer.get() >= 1){
+                if (m_timer.get() >= .2){
+                    openGripper = true;
                     autonomousStep ++;
                     m_timer.reset();
                     m_timer.start();
@@ -325,11 +327,12 @@ public class A1B2C extends genericAutonomous {
                 armPos = -4;
                 xspd = yspd = 0;
                 lightOn = false;
-                m_timer.restart();
-                autonomousStep++;
+                if (m_timer.get() >= .1){
+                    m_timer.restart();
+                    autonomousStep++;
+                }
                 break;
-            case 9:
-
+            case 9: //drive to intermediary point, avoid CS! look for cube as you go
                 armPos = -4;
                 autoMode = false;
                 t = m_timer.get();
@@ -346,9 +349,10 @@ public class A1B2C extends genericAutonomous {
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     if (possPose.getX() > centerLine && robot.getRed()){
                         this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                        lightOn = true;
                     }
                     if (possPose.getX() < centerLine && !robot.getRed()){
-
+                        lightOn = true;
                         this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
                     }
                 }
@@ -362,8 +366,7 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep ++;
                 }
                 break;
-            case 10:
-
+            case 10: //Look for cube
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
                     var objOffset = firstDetection.location.getTranslation().toTranslation2d()
@@ -398,7 +401,7 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep ++;
                 }
                 break;
-            case 11:
+            case 11: //go from obj pose to frog. Avoid CS!
                 desiredYaw = 0;
                 t = m_timer.get();
                 s = getS(m_timer.get());
@@ -414,7 +417,7 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 12:
+            case 12: //drive back from frog to zone C
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
@@ -429,18 +432,18 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 13:
+            case 13: // move arm out
                 xspd = yspd = turnspd = 0;
                 autoMode = true;
                 armPos = 25;
                 collectorRPM = 9000;
-                if (m_timer.get() >= 1.0){
+                if (m_timer.get() >= .2){
                     autonomousStep ++;
                     m_timer.reset();
                     m_timer.start();
                 }
                 break;
-            case 14: //I genuniely have no clue what this does, yes I know I spelt genueniely wrong but thats what I code and not write papers
+            case 14: //Deposit cube in lower zone C
                 openGripper = true;
                 xspd = 0;
                 if (robot.getRed()) xspd = -xspd;
@@ -448,7 +451,7 @@ public class A1B2C extends genericAutonomous {
                     xspd = yspd = 0;
                 }
                 break;
-            case 15:
+            case 15: //stop everything and put arm in
                 collectorRPM = 0;
                 xspd = yspd = 0;
                 armPos = -4;
