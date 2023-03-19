@@ -36,7 +36,7 @@ public final class MoeNetVision {
         return inches;
     }
     List<NetworkCamera> cameras = List.of(
-            new OakCamera(-10.5)
+            new OakCamera()
     );
     GenericRobot robot;
     double currentYaw = 0;
