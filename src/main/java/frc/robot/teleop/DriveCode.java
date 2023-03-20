@@ -79,6 +79,9 @@ public class DriveCode extends GenericTeleop{
     double startX = 0;
     boolean clockTurn = false;
     boolean counterTurn = false;
+    boolean clockTurnPartial = false;
+    boolean counterTurnPartial = false;
+    double oldYaw;
 
 
 
@@ -155,10 +158,12 @@ public class DriveCode extends GenericTeleop{
         }
 
         if (turnspd != 0){
+            clockTurn = false;
+            counterTurn = false;
             desiredYaw = robot.getYaw();
         }
         else {
-            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)) {
+            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2) || clockTurn || counterTurn) {
                 turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
             }
         }
@@ -226,25 +231,30 @@ public class DriveCode extends GenericTeleop{
         }
 ////////////////////////////////////////////////////////////////////////////////////////rotate 180 clockwise of 180 counterclock
 
-        if (counterTurn){
+        if (counterTurnPartial){
             desiredYaw -= 90;
-            counterTurn = false;
+            counterTurnPartial = false;
         }
-        if (clockTurn){
+        if (clockTurnPartial){
             desiredYaw += 90;
-            clockTurn = false;
+            clockTurnPartial = false;
         }
-        switch (POVDirection.getDirection(xboxDriver.getPOV())) {
-            case EAST:
-                desiredYaw -= 90;
+        if (xboxDriver.getRawAxis(5) > .8){
+                desiredYaw = oldYaw - 90;
                 counterTurn = true;
                 clockTurn = false;
-                break;
-            case WEST:
-                desiredYaw += 90;
-                clockTurn = true;
-                counterTurn = false;
-                break;
+                counterTurnPartial = true;
+                clockTurnPartial = false;
+        }
+        else if (xboxDriver.getRawAxis(5) < -.8){
+            desiredYaw = oldYaw + 90;
+            counterTurn = false;
+            clockTurn = true;
+            counterTurnPartial = false;
+            clockTurnPartial = true;
+        }
+        else{
+            oldYaw = robot.getYaw();
         }
 
 

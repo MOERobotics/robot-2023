@@ -11,18 +11,18 @@ import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
 import org.opencv.core.Point;
 
-public class E2Engage extends genericAutonomous{
+public class E2EngageFast extends genericAutonomous{
 
     Point startPosition       = new Point(83,108);
     Point firstScorePosition  = new Point(69, 108);
     double xLeftChargeStation = 200;
     Point estimatedCubeSpot   = new Point(270, 130.5);
-    Point spotBeforeEngage    = new Point(220, 108);
+    Point spotBeforeEngage    = new Point(200-48-8, 88);
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
     double xLeftChargeStationBlue     = 200;
     Point estimatedCubeSpotBlue   = new Point(270, 130.5);
-    Point spotBeforeEngageBlue    = new Point(220, 108);
+    Point spotBeforeEngageBlue    = new Point(200-48-8, 88);
 
     double dist1 = AutoCodeLines.getDistance(startPositionBlue, firstScorePositionBlue);
     double dist2 = AutoCodeLines.getDistance(estimatedCubeSpotBlue, spotBeforeEngageBlue);
@@ -36,11 +36,11 @@ public class E2Engage extends genericAutonomous{
     Timer m_timer = new Timer();
     double armPos = 0;
     double xspd, yspd, turnspd, s, t, xPos, timerDelta;
-    double basePower = 35;
+    double basePower = 80;
     double currPitch;
-    double climbPower = 30;
+    double climbPower = 80;
     double correctionPower = 13;
-    double defaultSpeed = 40;
+    double defaultSpeed = 70;
     double desiredPitch = 9;
     double dropping = 9;
     double high = 13.5;
@@ -67,10 +67,10 @@ public class E2Engage extends genericAutonomous{
         firstScorePosition.x   = firstScorePositionBlue.x;
         estimatedCubeSpot.x    = estimatedCubeSpotBlue.x;
         spotBeforeEngage.x     = spotBeforeEngageBlue.x;
-        basePower = 35;
-        climbPower = 30;
+        basePower = 80;
+        climbPower = 80;
         correctionPower = 13;
-        defaultSpeed = 40;
+        defaultSpeed = 70;
         xLeftChargeStation = xLeftChargeStationBlue;
         centerLine = centerLineBlue;
         if (robot.getRed()){
@@ -83,7 +83,6 @@ public class E2Engage extends genericAutonomous{
             basePower *= -1;
             climbPower *= -1;
             correctionPower *= -1;
-            defaultSpeed = 40;
             startRot = new Rotation2d(Math.PI);
             robot.setPigeonYaw(180);
         }
@@ -113,7 +112,7 @@ public class E2Engage extends genericAutonomous{
                 }
                 break;
             case 1: //rollback to get ready to score
-                xspd = -30;
+                xspd = -60;
                 if (robot.getRed()) xspd *= -1;
                 if (Math.abs(startXPose - currPose.getX()) >= 24){
                     xspd = yspd = 0;
@@ -158,6 +157,7 @@ public class E2Engage extends genericAutonomous{
             case 6: //down incline
                 xspd = climbPower+4;
                 if (Math.abs(currPitch) > high){
+
                     autonomousStep ++;
                 }
                 break;
@@ -219,32 +219,7 @@ public class E2Engage extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 10: //go back up
-                xspd = basePower;
-                collectorRPM = 0;
-                if (Math.abs(currPitch) > high) {
-                    xPos = robot.getPose().getX();
-                    autonomousStep++;
-                }
-                break;
-            case 11: // go up incline
-                if(Math.abs(robot.getPose().getX() - xPos) >= 32){
-                    climbPower *= 13;
-                    climbPower /= 30;
-                }
-                xspd = climbPower;
-                if (Math.abs(currPitch) < dropping) {
-                    autonomousStep++;
-                }
-                break;
-            case 12: // start
-                xspd = correctionPower;
-                m_timer.reset();
-                m_timer.start();
-                //This is a future feature to stop and let others get on before autobalancing.
-                autonomousStep++;
-                break;
-            case 13:
+            case 10:
                 if ((currPitch < -desiredPitch) && (m_timer.get() <1)) { //correcting begins
                     timerDelta = m_timer.get();
                     xspd = -correctionPower; //backward
@@ -324,7 +299,7 @@ public class E2Engage extends genericAutonomous{
             return AutoCodeLines.getS(dist1, .1, 20, time);
         }
         else{
-            return AutoCodeLines.getS(dist2, .1, 20, time);
+            return AutoCodeLines.getS(dist2, .1, 60, time);
         }
     }
 
@@ -334,7 +309,7 @@ public class E2Engage extends genericAutonomous{
             return AutoCodeLines.getdS(dist1, .1, 20, time);
         }
         else{
-            return AutoCodeLines.getdS(dist2, .1, 20, time);
+            return AutoCodeLines.getdS(dist2, .1, 60, time);
         }
     }
 }

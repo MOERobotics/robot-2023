@@ -371,9 +371,9 @@ public abstract class GenericRobot {
     public void setRed(boolean redStatus){Red = redStatus;}
 
     ///////////////////////////////////////////////////////////Light Sensors
-    public boolean getLeftLightSensor(){return false;}
+    public boolean getLeftFloorSensor(){return false;}
 
-    public boolean getRightLightSensor(){return false;}
+    public boolean getRightFloorSensor(){return false;}
 
     ////////////////////////////////////////////////////////////solenoid lights
 
