@@ -69,10 +69,10 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStationRedLeft = new Point (53,240.7);
-    Point shelfStationRedRight = new Point(53, 280);
-    Point shelfStationBlueLeft = new Point (650-53, 280);
-    Point shelfStationBlueRight = new Point(650-53, 240.7);
+    Point shelfStationRedLeft = new Point (55,240.7);
+    Point shelfStationRedRight = new Point(55, 280);
+    Point shelfStationBlueLeft = new Point (650-55, 280);
+    Point shelfStationBlueRight = new Point(650-55, 240.7);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -289,7 +289,7 @@ public class DriveCode extends GenericTeleop{
                 poseNull = false;
                 x = visPose.getX();
                 if (robot.getRed()){
-                    y = visPose.getY() + 12;
+                    y = visPose.getY() + 9;
                 }
                 else{
                     y = visPose.getY() - 19; //TODO: check if offset shdnt be off
@@ -298,7 +298,7 @@ public class DriveCode extends GenericTeleop{
 
             startingPos = new Point(x, y);
             double shelfCollectSpeed = 48;
-
+            desiredYaw = 180;
             switch(autoStep) {
                 case 0:
                     robot.resetStartDists();
@@ -316,7 +316,7 @@ public class DriveCode extends GenericTeleop{
                 case 1:
                     double xDiff, yDiff, totDiff;
                     xDiff = shelfStation.x - robotPose.getX();
-                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 24){
                         robot.resetStartDists();
                         robot.resetStartHeading();
                         robot.resetStartPivots();
