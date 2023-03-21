@@ -1,5 +1,6 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
@@ -22,17 +23,17 @@ public class ExitAndStop extends genericAutonomous{
     @Override
     public void autonomousPeriodic(GenericRobot robot) {
         SmartDashboard.putNumber("autonomousStep", autonomousStep);
-
+        Pose2d currPose = robot.getPose();
         switch (autonomousStep) {
             case 0:
                 xspd = defaultPower;
+                if (robot.getRed()) xspd *= -1;
+                xPos = currPose.getX();
                 yspd = turnspd = 0;
-                xPos = robot.getPose().getX();
-                if (xPos > 30) {
-                    //Add length of the robot from front encoder to end of back wheel.
+                if (Math.abs(xPos - currPose.getX()) >= 120) {
+                    xspd = 0;
                     autonomousStep++;
                 }
-                break;
             case 1:
                 xspd = 0;
                 break;

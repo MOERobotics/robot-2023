@@ -13,9 +13,7 @@ import org.opencv.core.Point;
 
 public class ScoreAndStop extends genericAutonomous {
     Point startPosition       = new Point(85,108);
-    Point firstScorePosition  = new Point(69, 108);
-    Point startPositionBlue       = new Point(85,108);
-    Point firstScorePositionBlue  = new Point(69, 108);
+    Point startPositionBlue   = new Point(85, 100);
     Rotation2d startRot;
     Timer m_timer = new Timer();
     boolean lightOn, collectorUp, openGripper;
@@ -38,12 +36,10 @@ public class ScoreAndStop extends genericAutonomous {
         defaultPower = 35;
         startRot = new Rotation2d(0);
         centerLine = centerLineBlue;
-        startPosition.x        = startPositionBlue.x;
-        firstScorePosition.x   = firstScorePositionBlue.x;
+        startPosition.x = startPositionBlue.x;
         if (robot.getRed()){
+            startPosition.x = lengthOfField - startPositionBlue.x;
             centerLine = lengthOfField - centerLineBlue;
-            startPosition.x        = lengthOfField - startPositionBlue.x;
-            firstScorePosition.x   = lengthOfField - firstScorePositionBlue.x;
             robot.setPigeonYaw(180);
         }
         robot.resetPose();
@@ -78,19 +74,26 @@ public class ScoreAndStop extends genericAutonomous {
                 }
                 break;
             case 2: //score the cone
-                openGripper = true;
+
                 armPos = 85;
                 if (m_timer.get() > .2) {
-                    m_timer.restart();
-                    autonomousStep++;
-                    startXPose = currPose.getX();
+                    openGripper = true;
+                    if (m_timer.get() >.4) {
+                        m_timer.restart();
+                        autonomousStep++;
+                        startXPose = currPose.getX();
+                    }
                 }
                 break;
             case 3: //drive forward
                 xspd = defaultPower;
+                if (robot.getRed()) xspd *= -1;
+                xPos = currPose.getX();
                 yspd = turnspd = 0;
-                xPos = robot.getPose().getX();
-                if (xPos > 220) {
+                if (Math.abs(xPos-startXPose) >= 30){
+                    armPos = -4;
+                }
+                if (Math.abs(xPos-startXPose) >= 120) {
                     xspd = 0;
                     autonomousStep++;
                 }
