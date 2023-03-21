@@ -1,6 +1,5 @@
 package frc.robot.autonomous;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
@@ -8,6 +7,7 @@ public class ExitAndStop extends genericAutonomous{
     double defaultPower = 30.0;
     double xspd, yspd, turnspd;
     double xPos;
+
     @Override
     public void autonomousInit(GenericRobot robot) {
         autonomousStep = 0;
@@ -36,9 +36,6 @@ public class ExitAndStop extends genericAutonomous{
             case 1:
                 xspd = 0;
                 break;
-        }
-        if (robot.getPose().getX() > 200){
-            xspd = 0;
         }
         robot.setDrive(xspd, yspd, turnspd, true, true);
     }
