@@ -28,9 +28,10 @@ public class Robot extends TimedRobot {
         A1B2C = new A1B2C(),
         A1 = new A1(),
         E2Engage = new E2Engage(),
-        E2EngageFast = new E2EngageFast();
+        E2EngageFast = new E2EngageFast(),
+        ScoreAndStop = new ScoreAndStop();
 
-  genericAutonomous autonomous = A1B2C;
+  genericAutonomous autonomous = new A1B2C();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();
@@ -117,6 +118,7 @@ public class Robot extends TimedRobot {
    if (autoSelect.getRawButtonPressed(6)) autonomous = A1;
    if (autoSelect.getRawButtonPressed(7)) autonomous = E2Engage;
    if (autoSelect.getRawButtonPressed(8)) autonomous = E2EngageFast;
+   if (autoSelect.getRawButtonPressed(9)) autonomous = ScoreAndStop;
   }
 
 
