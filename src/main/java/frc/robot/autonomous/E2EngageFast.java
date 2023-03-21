@@ -13,16 +13,16 @@ import org.opencv.core.Point;
 
 public class E2EngageFast extends genericAutonomous{
 
-    Point startPosition       = new Point(83,108);
+    Point startPosition       = new Point(85,108);
     Point firstScorePosition  = new Point(69, 108);
-    double xLeftChargeStation = 200;
+    double xLeftChargeStation = 230;
     Point estimatedCubeSpot   = new Point(270, 130.5);
-    Point spotBeforeEngage    = new Point(200-48-8, 88);
+    Point spotBeforeEngage    = new Point(220, 88);
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
-    double xLeftChargeStationBlue     = 200;
+    double xLeftChargeStationBlue     = 230;
     Point estimatedCubeSpotBlue   = new Point(270, 130.5);
-    Point spotBeforeEngageBlue    = new Point(200-48-8, 88);
+    Point spotBeforeEngageBlue    = new Point(220, 88);
 
     double dist1 = AutoCodeLines.getDistance(startPositionBlue, firstScorePositionBlue);
     double dist2 = AutoCodeLines.getDistance(estimatedCubeSpotBlue, spotBeforeEngageBlue);
@@ -36,11 +36,11 @@ public class E2EngageFast extends genericAutonomous{
     Timer m_timer = new Timer();
     double armPos = 0;
     double xspd, yspd, turnspd, s, t, xPos, timerDelta;
-    double basePower = 80;
+    double basePower = 60;
     double currPitch;
-    double climbPower = 80;
+    double climbPower = 60;
     double correctionPower = 13;
-    double defaultSpeed = 70;
+    double defaultSpeed = 40;
     double desiredPitch = 9;
     double dropping = 9;
     double high = 13.5;
@@ -50,9 +50,9 @@ public class E2EngageFast extends genericAutonomous{
     double yPidK = 7;
     double collectorRPM = 9000;
     Pose3d visionPose;
-    PIDController PID = new PIDController(1.0e-1, 0, 0);
+    PIDController PID = new PIDController(0.7e-1, 0, 0);
     double startXPose;
-    double centerLineBlue = 295;
+    double centerLineBlue = 300;
     double centerLine = centerLineBlue;
     @Override
     public void autonomousInit(GenericRobot robot) {
@@ -67,10 +67,9 @@ public class E2EngageFast extends genericAutonomous{
         firstScorePosition.x   = firstScorePositionBlue.x;
         estimatedCubeSpot.x    = estimatedCubeSpotBlue.x;
         spotBeforeEngage.x     = spotBeforeEngageBlue.x;
-        basePower = 80;
-        climbPower = 80;
+        basePower = 60;
+        climbPower = 60;
         correctionPower = 13;
-        defaultSpeed = 70;
         xLeftChargeStation = xLeftChargeStationBlue;
         centerLine = centerLineBlue;
         if (robot.getRed()){
@@ -112,7 +111,7 @@ public class E2EngageFast extends genericAutonomous{
                 }
                 break;
             case 1: //rollback to get ready to score
-                xspd = -60;
+                xspd = -40;
                 if (robot.getRed()) xspd *= -1;
                 if (Math.abs(startXPose - currPose.getX()) >= 24){
                     xspd = yspd = 0;
@@ -121,12 +120,14 @@ public class E2EngageFast extends genericAutonomous{
                 }
                 break;
             case 2: //score the cone
-                openGripper = true;
                 armPos = 85;
                 if (m_timer.get() > .2){
-                    m_timer.restart();
-                    autonomousStep++;
-                    startXPose = currPose.getX();
+                    openGripper = true;
+                    if (m_timer.get() > .4) {
+                        m_timer.restart();
+                        autonomousStep++;
+                        startXPose = currPose.getX();
+                    }
                 }
                 break;
             case 3: //drive over the charge station
@@ -208,6 +209,7 @@ public class E2EngageFast extends genericAutonomous{
                 }
                 break;
             case 9: //go to spot before engage
+                SmartDashboard.putNumber("dist2", dist2);
                 collectorRPM = 0;
                 t = m_timer.get();
                 s = getS(t);
@@ -220,6 +222,31 @@ public class E2EngageFast extends genericAutonomous{
                 }
                 break;
             case 10:
+                xspd = basePower;
+                collectorRPM = 0;
+                if (Math.abs(currPitch) > high) {
+                    xPos = robot.getPose().getX();
+                    autonomousStep++;
+                }
+                break;
+            case 11: // go up incline
+                if(Math.abs(robot.getPose().getX() - xPos) >= 34){
+                    climbPower *= 13;
+                    climbPower /= 30;
+                }
+                xspd = climbPower;
+                if (Math.abs(currPitch) < dropping) {
+                    autonomousStep++;
+                }
+                break;
+            case 12: // start
+                xspd = correctionPower;
+                m_timer.reset();
+                m_timer.start();
+                //This is a future feature to stop and let others get on before autobalancing.
+                autonomousStep++;
+                break;
+            case 13:
                 if ((currPitch < -desiredPitch) && (m_timer.get() <1)) { //correcting begins
                     timerDelta = m_timer.get();
                     xspd = -correctionPower; //backward
