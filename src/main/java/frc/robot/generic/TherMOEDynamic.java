@@ -105,6 +105,8 @@ public class TherMOEDynamic extends GenericRobot{
     SparkMaxLimitSwitch floorSensorRightForward = rightMotorB.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch floorSensorRightReverse = rightMotorB.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 
+    PIDController armController = new PIDController(.01, 0.18e-2, 0);
+
     // Robot chassic dimensions, shaft to shaft.
     static final double w = 13.875;
     static final double d = 10.375;
@@ -740,14 +742,19 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void holdArmPosition(double pos){
-        double armPower = .01*(-getPotDegrees() + pos);
+        double armPower = armController.calculate(getPotDegrees() - pos);
         if (armPower < 0){
-            armPower = Math.max(-.5, armPower);
+            armPower = Math.max(-.2, armPower);
         }
         else{
-            armPower = Math.min(.5, armPower);
+            armPower = Math.min(.4, armPower);
         }
         moveArm(armPower);
+    }
+
+    @Override
+    public void resetArmPID() {
+        armController.reset();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////gripper commands

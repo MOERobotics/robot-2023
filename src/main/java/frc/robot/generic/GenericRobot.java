@@ -123,6 +123,17 @@ public abstract class GenericRobot {
 
     public void setPigeonYaw(double startYaw){}
 
+    public double getPigeonBoundedYaw(double pigeonYaw){
+        if (pigeonYaw < 0){
+            return (pigeonYaw - 180)%360+180;
+        }
+        else{
+            return (pigeonYaw + 180)%360-180;
+        }
+    }
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
     ////////////////////////////////////////////////////////// Encoders
@@ -348,6 +359,7 @@ public abstract class GenericRobot {
     public void holdArmPosition(double pos){
 
     }
+    public void resetArmPID(){}
 
     public void liftArm(){
 

@@ -34,7 +34,7 @@ public class DriveCode extends GenericTeleop{
     Joystick buttonBox = new Joystick(0);
     Timer m_timer = new Timer();
     double xspd, yspd, turnspd;
-    double HeightsDeg[] = new double[] {33.4, 84.8, 101.1};
+    double HeightsDeg[] = new double[] {33.4, 84.8, 97};
     int autoStep = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
@@ -82,6 +82,8 @@ public class DriveCode extends GenericTeleop{
     boolean clockTurnPartial = false;
     boolean counterTurnPartial = false;
     double oldYaw;
+
+    double pigYaw = 0;
 
 
 
@@ -298,7 +300,10 @@ public class DriveCode extends GenericTeleop{
 
             startingPos = new Point(x, y);
             double shelfCollectSpeed = 48;
-            desiredYaw = 180;
+            desiredYaw = robot.getYaw();
+            pigYaw = robot.getPigeonYaw();
+            if (!robot.getRed()) pigYaw -= 180;
+            pigYaw = robot.getPigeonBoundedYaw(pigYaw);
             switch(autoStep) {
                 case 0:
                     robot.resetStartDists();
@@ -309,14 +314,14 @@ public class DriveCode extends GenericTeleop{
                     robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
                     openGripper = true;
 
-                    desiredArmPos = 85;
+                    desiredArmPos = 82;
                     if (!poseNull)autoStep++;
                     m_timer.restart();
                     break;
                 case 1:
                     double xDiff, yDiff, totDiff;
                     xDiff = shelfStation.x - robotPose.getX();
-                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 24){
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 36){
                         robot.resetStartDists();
                         robot.resetStartHeading();
                         robot.resetStartPivots();
@@ -345,7 +350,7 @@ public class DriveCode extends GenericTeleop{
                     xspd = yspd = 0;
                     openGripper = false;
                     if (m_timer.get() >= 1){
-                        desiredArmPos = 90;
+                        desiredArmPos = 88;
                         autoStep ++;
                         startX = robotPose.getX();
                     }
@@ -361,7 +366,7 @@ public class DriveCode extends GenericTeleop{
                     xspd = yspd = 0;
                     break;
             }
-            turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
+            turnspd = yawControl.calculate(pigYaw);
 
         }
 
@@ -426,6 +431,7 @@ public class DriveCode extends GenericTeleop{
             armPower = powerForArm;
         }
         if(armPower != 0){
+            robot.resetArmPID();
             desiredArmPos = robot.getPotDegrees();
         }
         if (robot.getPotDegrees() > 0) raiseTopRoller = true; //arm fail-safes to obey the rules
@@ -437,6 +443,7 @@ public class DriveCode extends GenericTeleop{
          */
         int height = heightIndex();
         if (pressed){
+            robot.resetArmPID();
             desiredArmPos = HeightsDeg[height];
             pressed = false;
         }
@@ -466,6 +473,7 @@ public class DriveCode extends GenericTeleop{
         robot.openGripper(openGripper);
         robot.setLightsOn(lightsOn);
         if (armPower != 0) {
+            robot.resetArmPID();
             robot.moveArm(armPower);
         }
         else{

@@ -39,6 +39,7 @@ public class SmartDash {
         SmartDashboard.putBoolean("floorSensorLeft", robot.getLeftFloorSensor());
         SmartDashboard.putBoolean("floorSensorRight", robot.getRightFloorSensor());
 
+        SmartDashboard.putNumber("pigeonBoundYaw", robot.getPigeonBoundedYaw(robot.getPigeonYaw()));
 
         robot.getDriveDistanceInchesLeftA();
         robot.getDriveDistanceInchesLeftB();
