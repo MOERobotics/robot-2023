@@ -473,7 +473,6 @@ public class DriveCode extends GenericTeleop{
         }
     }
 
-
     public int heightIndex(){
         int heightIndex = 0;
         if(buttonBox.getRawButtonPressed(1) || buttonBox.getRawButtonPressed(4) || buttonBox.getRawButtonPressed(7)) {
@@ -490,7 +489,6 @@ public class DriveCode extends GenericTeleop{
         }
         return heightIndex;
     }
-
 
     public enum POVDirection {
         NORTH(0),

@@ -38,6 +38,11 @@ public class Robot extends TimedRobot {
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
+  Joystick xboxDriver = new Joystick(1);
+  double xspd = 0;
+  double yspd = 0;
+  double turnspd = 0;
+
   @Override
   public void robotInit() {
    robot.resetPigeon();
@@ -99,6 +104,28 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     SmartDashboard.putBoolean("isAuto", false);
+      switch (DriveCode.POVDirection.getDirection(xboxDriver.getPOV())) {
+          case NORTH:
+              break;
+          case EAST:
+              yspd = -12;
+              if(robot.getRed()){
+                  yspd *= -1;
+              }
+              break;
+          case SOUTH:
+              break;
+          case WEST:
+              yspd = 12;
+              if(robot.getRed()){
+                  yspd *= -1;
+              }
+              break;
+          case NULL:
+              yspd = 0;
+              break;
+      }
+      robot.setDrive(xspd,yspd,turnspd);
     teleop.teleopPeriodic(robot);
   }
 
