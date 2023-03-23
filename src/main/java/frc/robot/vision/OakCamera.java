@@ -70,7 +70,7 @@ public class OakCamera implements NetworkCamera{
 
             Detection.Cargo cargoType = Detection.Cargo.values()[(int)detections[i+3]];
             //10.5 is our offset for hatboro will need to change
-            Detection newDebt = new Detection(z,-x- Units.inchesToMeters(10.5),y,cargoType);
+            Detection newDebt = new Detection(z,-x- Units.inchesToMeters(10),y,cargoType);
             debt.add(newDebt);
         }
 

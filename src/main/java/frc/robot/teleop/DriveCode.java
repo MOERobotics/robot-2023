@@ -393,7 +393,6 @@ public class DriveCode extends GenericTeleop{
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip){
-                collectorRPM = 3000;
                 desiredArmPos = -4;
                 armPower = 0;
             }

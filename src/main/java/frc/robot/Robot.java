@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
         E2EngageFast = new E2EngageFast(),
         ScoreAndStop = new ScoreAndStop();
 
-  genericAutonomous autonomous = new A1B2C();
+  genericAutonomous autonomous = new A1B2CFast();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
   GenericRobot robot = new TherMOEDynamic();

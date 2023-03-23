@@ -78,7 +78,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     PIDController pivotLeftAPID = new PIDController(8.0e-3,0,0);
     PIDController pivotLeftBPID = new PIDController(8.0e-3,0,0);
-    PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
+    PIDController pivotRightAPID = new PIDController(12.0e-3,0,0);
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
     SwerveDriveOdometry m_odometry;
