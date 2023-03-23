@@ -465,7 +465,7 @@ public class DriveCode extends GenericTeleop{
         else {
             SmartDashboard.putNumber("turnspd", turnspd);
             balanceInit = false;
-            robot.setDrive(xspd, yspd, turnspd, false, fieldCentric);
+            robot.setDrive(xspd, yspd, turnspd, autoDrive, fieldCentric);
         }
         robot.collect(collectorRPM, autoMode);
         robot.raiseTopRoller(raiseTopRoller);
