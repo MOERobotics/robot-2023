@@ -14,10 +14,10 @@ import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class A1B2C extends genericAutonomous {
+public class A1B2CFast extends genericAutonomous {
     double TARGET_DISTANCE = 0; //this is distance of camera
     double xspd, yspd, turnspd;
-    double desiredInchesPerSecond = 60;
+    double desiredInchesPerSecond = 80;
     double xPidK = 7;
     double yPidK = 7;
 
@@ -180,7 +180,7 @@ public class A1B2C extends genericAutonomous {
                 }
                 break;
             case 2: // go back and drop that cone!
-                xspd = -50;
+                xspd = -60;
                 if (robot.getRed()) xspd *= -1;
                 yspd = 0;
                 if(Math.abs(currPose.getX() - startX) >= rollBackDist){
@@ -550,25 +550,25 @@ public class A1B2C extends genericAutonomous {
     @Override
     public double getS(double time){
         if (autonomousStep == 0)return 0;
-        if (autonomousStep == 3) return AutoCodeLines.getS(distAto1, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 5) return AutoCodeLines.getS(dist1toARevisted, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 6) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 3) return AutoCodeLines.getS(distAto1, .75, desiredInchesPerSecond, time);
+        if (autonomousStep == 5) return AutoCodeLines.getS(dist1toARevisted, .75, desiredInchesPerSecond, time);
+        if (autonomousStep == 6) return AutoCodeLines.getS(distARevisitedtoB, .15, desiredInchesPerSecond-20, time);
         if (autonomousStep == 9) return AutoCodeLines.getS(distBto2, .25, desiredInchesPerSecond, time);
         if (autonomousStep == 11) return AutoCodeLines.getS(dist2toFrog, .25, desiredInchesPerSecond, time);
         if (autonomousStep == 12) return AutoCodeLines.getS(distFrogtoB, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 13) return AutoCodeLines.getS(distBtoC, .2, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 13) return AutoCodeLines.getS(distBtoC, .15, desiredInchesPerSecond-20, time);
         return 0;
     }
     @Override
     public double getdS(double time){
         if (autonomousStep == 0) return 0;
-        if (autonomousStep == 3) return AutoCodeLines.getdS(distAto1, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 5) return AutoCodeLines.getdS(dist1toARevisted, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 6) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 3) return AutoCodeLines.getdS(distAto1, .75, desiredInchesPerSecond, time);
+        if (autonomousStep == 5) return AutoCodeLines.getdS(dist1toARevisted, .75, desiredInchesPerSecond, time);
+        if (autonomousStep == 6) return AutoCodeLines.getdS(distARevisitedtoB, .15, desiredInchesPerSecond-20, time);
         if (autonomousStep == 9) return AutoCodeLines.getdS(distBto2, .25, desiredInchesPerSecond, time);
         if (autonomousStep == 11) return AutoCodeLines.getdS(dist2toFrog, .25, desiredInchesPerSecond, time);
         if (autonomousStep == 12) return AutoCodeLines.getdS(distFrogtoB, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 13) return AutoCodeLines.getdS(distBtoC, .2, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 13) return AutoCodeLines.getdS(distBtoC, .15, desiredInchesPerSecond-20, time);
         return 0;
 
     }

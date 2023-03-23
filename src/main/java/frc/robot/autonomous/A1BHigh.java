@@ -14,7 +14,7 @@ import org.opencv.core.Point;
 import frc.robot.helpers.AutoCodeLines;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class A1B2C extends genericAutonomous {
+public class A1BHigh extends genericAutonomous {
     double TARGET_DISTANCE = 0; //this is distance of camera
     double xspd, yspd, turnspd;
     double desiredInchesPerSecond = 60;
@@ -28,12 +28,8 @@ public class A1B2C extends genericAutonomous {
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point positionABlue = new Point(59.88 + 21, 195.47); //SCORE HERE
     Point position1Blue = new Point(176.88, 194.735+6);
-    Point positionARevisitedBlue = new Point(64.88, 195.47); //SCORE HERE
+    Point positionARevisitedBlue = new Point(59.88+21, 195.47); //SCORE HERE
     Point positionBBlue = new Point(64.88, 170.47+6);
-    Point position2Blue = new Point(188.88, 200); //Changed value to give buffer when clipping CS
-    Point positionFrogBlue = new Point(166.88,200); //this is an arbitrary point to avoid charging station
-    Point positionBRevisitedBlue = new Point(59.88, 194);//SCORE AGAIN!!
-    Point positionCBlue = new Point(59.88, 156.37);
 
 
     //TODO: Not sure if this needs to be fixed but, our positions B and C do not align with position A
@@ -42,18 +38,10 @@ public class A1B2C extends genericAutonomous {
     Point position1 = new Point(position1Blue.x, position1Blue.y);
     Point positionARevisited = new Point(positionARevisitedBlue.x, positionARevisitedBlue.y);
     Point positionB = new Point(positionBBlue.x, positionBBlue.y);
-    Point position2 = new Point(position2Blue.x, position2Blue.y);
-    Point positionFrog = new Point(positionFrogBlue.x, positionFrogBlue.y);
-    Point positionBRevisited = new Point(positionBRevisitedBlue.x, positionBRevisitedBlue.y);
-    Point positionC = new Point(positionCBlue.x, positionCBlue.y);
 
     double distAto1 = AutoCodeLines.getDistance(positionA, position1);
     double dist1toARevisted = AutoCodeLines.getDistance(position1, positionARevisited);
     double distARevisitedtoB = AutoCodeLines.getDistance(positionARevisited, positionB);
-    double distBto2 = AutoCodeLines.getDistance(positionB, position2);
-    double dist2toFrog = AutoCodeLines.getDistance(position2, positionFrog);
-    double distFrogtoB = AutoCodeLines.getDistance(positionFrog, positionBRevisited);
-    double distBtoC = AutoCodeLines.getDistance(positionBRevisited, positionC);
 
     double centerLineBlue = 295;
     double centerLine = centerLineBlue;
@@ -96,38 +84,25 @@ public class A1B2C extends genericAutonomous {
             position1.x = lengthOfField - position1Blue.x;
             positionARevisited.x = lengthOfField - positionARevisitedBlue.x;
             positionB.x = lengthOfField - positionBBlue.x;
-            position2.x = lengthOfField - position2Blue.x;
-            positionFrog.x = lengthOfField - positionFrogBlue.x;
-            positionBRevisited.x = lengthOfField - positionBRevisitedBlue.x;
             desiredPose = new Pose2d(lengthOfField - desiredPoseBlue.getX(),
                     desiredPoseBlue.getY(), startRot);
             centerLine = lengthOfField - centerLineBlue;
-            positionC.x = lengthOfField - positionCBlue.x;
             robot.setPigeonYaw(180);
         }else{
             positionA.x = positionABlue.x;
             position1.x = position1Blue.x;
             positionARevisited.x = positionARevisitedBlue.x;
             positionB.x = positionBBlue.x;
-            position2.x = position2Blue.x;
-            positionFrog.x = positionFrogBlue.x;
-            positionBRevisited.x = positionBRevisitedBlue.x;
-            positionC.x = positionCBlue.x;
             desiredPose = new Pose2d(desiredPoseBlue.getX(),
                     desiredPoseBlue.getY(), startRot);
         }
-        robot.resetStartHeading();
-        m_timer.reset();
-        robot.resetStartDists();
-        robot.resetStartPivots();
-        robot.resetAttitude();
+        robot.resetPose();
         robot.setPose(new Pose2d(positionA.x, positionA.y, startRot));
         autonomousStep = 0;
         PID.enableContinuousInput(-180,180);
         xspd = yspd = 0;
         openGripper = true;
-        m_timer.reset();
-        m_timer.start();
+        m_timer.restart();
         timeToWait = false;
         tripHappened = false;
     }
@@ -199,7 +174,7 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep = 3;
                 }
                 break;
-            case 3: //drive to spot A and look for cube
+            case 3: //drive to spot 1 and look for cube
 
                 collectorRPM = 9000;
                 collectorUp = false;
@@ -292,9 +267,18 @@ public class A1B2C extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 6: //slide from spot A to spot B
+            case 6: //raise arm
+                if (m_timer.get() > .5) {
+                    openGripper = false;
+                    armPos = scoringArmPos;
+                    if (Math.abs(robot.getPotDegrees() - armPos) <= 10) {
+                        m_timer.restart();
+                        autonomousStep++;
+                    }
+                }
+                break;
+            case 7: //slide from spot A to spot B
                 desiredPose = new Pose2d(desiredPose.getX(), cube2Pos, startRot);
-                armPos = -4;
                 t = m_timer.get();
                 s = getS(m_timer.get());
                 xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX()) ;
@@ -308,171 +292,13 @@ public class A1B2C extends genericAutonomous {
                     m_timer.start();
                     autonomousStep ++;
                     autoMode = true;
-                    collectorRPM = 9000;
+                    collectorRPM = 0;
                 }
                 break;
-            case 7: //spit cube out :) --> B lower zone
+            case 8: //stack cube on high
                 xspd = yspd = turnspd = 0;
-                autoMode = true;
-                armPos = 25;
-                collectorRPM = 9000;
-                if (m_timer.get() >= .5){
-                    openGripper = true;
-                    autonomousStep ++;
-                    m_timer.reset();
-                    m_timer.start();
-                }
-                break;
-            case 8: //wait for arm to go back into position
-                collectorRPM = 9000;
-                armPos = -4;
-                xspd = yspd = 0;
-                lightOn = false;
-                if (m_timer.get() >= .1){
-                    m_timer.restart();
-                    autonomousStep++;
-                }
-                break;
-            case 9: //drive to intermediary point, avoid CS! look for cube as you go
-                armPower = -.3;
-                armPos = -4;
-                autoMode = false;
-                t = m_timer.get();
-                s = getS(t);
-                xspd = velocityFunctionX(s, t) + xPidK * (positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-                firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
-                if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
-                    double distance = objOffset.getNorm();
-                    var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    if (possPose.getX() > centerLine && robot.getRed()){
-                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                        lightOn = true;
-                    }
-                    if (possPose.getX() < centerLine && !robot.getRed()){
-                        lightOn = true;
-                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    }
-                }
-                if (s >= distBto2) {
-                    xspd = 0;
-                    yspd = 0;
-                    m_timer.reset();
-                    m_timer.start();
-                    desiredYaw = 40;
-                    if (robot.getRed()) desiredYaw*= -1;
-                    autonomousStep ++;
-                }
-                break;
-            case 10: //Look for cube
-                armPower = -.3;
-                firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
-                if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
-                    double distance = objOffset.getNorm();
-                    var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
-                    Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    if (possPose.getX() > centerLine && robot.getRed()){
-                        lightOn = true;
-                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    }
-                    if (possPose.getX() < centerLine && !robot.getRed()){
-                        lightOn = true;
-                        this.desiredPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
-                    }
-                    SmartDashboard.putString("detautoTarget", String.format("%f, %f", this.desiredPose.getX(), this.desiredPose.getY()));
-                }
-
-                xDiff = desiredPose.getX()-currPose.getX() + 6;
-                yDiff = desiredPose.getY()-currPose.getY();
-                totDiff = Math.hypot(xDiff, yDiff);
-                xspd = yspd = 0;
-                if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
-                if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 6 || robot.cargoInCollector()){
-                    position2 = new Point(currPose.getX(), currPose.getY());
-                    dist2toFrog = AutoCodeLines.getDistance(position2, positionFrog);
-                    xspd = yspd = 0;
-                    m_timer.reset();
-                    m_timer.start();
-                    autonomousStep ++;
-                }
-                break;
-            case 11: //go from obj pose to frog. Avoid CS!
-                armPower = -.3;
-                desiredYaw = 0;
-                t = m_timer.get();
-                s = getS(m_timer.get());
-                xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-                if (robot.cargoInCollector()) openGripper = false;
-                if (s >= dist2toFrog) {
-                    xspd = 0;
-                    yspd = 0;
-                    turnspd = 0;
-                    m_timer.reset();
-                    m_timer.start();
-                    autonomousStep++;
-                }
-                break;
-            case 12: //drive back from frog to zone B
-                armPower = -.3;
-                if (robot.cargoInCollector()) openGripper = false;
-                t = m_timer.get();
-                s = getS(m_timer.get());
-                xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-                if (s >= distFrogtoB) {
-                    xspd = 0;
-                    yspd = 0;
-                    turnspd = 0;
-                    m_timer.reset();
-                    m_timer.start();
-                    autonomousStep++;
-                }
-                break;
-            case 13: //go to C
-                armPower = -.3;
-                t = m_timer.get();
-                s = getS(m_timer.get());
-                xspd = velocityFunctionX(s, t)+ xPidK * (positionFunctionX(s) - currPose.getX());
-                yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
-                if (s >= distBtoC) {
-                    xspd = 0;
-                    yspd = 0;
-                    turnspd = 0;
-                    m_timer.reset();
-                    m_timer.start();
-                    autonomousStep++;
-                }
-                break;
-            case 14: // move arm out
-                xspd = yspd = turnspd = 0;
-                autoMode = true;
-                armPos = 25;
-                collectorRPM = 9000;
-                if (m_timer.get() >= .2){
-                    autonomousStep ++;
-                    m_timer.reset();
-                    m_timer.start();
-                }
-                break;
-            case 15: //Deposit cube in lower zone C
                 openGripper = true;
-                xspd = 0;
-                if (robot.getRed()) xspd = -xspd;
-                if (m_timer.get() >= .8){
-                    xspd = yspd = 0;
-                }
-                break;
-            case 16: //stop everything and put arm in
-                collectorRPM = 0;
-                xspd = yspd = 0;
-                armPos = -4;
+                armPos = scoringDownwardArmPos;
                 break;
 
         }
@@ -496,13 +322,9 @@ public class A1B2C extends genericAutonomous {
         if (autonomousStep == 0)   return positionA.x;
         if (autonomousStep == 3)   return AutoCodeLines.getPositionX(positionA, position1, s);
         if (autonomousStep == 5)   return AutoCodeLines.getPositionX(position1, positionARevisited, s);
-        if (autonomousStep == 6)   return AutoCodeLines.getPositionX(positionARevisited, positionB, s);
-        if (autonomousStep == 9)   return AutoCodeLines.getPositionX(positionB, position2, s);
-        if (autonomousStep == 11) return AutoCodeLines.getPositionX(position2, positionFrog, s);
-        if (autonomousStep == 12) return AutoCodeLines.getPositionX(positionFrog, positionBRevisited, s);
-        if (autonomousStep == 13) return AutoCodeLines.getPositionX(positionBRevisited, positionC, s);
+        if (autonomousStep == 7)   return AutoCodeLines.getPositionX(positionARevisited, positionB, s);
 
-        return positionBRevisited.x;
+        return positionB.x;
     }
 
     @Override
@@ -510,24 +332,16 @@ public class A1B2C extends genericAutonomous {
         if (autonomousStep == 0) return positionA.y;
         if (autonomousStep == 3) return AutoCodeLines.getPositionY(positionA, position1, s);
         if (autonomousStep == 5) return AutoCodeLines.getPositionY(position1, positionARevisited, s);
-        if (autonomousStep == 6) return AutoCodeLines.getPositionY(positionARevisited, positionB, s);
-        if (autonomousStep == 9) return AutoCodeLines.getPositionY(positionB, position2, s);
-        if (autonomousStep == 11) return AutoCodeLines.getPositionY(position2, positionFrog, s);
-        if (autonomousStep == 12) return AutoCodeLines.getPositionY(positionFrog, positionBRevisited, s);
-        if (autonomousStep == 13) return AutoCodeLines.getPositionY(positionBRevisited, positionC, s);
+        if (autonomousStep == 7) return AutoCodeLines.getPositionY(positionARevisited, positionB, s);
 
-        return positionBRevisited.y;
+        return positionB.y;
     }
 
     public double velocityFunctionX(double s, double time) {
         if (autonomousStep == 0) return 0;
         if (autonomousStep == 3) return AutoCodeLines.getVelocityX(positionA, position1, s) * getdS(time);
         if (autonomousStep == 5) return AutoCodeLines.getVelocityX(position1, positionARevisited, s) * getdS(time);
-        if (autonomousStep == 6) return AutoCodeLines.getVelocityX(positionARevisited, positionB, s) * getdS(time);
-        if (autonomousStep == 9) return AutoCodeLines.getVelocityX(positionB, position2, s) * getdS(time);
-        if (autonomousStep == 11) return AutoCodeLines.getVelocityX(position2, positionFrog, s) * getdS(time);
-        if (autonomousStep == 12) return AutoCodeLines.getVelocityX(positionFrog, positionBRevisited, s) * getdS(time);
-        if (autonomousStep == 13) return AutoCodeLines.getVelocityX(positionBRevisited, positionC, s) * getdS(time);
+        if (autonomousStep == 7) return AutoCodeLines.getVelocityX(positionARevisited, positionB, s) * getdS(time);
 
         return 0;
     }
@@ -539,11 +353,7 @@ public class A1B2C extends genericAutonomous {
         if (autonomousStep == 0) return 0;
         if (autonomousStep == 3)return AutoCodeLines.getVelocityY(positionA, position1, s)* getdS(time);
         if (autonomousStep == 5)return AutoCodeLines.getVelocityY(position1, positionARevisited, s)* getdS(time);
-        if (autonomousStep == 6) return AutoCodeLines.getVelocityY(positionARevisited, positionB, s)* getdS(time);
-        if (autonomousStep == 9) return AutoCodeLines.getVelocityY(positionB, position2, s)* getdS(time);
-        if (autonomousStep == 11) return AutoCodeLines.getVelocityY(position2, positionFrog, s)* getdS(time);
-        if (autonomousStep == 12) return AutoCodeLines.getVelocityY(positionFrog, positionBRevisited, s)* getdS(time);
-        if (autonomousStep == 13) return AutoCodeLines.getVelocityY(positionBRevisited, positionC, s) * getdS(time);
+        if (autonomousStep == 7) return AutoCodeLines.getVelocityY(positionARevisited, positionB, s)* getdS(time);
         return 0;
     }
 
@@ -552,11 +362,7 @@ public class A1B2C extends genericAutonomous {
         if (autonomousStep == 0)return 0;
         if (autonomousStep == 3) return AutoCodeLines.getS(distAto1, .55, desiredInchesPerSecond, time);
         if (autonomousStep == 5) return AutoCodeLines.getS(dist1toARevisted, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 6) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
-        if (autonomousStep == 9) return AutoCodeLines.getS(distBto2, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 11) return AutoCodeLines.getS(dist2toFrog, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 12) return AutoCodeLines.getS(distFrogtoB, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 13) return AutoCodeLines.getS(distBtoC, .2, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 7) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
         return 0;
     }
     @Override
@@ -564,11 +370,7 @@ public class A1B2C extends genericAutonomous {
         if (autonomousStep == 0) return 0;
         if (autonomousStep == 3) return AutoCodeLines.getdS(distAto1, .55, desiredInchesPerSecond, time);
         if (autonomousStep == 5) return AutoCodeLines.getdS(dist1toARevisted, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 6) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
-        if (autonomousStep == 9) return AutoCodeLines.getdS(distBto2, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 11) return AutoCodeLines.getdS(dist2toFrog, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 12) return AutoCodeLines.getdS(distFrogtoB, .25, desiredInchesPerSecond, time);
-        if (autonomousStep == 13) return AutoCodeLines.getdS(distBtoC, .2, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 7) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
         return 0;
 
     }
