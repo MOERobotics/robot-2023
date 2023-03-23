@@ -42,6 +42,7 @@ public class Robot extends TimedRobot {
   double yspd = 0;
   double turnspd = 0;
 
+
   @Override
   public void robotInit() {
    robot.resetPigeon();
