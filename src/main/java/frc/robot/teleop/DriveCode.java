@@ -259,7 +259,22 @@ public class DriveCode extends GenericTeleop{
             oldYaw = robot.getYaw();
         }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////D-Pad controls
 
+        switch (DriveCode.POVDirection.getDirection(xboxDriver.getPOV())) {
+            case EAST:
+                yspd = -12;
+                if (robot.getRed()) {
+                    yspd *= -1;
+                }
+                break;
+            case WEST:
+                yspd = 12;
+                if (robot.getRed()) {
+                    yspd *= -1;
+                }
+                break;
+        }
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
         if (xboxDriver.getRawButtonPressed(3)){
