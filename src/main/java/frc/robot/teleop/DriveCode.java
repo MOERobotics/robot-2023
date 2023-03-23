@@ -84,7 +84,7 @@ public class DriveCode extends GenericTeleop{
     double oldYaw;
 
     double pigYaw = 0;
-
+    boolean autoDrive = false;
 
 
     @Override
@@ -139,6 +139,7 @@ public class DriveCode extends GenericTeleop{
         Pose2d robotPose = robot.getPose();
         fieldCentric = true;
         armPower = 0;
+        autoDrive = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
         xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
         yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
@@ -304,6 +305,7 @@ public class DriveCode extends GenericTeleop{
             pigYaw = robot.getPigeonYaw();
             if (!robot.getRed()) pigYaw -= 180;
             pigYaw = robot.getPigeonBoundedYaw(pigYaw);
+            autoDrive = true;
             switch(autoStep) {
                 case 0:
                     robot.resetStartDists();
@@ -334,10 +336,7 @@ public class DriveCode extends GenericTeleop{
                     SmartDashboard.putNumber("totalDiff", totDiff);
                     xspd = shelfCollectSpeed * xDiff/totDiff;
                     yspd = shelfCollectSpeed * yDiff/totDiff;
-                    if (robot.getRed()){
-                        xspd *= -1;
-                        yspd *= -1;
-                    }
+
                     if (totDiff <= 1) {
                         xspd = 0;
                         yspd = 0;
@@ -357,6 +356,7 @@ public class DriveCode extends GenericTeleop{
                     break;
                 case 3:
                     xspd = -shelfCollectSpeed;
+                    if (robot.getRed()) xspd *= -1;
                     yspd = 0;
                     if (Math.abs(robotPose.getX() - startX) >= 12){
                         xspd = yspd = 0;
