@@ -70,9 +70,9 @@ public class DriveCode extends GenericTeleop{
     double armLength = 40;
     Point startingPos = new Point(0,0);
     Point shelfStationRedLeft = new Point (55,240.7);
-    Point shelfStationRedRight = new Point(55, 280);
+    Point shelfStationRedRight = new Point(56, 284);
     Point shelfStationBlueLeft = new Point (650-55, 280);
-    Point shelfStationBlueRight = new Point(650-55, 240.7);
+    Point shelfStationBlueRight = new Point(650-55, 220.7);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -263,18 +263,19 @@ public class DriveCode extends GenericTeleop{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////D-Pad controls
 
         switch (DriveCode.POVDirection.getDirection(xboxDriver.getPOV())) {
+            case NORTH:
+                xspd = 12;
+                break;
             case EAST:
                 yspd = -12;
-                if (robot.getRed()) {
-                    yspd *= -1;
-                }
+                break;
+            case SOUTH:
+                xspd = -12;
                 break;
             case WEST:
                 yspd = 12;
-                if (robot.getRed()) {
-                    yspd *= -1;
-                }
                 break;
+
         }
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
@@ -310,7 +311,7 @@ public class DriveCode extends GenericTeleop{
                     y = visPose.getY() + 9;
                 }
                 else{
-                    y = visPose.getY() - 19; //TODO: check if offset shdnt be off
+                    y = visPose.getY() - 30; //TODO: check if offset shdnt be off
                 }
             }
 
@@ -338,7 +339,7 @@ public class DriveCode extends GenericTeleop{
                 case 1:
                     double xDiff, yDiff, totDiff;
                     xDiff = shelfStation.x - robotPose.getX();
-                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 36){
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
                         robot.resetStartDists();
                         robot.resetStartHeading();
                         robot.resetStartPivots();

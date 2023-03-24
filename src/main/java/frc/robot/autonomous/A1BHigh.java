@@ -57,7 +57,7 @@ public class A1BHigh extends genericAutonomous {
     //3rd level: 101 and 85
     //2nd level: 87 and 70
     double scoringArmPos = 97;
-    double scoringDownwardArmPos = 83;
+    double scoringDownwardArmPos = 81;
     double rollBackDist = 19;
     Rotation2d startRot;
     MoeNetVision vision;
@@ -296,9 +296,11 @@ public class A1BHigh extends genericAutonomous {
                 }
                 break;
             case 8: //stack cube on high
-                xspd = yspd = turnspd = 0;
-                openGripper = true;
                 armPos = scoringDownwardArmPos;
+                if (m_timer.get() > .5) {
+                    xspd = yspd = turnspd = 0;
+                    openGripper = true;
+                }
                 break;
 
         }
@@ -362,7 +364,7 @@ public class A1BHigh extends genericAutonomous {
         if (autonomousStep == 0)return 0;
         if (autonomousStep == 3) return AutoCodeLines.getS(distAto1, .55, desiredInchesPerSecond, time);
         if (autonomousStep == 5) return AutoCodeLines.getS(dist1toARevisted, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 7) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 7) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-30, time);
         return 0;
     }
     @Override
@@ -370,7 +372,7 @@ public class A1BHigh extends genericAutonomous {
         if (autonomousStep == 0) return 0;
         if (autonomousStep == 3) return AutoCodeLines.getdS(distAto1, .55, desiredInchesPerSecond, time);
         if (autonomousStep == 5) return AutoCodeLines.getdS(dist1toARevisted, .55, desiredInchesPerSecond, time);
-        if (autonomousStep == 7) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-20, time);
+        if (autonomousStep == 7) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-30, time);
         return 0;
 
     }
