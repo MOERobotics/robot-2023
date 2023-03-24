@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Robot extends TimedRobot {
   Joystick autoSelect = new Joystick(0);
   public static final genericAutonomous
-        A1CDock = new A1CDock(),
         A1C = new A1C(),
         A1B2C = new A1B2C(),
         A1 = new A1(),
@@ -108,7 +107,7 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
    SmartDashboard.putBoolean("isAuto", false);
-   if (autoSelect.getRawButtonPressed(1)) autonomous = A1CDock;
+   if (autoSelect.getRawButtonPressed(1))
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
    if (autoSelect.getRawButtonPressed(3))
    if (autoSelect.getRawButtonPressed(4)) autonomous = A1B2C;

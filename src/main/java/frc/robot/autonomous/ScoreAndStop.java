@@ -93,7 +93,7 @@ public class ScoreAndStop extends genericAutonomous {
                 if (Math.abs(xPos-startXPose) >= 30){
                     armPos = -4;
                 }
-                if (Math.abs(xPos-startXPose) >= 120) {
+                if (Math.abs(xPos-startXPose) >= 150) {
                     xspd = 0;
                     autonomousStep++;
                 }
