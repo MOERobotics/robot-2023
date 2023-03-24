@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
+import frc.robot.autonomousgraveyard.*;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.TherMOEDynamic;
-import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
@@ -23,12 +23,9 @@ public class Robot extends TimedRobot {
   public static final genericAutonomous
         A1CDock = new A1CDock(),
         A1C = new A1C(),
-        ExitAndEngage = new ExitAndEngageSideways(),
-        mobilityEngage = new mobilityEngage(),
         A1B2C = new A1B2C(),
         A1 = new A1(),
-        E2Engage = new E2Engage(),
-        E2EngageFast = new E2EngageFast(),
+        F2Engage = new F2Engage(),
         ScoreAndStop = new ScoreAndStop(),
         A1BHigh = new A1BHigh();
 
@@ -38,11 +35,6 @@ public class Robot extends TimedRobot {
   GenericRobot robot = new TherMOEDynamic();
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
-
-  double xspd = 0;
-  double yspd = 0;
-  double turnspd = 0;
-
 
   @Override
   public void robotInit() {
@@ -118,12 +110,12 @@ public class Robot extends TimedRobot {
    SmartDashboard.putBoolean("isAuto", false);
    if (autoSelect.getRawButtonPressed(1)) autonomous = A1CDock;
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
-   if (autoSelect.getRawButtonPressed(3)) autonomous = ExitAndEngage;
+   if (autoSelect.getRawButtonPressed(3))
    if (autoSelect.getRawButtonPressed(4)) autonomous = A1B2C;
    if (autoSelect.getRawButtonPressed(5)) autonomous = A1BHigh;
    if (autoSelect.getRawButtonPressed(6)) autonomous = A1;
-   if (autoSelect.getRawButtonPressed(7)) autonomous = E2Engage;
-   if (autoSelect.getRawButtonPressed(8)) autonomous = E2EngageFast;
+   if (autoSelect.getRawButtonPressed(7))
+   if (autoSelect.getRawButtonPressed(8)) autonomous = F2Engage;
    if (autoSelect.getRawButtonPressed(9)) autonomous = ScoreAndStop;
 
   }

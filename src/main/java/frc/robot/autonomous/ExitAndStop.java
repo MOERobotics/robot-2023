@@ -30,7 +30,7 @@ public class ExitAndStop extends genericAutonomous{
                 if (robot.getRed()) xspd *= -1;
                 xPos = currPose.getX();
                 yspd = turnspd = 0;
-                if (Math.abs(xPos - currPose.getX()) >= 120) {
+                if (Math.abs(xPos - currPose.getX()) >= 60) {
                     xspd = 0;
                     autonomousStep++;
                 }

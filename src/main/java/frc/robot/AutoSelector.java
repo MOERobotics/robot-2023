@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.autonomous.A1CDock;
+import frc.robot.autonomousgraveyard.A1CDock;
 import frc.robot.autonomous.genericAutonomous;
 
 public class AutoSelector{
