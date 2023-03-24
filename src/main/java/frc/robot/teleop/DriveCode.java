@@ -116,6 +116,7 @@ public class DriveCode extends GenericTeleop{
         fieldCentric = true;
         clockTurn = false;
         counterTurn = false;
+        desiredArmPos = robot.getPotDegrees();
         if (robot.getRed()){
             startRot = new Rotation2d(Math.PI);
         }
