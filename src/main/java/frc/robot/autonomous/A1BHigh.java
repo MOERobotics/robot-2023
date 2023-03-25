@@ -29,7 +29,7 @@ public class A1BHigh extends genericAutonomous {
     Point positionABlue = new Point(59.88 + 21, 195.47); //SCORE HERE
     Point position1Blue = new Point(176.88, 194.735+6);
     Point positionARevisitedBlue = new Point(59.88+21, 195.47); //SCORE HERE
-    Point positionBBlue = new Point(64.88, 170.47+6);
+    Point positionBBlue = new Point(53.88, 170.47+6);
 
 
     //TODO: Not sure if this needs to be fixed but, our positions B and C do not align with position A
@@ -58,7 +58,7 @@ public class A1BHigh extends genericAutonomous {
     //2nd level: 87 and 70
     double scoringArmPos = 97;
     double scoringDownwardArmPos = 81;
-    double rollBackDist = 19;
+    double rollBackDist = 22;
     Rotation2d startRot;
     MoeNetVision vision;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -160,7 +160,6 @@ public class A1BHigh extends genericAutonomous {
                 yspd = 0;
                 if(Math.abs(currPose.getX() - startX) >= rollBackDist){
                     xspd = 0;
-                    openGripper = true;
                     armPos = scoringDownwardArmPos;
                     m_timer.restart();
                     autonomousStep = 20;
@@ -168,6 +167,9 @@ public class A1BHigh extends genericAutonomous {
                 break;
             case 20:
                 if (m_timer.get() > .2){
+                    openGripper = true;
+                }
+                if (m_timer.get() > .4){
                     positionA = new Point(currPose.getX(), currPose.getY());
                     distAto1 = AutoCodeLines.getDistance(positionA, position1);
                     m_timer.restart();

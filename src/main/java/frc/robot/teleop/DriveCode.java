@@ -35,7 +35,7 @@ public class DriveCode extends GenericTeleop{
     Timer m_timer = new Timer();
     Timer armTimer = new Timer();
     double xspd, yspd, turnspd;
-    double HeightsDeg[] = new double[] {33.4, 84.8, 97};
+    double HeightsDeg[] = new double[] {20, 84.8, 97};
     int autoStep = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
@@ -70,7 +70,7 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStationRedLeft = new Point (55,240.7);
+    Point shelfStationRedLeft = new Point (56,240.7-4);
     Point shelfStationRedRight = new Point(56, 284);
     Point shelfStationBlueLeft = new Point (650-55, 280);
     Point shelfStationBlueRight = new Point(650-55, 220.7);
@@ -86,6 +86,7 @@ public class DriveCode extends GenericTeleop{
 
     double pigYaw = 0;
     boolean autoDrive = false;
+    boolean coneGrabOn = false;
 
 
     @Override
@@ -143,6 +144,7 @@ public class DriveCode extends GenericTeleop{
         fieldCentric = true;
         armPower = 0;
         autoDrive = false;
+        coneGrabOn = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
         xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
         yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
@@ -299,6 +301,7 @@ public class DriveCode extends GenericTeleop{
             }
         }
         if (xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)){
+            coneGrabOn = true;
             SmartDashboard.putNumber("autoStep", autoStep);
             SmartDashboard.putNumber("startPosX", startingPos.x);
             SmartDashboard.putNumber("startPosY", startingPos.y);
@@ -335,7 +338,7 @@ public class DriveCode extends GenericTeleop{
                     robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
                     openGripper = true;
 
-                    desiredArmPos = 82;
+                    desiredArmPos = 81;
                     if (!poseNull)autoStep++;
                     m_timer.restart();
                     break;
@@ -378,10 +381,12 @@ public class DriveCode extends GenericTeleop{
                     if (robot.getRed()) xspd *= -1;
                     yspd = 0;
                     if (Math.abs(robotPose.getX() - startX) >= 12){
+                        coneGrabOn = false;
                         xspd = yspd = 0;
                     }
                     break;
                 case 4:
+                    coneGrabOn = false;
                     xspd = yspd = 0;
                     break;
             }
@@ -490,6 +495,7 @@ public class DriveCode extends GenericTeleop{
         robot.raiseTopRoller(raiseTopRoller);
         robot.openGripper(openGripper);
         robot.setLightsOn(lightsOn);
+        robot.coneGrabInAction(coneGrabOn);
         if (armPower != 0) {
             robot.resetArmPID();
             robot.moveArm(armPower);

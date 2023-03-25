@@ -16,13 +16,13 @@ public class F2Engage extends genericAutonomous{
     Point startPosition       = new Point(85,108);
     Point firstScorePosition  = new Point(69, 108);
     double xLeftChargeStation = 230;
-    Point estimatedCubeSpot   = new Point(270, 130.5);
-    Point spotBeforeEngage    = new Point(220, 88);
+    Point estimatedCubeSpot   = new Point(270, 100);
+    Point spotBeforeEngage    = new Point(220, 108);
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
     double xLeftChargeStationBlue     = 230;
-    Point estimatedCubeSpotBlue   = new Point(270, 130.5);
-    Point spotBeforeEngageBlue    = new Point(220, 88);
+    Point estimatedCubeSpotBlue   = new Point(270, 100);
+    Point spotBeforeEngageBlue    = new Point(220, 108);
 
     double dist1 = AutoCodeLines.getDistance(startPositionBlue, firstScorePositionBlue);
     double dist2 = AutoCodeLines.getDistance(estimatedCubeSpotBlue, spotBeforeEngageBlue);
@@ -52,7 +52,7 @@ public class F2Engage extends genericAutonomous{
     Pose3d visionPose;
     PIDController PID = new PIDController(0.7e-1, 0, 0);
     double startXPose;
-    double centerLineBlue = 300;
+    double centerLineBlue = 310;
     double centerLine = centerLineBlue;
     @Override
     public void autonomousInit(GenericRobot robot) {
@@ -206,7 +206,7 @@ public class F2Engage extends genericAutonomous{
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 6){
+                if (robot.cargoDetected() || m_timer.get() > 3){
                     estimatedCubeSpot = new Point(currPose.getX(), currPose.getY());
                     dist2 = AutoCodeLines.getDistance(estimatedCubeSpot, spotBeforeEngage);
                     collectorRPM = 4000;
@@ -239,12 +239,13 @@ public class F2Engage extends genericAutonomous{
                 }
                 break;
             case 11: // go up incline
-                if(Math.abs(robot.getPose().getX() - xPos) >= 34){
+                if(Math.abs(robot.getPose().getX() - xPos) >= 34+26){
                     climbPower *= 13;
                     climbPower /= 30;
                 }
                 xspd = climbPower;
                 if (Math.abs(currPitch) < dropping) {
+                    xspd = 0;
                     autonomousStep++;
                 }
                 break;
@@ -271,10 +272,10 @@ public class F2Engage extends genericAutonomous{
                 }
                 break;
         }
-        if (currPose.getX() < centerLine && robot.getRed()){
+        if (currPose.getX() < centerLine && robot.getRed() && xspd < 0){
             xspd = 0;
         }
-        if (currPose.getX() > centerLine && !robot.getRed()){
+        if (currPose.getX() > centerLine && !robot.getRed() && xspd > 0){
             xspd = 0;
         }
         if (autonomousStep > 0) turnspd = PID.calculate(-robot.getYaw());

@@ -70,7 +70,7 @@ public class A1B2C extends genericAutonomous {
     //2nd level: 87 and 70
     double scoringArmPos = 97;
     double scoringDownwardArmPos = 83;
-    double rollBackDist = 19;
+    double rollBackDist = 21;
     Rotation2d startRot;
     MoeNetVision vision;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -185,7 +185,6 @@ public class A1B2C extends genericAutonomous {
                 yspd = 0;
                 if(Math.abs(currPose.getX() - startX) >= rollBackDist){
                     xspd = 0;
-                    openGripper = true;
                     armPos = scoringDownwardArmPos;
                     m_timer.restart();
                     autonomousStep = 20;
@@ -193,6 +192,9 @@ public class A1B2C extends genericAutonomous {
                 break;
             case 20:
                 if (m_timer.get() > .2){
+                    openGripper = true;
+                }
+                if (m_timer.get() > .4){
                     positionA = new Point(currPose.getX(), currPose.getY());
                     distAto1 = AutoCodeLines.getDistance(positionA, position1);
                     m_timer.restart();

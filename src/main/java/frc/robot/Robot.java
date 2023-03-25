@@ -69,6 +69,12 @@ public class Robot extends TimedRobot {
      robot.setRed(false);
    }
    SmartDashboard.putBoolean("isAuto", false);
+   if (Math.abs(robot.getPitch()) > 10 || Math.abs(robot.getRoll()) > 10){
+       robot.robotTipping(true);
+   }
+   else{
+       robot.robotTipping(false);
+   }
   }
 
 

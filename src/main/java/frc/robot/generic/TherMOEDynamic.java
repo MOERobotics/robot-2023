@@ -87,6 +87,9 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid retractor;
     Solenoid lights;
 
+    Solenoid coneGrabLights;
+    Solenoid pitchLights;
+
     AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
     CANCoder shoulder2 = new WPI_CANCoder(35);
 
@@ -212,6 +215,8 @@ public class TherMOEDynamic extends GenericRobot{
         retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
         gripper   = new Solenoid(PneumaticsModuleType.REVPH,12);
         lights = new Solenoid(PneumaticsModuleType.REVPH, 9);
+        coneGrabLights = new Solenoid(PneumaticsModuleType.REVPH, 14);
+        pitchLights = new Solenoid(PneumaticsModuleType.REVPH, 15);
 
     }
 
@@ -773,6 +778,16 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void setLightsOn(boolean on) {
         lights.set(on);
+    }
+
+    @Override
+    public void coneGrabInAction(boolean on) {
+        coneGrabLights.set(on);
+    }
+
+    @Override
+    public void robotTipping(boolean tip) {
+        pitchLights.set(tip);
     }
 
     //////////////////////////////////////////////////////////////////////////////////floor sensors

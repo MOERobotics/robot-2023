@@ -392,4 +392,8 @@ public abstract class GenericRobot {
     public void setLightsOn(boolean on){
     }
 
+    public void coneGrabInAction(boolean on){}
+
+    public void robotTipping(boolean tip){}
+
 }
