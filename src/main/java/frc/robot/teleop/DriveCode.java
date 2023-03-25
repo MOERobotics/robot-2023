@@ -73,7 +73,7 @@ public class DriveCode extends GenericTeleop{
     Point shelfStationRedLeft = new Point (56,240.7-4);
     Point shelfStationRedRight = new Point(56, 284);
     Point shelfStationBlueLeft = new Point (650-55, 280);
-    Point shelfStationBlueRight = new Point(650-55, 220.7);
+    Point shelfStationBlueRight = new Point(650-55, 232.7);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 

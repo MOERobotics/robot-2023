@@ -396,4 +396,6 @@ public abstract class GenericRobot {
 
     public void robotTipping(boolean tip){}
 
+    public void robotHeartbeat(boolean beat){}
+
 }
