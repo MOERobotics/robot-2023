@@ -11,7 +11,7 @@ import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
 import org.opencv.core.Point;
 
-public class F2Engage extends genericAutonomous{
+public class F2Mutated extends genericAutonomous{
 
     Point startPosition       = new Point(85,108);
     Point firstScorePosition  = new Point(69, 108);
@@ -60,7 +60,7 @@ public class F2Engage extends genericAutonomous{
         xspd = yspd = turnspd = 0;
         vision = new MoeNetVision(robot);
         startRot = new Rotation2d(0);
-        autonomousStep = 0;
+        autonomousStep = 10;
         lightOn = false;
         robot.setPigeonYaw(0);
         startPosition.x        = startPositionBlue.x;
@@ -89,6 +89,8 @@ public class F2Engage extends genericAutonomous{
         robot.resetPose();
         robot.resetAttitude();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
+        climbPower*= -1;
+        basePower*= -1;
     }
 
     @Override
@@ -135,20 +137,11 @@ public class F2Engage extends genericAutonomous{
                 yspd = turnspd = 0;
                 if (Math.abs(currPose.getX()-startXPose) >= 20){
                     armPos = -4;
-                    xspd = 0;
-                    m_timer.restart();
-                    autonomousStep = 23;
                 }
-                break;
-            case 23:
-                if (robot.getPotDegrees()<5){
-                    xspd = basePower;
-                    if (Math.abs(currPitch) > firstBreak) {
-                        armPos = -4;
-                        m_timer.restart();
-                        //Add length of the robot from front encoder to end of back wheel.
-                        autonomousStep = 4;
-                    }
+                if (Math.abs(currPitch) > firstBreak) {
+                    armPos = -4;
+                    //Add length of the robot from front encoder to end of back wheel.
+                    autonomousStep++;
                 }
                 break;
             case 4: //are we on the incline

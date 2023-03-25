@@ -33,6 +33,7 @@ public class DriveCode extends GenericTeleop{
     Joystick xboxFuncOp = new Joystick(2);
     Joystick buttonBox = new Joystick(0);
     Timer m_timer = new Timer();
+    Timer armTimer = new Timer();
     double xspd, yspd, turnspd;
     double HeightsDeg[] = new double[] {33.4, 84.8, 97};
     int autoStep = 0;
@@ -125,6 +126,7 @@ public class DriveCode extends GenericTeleop{
         }
         if (robot.getRed()) robot.setPigeonYaw(180);
         if (!robot.getRed()) robot.setPigeonYaw(0);
+        armTimer.restart();
     }
 
     @Override
@@ -133,7 +135,7 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
         SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
         Pose2d currPose = robot.getPose();
-
+        if (armTimer.get() < .1) desiredArmPos = robot.getPotDegrees();
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
