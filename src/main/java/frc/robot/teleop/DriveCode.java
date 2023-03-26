@@ -70,10 +70,12 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStationRedLeft = new Point (56,240.7-4);
-    Point shelfStationRedRight = new Point(56, 284);
-    Point shelfStationBlueLeft = new Point (650-55, 280);
-    Point shelfStationBlueRight = new Point(650-55, 232.7);
+    Point shelfStationRed = new Point(56, 265);
+    Point shelfStationBlue = new Point(650-55, 265);
+    Point shelfStationRedLeft = new Point (56,240.7-7+1.5);
+    Point shelfStationRedRight = new Point(56, 284-3+1.5);
+    Point shelfStationBlueLeft = new Point (595, 279);
+    Point shelfStationBlueRight = new Point(595, 232.7-5);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -338,7 +340,7 @@ public class DriveCode extends GenericTeleop{
                     robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
                     openGripper = true;
 
-                    desiredArmPos = 81;
+                    desiredArmPos = 82;
                     if (!poseNull)autoStep++;
                     m_timer.restart();
                     break;
@@ -346,6 +348,7 @@ public class DriveCode extends GenericTeleop{
                     double xDiff, yDiff, totDiff;
                     xDiff = shelfStation.x - robotPose.getX();
                     if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
+                        System.out.println(Double.toString(visPose.getX()) + " "+ Double.toString(visPose.getY()));
                         robot.resetStartDists();
                         robot.resetStartHeading();
                         robot.resetStartPivots();
