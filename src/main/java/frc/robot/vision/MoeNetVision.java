@@ -181,6 +181,7 @@ public final class MoeNetVision {
      * @return Detection of object
      */
     public Detection firstObjectDetection(){
+        //TODO: write intelligent variables and comments. what is this supposed to mean 🛴
         for(NetworkCamera camera : cameras){
             //I was upsetty spagetti when I named this variable and I am not sorry
             List<Detection> klad = camera.getDetections();
@@ -210,6 +211,7 @@ public final class MoeNetVision {
         double closestDistance = radius;
 
         for(NetworkCamera camera : cameras){
+            //TODO: same issue here. stop being cringe
             //I was upsetty spagetti when I named this variable and I am not sorry
             List<Detection> klad;
             try {
