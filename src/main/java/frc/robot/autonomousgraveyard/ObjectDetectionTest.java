@@ -50,8 +50,7 @@ public class ObjectDetectionTest extends genericAutonomous {
                 SmartDashboard.putBoolean("detautoHasFirstDetection", firstDetection != null);
 
                 if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                                    .times(Units.metersToInches(1));
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d();
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
 

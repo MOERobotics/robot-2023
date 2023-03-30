@@ -6,7 +6,9 @@ import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.*;
 import com.revrobotics.AnalogInput;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -82,6 +84,8 @@ public class TherMOEDynamic extends GenericRobot{
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
     SwerveDriveOdometry m_odometry;
+
+    SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
     Solenoid gripper;
     Solenoid retractor;
@@ -328,7 +332,24 @@ public class TherMOEDynamic extends GenericRobot{
                         new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(startPivots[2])),
                         new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(startPivots[3]))
                 }, startPose);
+
+
+        //Bottom graciously profess
+        swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
+                kinematics(), startPose.getRotation(),
+                new SwerveModulePosition[] {
+                        new SwerveModulePosition(startDists[0], Rotation2d.fromDegrees(startPivots[0])),
+                        new SwerveModulePosition(startDists[1], Rotation2d.fromDegrees(startPivots[1])),
+                        new SwerveModulePosition(startDists[2], Rotation2d.fromDegrees(startPivots[2])),
+                        new SwerveModulePosition(startDists[3], Rotation2d.fromDegrees(startPivots[3]))
+                }, startPose,
+                VecBuilder.fill(
+                        0.1, 0.1, 0.1), // x,y,heading in radians; state std dev, higher=less weight
+                VecBuilder.fill(
+                        0.9, 0.9,
+                        0.9)); // x,y,heading in radians; Vision measurement std dev, higher=less weight);
     }
+
     @Override
     public void resetStartHeading(){
         startHeading = pigeon.getYaw();

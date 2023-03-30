@@ -214,8 +214,7 @@ public class A1B2C extends genericAutonomous {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                 Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d();
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
@@ -244,8 +243,7 @@ public class A1B2C extends genericAutonomous {
                 armPower = -.3;
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d();
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
@@ -345,8 +343,7 @@ public class A1B2C extends genericAutonomous {
                 yspd = velocityFunctionY(s, t) + yPidK * (positionFunctionY(s) - currPose.getY());
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d();
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
@@ -373,8 +370,7 @@ public class A1B2C extends genericAutonomous {
                 armPower = -.3;
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
-                    var objOffset = firstDetection.location.getTranslation().toTranslation2d()
-                            .times(Units.metersToInches(1));
+                    var objOffset = firstDetection.location.getTranslation().toTranslation2d();
                     double distance = objOffset.getNorm();
                     var targetPosition = objOffset.interpolate(new Translation2d(), 1-(distance-TARGET_DISTANCE)/distance);
                     Pose2d possPose = currPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));

@@ -298,6 +298,15 @@ public abstract class GenericRobot {
         return defaultPose;
     }
 
+    public Pose2d getAbsolutePose() {
+        return getPose();
+    }
+
+    public void addVisionPose(Pose2d visionPose, double latency, double error){
+
+    }
+
+
     public void setPose(Pose2d startPose){}
     public void setPose(){}
 

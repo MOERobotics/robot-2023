@@ -194,6 +194,40 @@ public final class MoeNetVision {
         return null;
     }
 
+
+    /**
+     * Loops through all the cameras to find detections. The poses are in camera space, so we're using
+     * the smallest one. This is a bad solution, we should compare the detections to the center of the
+     * collector but yeet.
+     *
+     * @return Detection of "closest" object
+     */
+    public Detection closestDetectionRough(){
+        Detection returnDetection = null;
+        double shortestDistance = Double.MAX_VALUE;
+
+        for(NetworkCamera camera : cameras){
+            //I was upsetty spagetti when I named this variable and I am not sorry
+            List<Detection> klad = camera.getDetections();
+            if(klad != null){
+                for (Detection detection : klad){
+                    double detectedX = detection.location.getX();
+                    double detectedY = detection.location.getY();
+
+                    double distance = Math.sqrt(
+                            (Math.abs(detectedX) * Math.abs(detectedX))
+                                    +(Math.abs(detectedY) * Math.abs(detectedY)));
+
+                    if(distance < shortestDistance){
+                        returnDetection = detection;
+                        shortestDistance = distance;
+                    }
+                }
+            }
+        }
+        return returnDetection;
+    }
+
     /**
      * Program selects an object type and location to search for. Loops through all the
      * cameras to find detections. This function uses vision to return the closest Detection
