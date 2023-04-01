@@ -250,7 +250,8 @@ public class TherMOEDynamic extends GenericRobot{
     }
     @Override
     public void setDrive(double xspd, double yspd, double turnspd, boolean auto, boolean fieldCentric){
-        double m_yaw = getYaw();
+        double m_yaw = -getPigeonYaw();
+        if (getRed()) m_yaw = -getPigeonYaw() + 180;
         if (auto){
             m_yaw = -getPigeonYaw();
         }
