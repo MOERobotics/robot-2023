@@ -327,6 +327,10 @@ public class TherMOEDynamic extends GenericRobot{
         SmartDashboard.putNumber("xPose", myPose.getX());
         SmartDashboard.putNumber("yPose", myPose.getY());
         SmartDashboard.putNumber("rotation", myPose.getRotation().getDegrees());
+
+        SmartDashboard.putNumber("xPose_swerveDrivePoseEstimator", myPose_swerveDrivePoseEstimator.getX());
+        SmartDashboard.putNumber("yPose_swerveDrivePoseEstimator", myPose_swerveDrivePoseEstimator.getY());
+        SmartDashboard.putNumber("rotation_swerveDrivePoseEstimator", myPose_swerveDrivePoseEstimator.getRotation().getDegrees());
         return myPose;
     }
 
