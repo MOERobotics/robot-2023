@@ -35,7 +35,7 @@ public class DriveCode extends GenericTeleop{
     Timer m_timer = new Timer();
     Timer armTimer = new Timer();
     double xspd, yspd, turnspd;
-    double HeightsDeg[] = new double[] {20, 84.8, 97};
+    double HeightsDeg[] = new double[] {20, 82, 97};
     int autoStep = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
@@ -341,7 +341,7 @@ public class DriveCode extends GenericTeleop{
                     openGripper = true;
 
                     desiredArmPos = 82;
-                    if (!poseNull)autoStep++;
+                    if (!poseNull && Math.abs(Math.abs(pigYaw) - 180) <= 5 && Math.abs(robot.getPotDegrees() - desiredArmPos) <= 10)autoStep++;
                     m_timer.restart();
                     break;
                 case 1:
