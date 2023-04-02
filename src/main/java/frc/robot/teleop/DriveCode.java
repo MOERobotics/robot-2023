@@ -157,7 +157,7 @@ public class DriveCode extends GenericTeleop{
             balanceCommand = false;
         }
 
-        if (xboxDriver.getRawButton(5)) { // speed boosters
+        if (xboxDriver.getRawButton(5)) { // speed un-boosters
             turnspd /= 2;
         }
         if (xboxDriver.getRawButton(6)) {
