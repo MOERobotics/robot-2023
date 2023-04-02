@@ -314,6 +314,14 @@ public class TherMOEDynamic extends GenericRobot{
                         new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(getPivotRightMotorB()))
                 });
 
+        Pose2d myPose_swerveDrivePoseEstimator = swerveDrivePoseEstimator.update(Rotation2d.fromDegrees(currHeading),
+                new SwerveModulePosition[] {
+                        new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
+                        new SwerveModulePosition(getDriveDistanceInchesRightA(), Rotation2d.fromDegrees(getPivotRightMotorA())),
+                        new SwerveModulePosition(getDriveDistanceInchesLeftB(), Rotation2d.fromDegrees(getPivotLeftMotorB())),
+                        new SwerveModulePosition(getDriveDistanceInchesRightB(), Rotation2d.fromDegrees(getPivotRightMotorB()))
+                });
+
 
         //Pose2d correctPose = new Pose2d(myPose.getX(),(2*startingPoseOdom.getY() - myPose.getY()), myPose.getRotation());
         SmartDashboard.putNumber("xPose", myPose.getX());
