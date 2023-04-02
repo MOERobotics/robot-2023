@@ -506,6 +506,9 @@ public class DriveCode extends GenericTeleop{
         else{
             robot.holdArmPosition(desiredArmPos);
         }
+
+        ////////////////////////////////////////////////////////ultrasonic stuff
+        robot.PingEnabled(true);
     }
 
     public int heightIndex(){

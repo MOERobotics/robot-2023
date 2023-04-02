@@ -17,6 +17,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
@@ -79,6 +80,10 @@ public class    swerveBot extends GenericRobot{
     DigitalInput rightLightSensor = new DigitalInput(1);
 
     Pose2d startingPoseOdom = defaultPose;
+
+    ///////////////////////////////////////////////////////////////Ultrasonic sensor
+
+    Ultrasonic pingSensor = new Ultrasonic(0,0);
 
 
 
@@ -659,4 +664,14 @@ public class    swerveBot extends GenericRobot{
 
     @Override
     public boolean getRightLightSensor(){return rightLightSensor.get();}*/
+
+    //////////////////////////////////////////////////////Ultrasonic senisores
+    @Override
+    public double getPingMillimeters(){return pingSensor.getRangeMM();}
+    @Override
+    public boolean setPingAutoMode(){return false;}
+    @Override
+    public double getPingInches(){return pingSensor.getRangeInches();}
+    @Override
+    public void PingEnabled(boolean state){pingSensor.setEnabled(state);}
 }

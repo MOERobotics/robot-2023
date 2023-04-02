@@ -398,4 +398,11 @@ public abstract class GenericRobot {
 
     public void robotHeartbeat(boolean beat){}
 
+    //////////////////////////////////////////////////////Ultrasonicsenisores
+    public double getPingMillimeters(){return 0;}
+    public boolean setPingAutoMode(){return false;}
+    public double getPingInches(){return 0;}
+
+    public void PingEnabled(boolean state){}
+
 }
