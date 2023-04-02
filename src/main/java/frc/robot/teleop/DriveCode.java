@@ -70,12 +70,10 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStationRed = new Point(56, 265);
-    Point shelfStationBlue = new Point(650-55, 265);
-    Point shelfStationRedLeft = new Point (56,240.7-7+1.5);
-    Point shelfStationRedRight = new Point(56, 284-3+1.5+4);
-    Point shelfStationBlueLeft = new Point (595, 279);
-    Point shelfStationBlueRight = new Point(595, 232.7-5);
+    Point shelfStationRedLeft = new Point (53.5,240.7-7+1.5);
+    Point shelfStationRedRight = new Point(53.5, 284-3+1.5);
+    Point shelfStationBlueLeft = new Point (597.5, 279);
+    Point shelfStationBlueRight = new Point(597.5, 232.7-5);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -332,6 +330,7 @@ public class DriveCode extends GenericTeleop{
             autoDrive = true;
             switch(autoStep) {
                 case 0:
+                    xspd = yspd = 0;
                     robot.resetStartDists();
                     robot.resetStartPivots();
                     robot.resetStartHeading();
@@ -341,13 +340,13 @@ public class DriveCode extends GenericTeleop{
                     openGripper = true;
 
                     desiredArmPos = 82;
-                    if (!poseNull && Math.abs(Math.abs(pigYaw) - 180) <= 5 && Math.abs(robot.getPotDegrees() - desiredArmPos) <= 10)autoStep++;
+                    if (!poseNull && Math.abs(pigYaw) <= 5 && Math.abs(robot.getPotDegrees() - desiredArmPos) <= 10)autoStep++;
                     m_timer.restart();
                     break;
                 case 1:
                     double xDiff, yDiff, totDiff;
                     xDiff = shelfStation.x - robotPose.getX();
-                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 21){
                         System.out.println(Double.toString(visPose.getX()) + " "+ Double.toString(visPose.getY()));
                         robot.resetStartDists();
                         robot.resetStartHeading();
@@ -362,7 +361,7 @@ public class DriveCode extends GenericTeleop{
                     xspd = shelfCollectSpeed * xDiff/totDiff;
                     yspd = shelfCollectSpeed * yDiff/totDiff;
 
-                    if (totDiff <= 1) {
+                    if (totDiff <= .5) {
                         xspd = 0;
                         yspd = 0;
                         m_timer.reset();
@@ -371,6 +370,22 @@ public class DriveCode extends GenericTeleop{
                     }
                     break;
                 case 2:
+                    xDiff = shelfStation.x - robotPose.getX();
+                    yDiff = shelfStation.y - robotPose.getY();
+                    totDiff = Math.hypot(xDiff, yDiff);
+                    xspd = yspd = 0;
+                    if (totDiff > .5){
+                        m_timer.restart();
+                        xspd = 12 * xDiff/totDiff;
+                        yspd = 12 * yDiff/totDiff;
+                    }
+                    if (m_timer.get() > .5){
+                        xspd = yspd = 0;
+                        m_timer.restart();
+                        autoStep ++;
+                    }
+                    break;
+                case 3:
                     xspd = yspd = 0;
                     openGripper = false;
                     if (m_timer.get() >= 1){
@@ -379,7 +394,7 @@ public class DriveCode extends GenericTeleop{
                         startX = robotPose.getX();
                     }
                     break;
-                case 3:
+                case 4:
                     xspd = -shelfCollectSpeed;
                     if (robot.getRed()) xspd *= -1;
                     yspd = 0;
@@ -388,7 +403,7 @@ public class DriveCode extends GenericTeleop{
                         xspd = yspd = 0;
                     }
                     break;
-                case 4:
+                case 5:
                     coneGrabOn = false;
                     xspd = yspd = 0;
                     break;
