@@ -28,6 +28,7 @@ public class TherMOEDynamic extends GenericRobot{
     public final double greatestAngle = 100;
     public final double shoulderCalib = 3.21;
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
+
 ///////////////////////////////////////////////////////////////////////////////////////swerve Motors and pivots
     CANSparkMax leftMotorA        = new CANSparkMax(19, kBrushless);
     CANSparkMax pivotLeftMotorA   = new CANSparkMax(18, kBrushless);
@@ -40,6 +41,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     CANSparkMax rightMotorB       = new CANSparkMax(13, kBrushless);
     CANSparkMax pivotRightMotorB   = new CANSparkMax(12, kBrushless);
+
 //////////////////////////////////////////////////////////////////////////////////////swerve Motor encoders
     RelativeEncoder encoderRightA  = rightMotorA.getEncoder();
     RelativeEncoder encoderLeftA   = leftMotorA.getEncoder();
@@ -805,4 +807,7 @@ public class TherMOEDynamic extends GenericRobot{
     public boolean getRightFloorSensor() {
         return floorSensorRightForward.isPressed();
     }
+    /////////////////////////////////////////////////////////////////////////////////ultrasonics add after swerve tested
+
+
 }
