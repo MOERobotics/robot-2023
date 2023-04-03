@@ -70,10 +70,10 @@ public class DriveCode extends GenericTeleop{
     double y = 0;
     double armLength = 40;
     Point startingPos = new Point(0,0);
-    Point shelfStationRedLeft = new Point (53,240.7-11);
-    Point shelfStationRedRight = new Point(53, 284-3+1.5);
-    Point shelfStationBlueLeft = new Point (598, 279);
-    Point shelfStationBlueRight = new Point(598, 232.7-5);
+    Point shelfStationRedLeft = new Point (53.5,240.7-7+1.5);
+    Point shelfStationRedRight = new Point(53.5, 284-3+1.5);
+    Point shelfStationBlueLeft = new Point (597.5, 279);
+    Point shelfStationBlueRight = new Point(597.5, 232.7-5);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -267,6 +267,12 @@ public class DriveCode extends GenericTeleop{
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////D-Pad controls
 
+        double strafexspd = robot.deadzone(xboxFuncOp.getRawAxis(5), .7);
+        double strafeyspd = robot.deadzone(xboxFuncOp.getRawAxis(4), .7);
+        if (strafexspd != 0) xspd = Math.signum(strafexspd)*12;
+        if (strafeyspd != 0) yspd = Math.signum(strafeyspd)*12;
+        ///^Roshik controls :)
+
         switch (DriveCode.POVDirection.getDirection(xboxDriver.getPOV())) {
             case NORTH:
                 xspd = 12;
@@ -282,6 +288,7 @@ public class DriveCode extends GenericTeleop{
                 break;
 
         }
+
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
         if (xboxDriver.getRawButtonPressed(3)){
@@ -489,12 +496,7 @@ public class DriveCode extends GenericTeleop{
             pressed = false;
         }
 //////////////////////////////////////////////////////////////////////////////////////////lights on hp command
-        if (xboxFuncOp.getRawButton(7)){
-            lightsOn = false;
-        }
-        if (xboxFuncOp.getRawButton(8)){
-            lightsOn = true;
-        }
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
             raiseTopRoller = true;
