@@ -679,6 +679,7 @@ public class swerveBot extends GenericRobot{
     public double getTOFAmbientLightLevel(){
         return timeOfFlightSensor.getAmbientLightLevel();
     }
+
     public boolean getRightLightSensor(){return rightLightSensor.get();}
 
     //////////////////////////////////////////////////////Ultrasonic senisores
