@@ -79,7 +79,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     PIDController pivotLeftAPID = new PIDController(8.0e-3,0,0);
     PIDController pivotLeftBPID = new PIDController(8.0e-3,0,0);
-    PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
+    PIDController pivotRightAPID = new PIDController(12.0e-3,0,0);
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
     SwerveDriveOdometry m_odometry;
@@ -87,6 +87,9 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid gripper;
     Solenoid retractor;
     Solenoid lights;
+
+    Solenoid coneGrabLights;
+    Solenoid pitchLights;
 
     AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
     CANCoder shoulder2 = new WPI_CANCoder(35);
@@ -99,6 +102,14 @@ public class TherMOEDynamic extends GenericRobot{
 
     SparkMaxLimitSwitch armLimitSwitchForward = leftArmMotor.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
     SparkMaxLimitSwitch armLimitSwitchReverse = leftArmMotor.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    SparkMaxLimitSwitch floorSensorLeftForward = leftMotorB.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch floorSensorLeftReverse = leftMotorB.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    SparkMaxLimitSwitch floorSensorRightForward = rightMotorB.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+    SparkMaxLimitSwitch floorSensorRightReverse = rightMotorB.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+
+    PIDController armController = new PIDController(.01, 0.18e-2, 0);
 
     TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
 
@@ -118,6 +129,10 @@ public class TherMOEDynamic extends GenericRobot{
         firstCargoFinderReverse.enableLimitSwitch(false);
         armLimitSwitchForward.enableLimitSwitch(false);
         armLimitSwitchReverse.enableLimitSwitch(false);
+        floorSensorRightReverse.enableLimitSwitch(false);
+        floorSensorRightForward.enableLimitSwitch(false);
+        floorSensorLeftForward.enableLimitSwitch(false);
+        floorSensorLeftReverse.enableLimitSwitch(false);
 
         m_ph.enableCompressorAnalog(100,120);
 
@@ -203,6 +218,8 @@ public class TherMOEDynamic extends GenericRobot{
         retractor = new Solenoid(PneumaticsModuleType.REVPH,8);
         gripper   = new Solenoid(PneumaticsModuleType.REVPH,12);
         lights = new Solenoid(PneumaticsModuleType.REVPH, 9);
+        coneGrabLights = new Solenoid(PneumaticsModuleType.REVPH, 14);
+        pitchLights = new Solenoid(PneumaticsModuleType.REVPH, 15);
 
     }
 
@@ -228,14 +245,16 @@ public class TherMOEDynamic extends GenericRobot{
                 new Translation2d(-w, -d)
         );
     }
-
+    @Override
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){this.setDrive(xspd, yspd, turnspd, auto, true);}
     @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
         this.setDrive(xspd,yspd,turnspd,false, true);
     }
     @Override
     public void setDrive(double xspd, double yspd, double turnspd, boolean auto, boolean fieldCentric){
-        double m_yaw = getYaw();
+        double m_yaw = -getPigeonYaw();
+        if (getRed()) m_yaw = -getPigeonYaw() + 180;
         if (auto){
             m_yaw = -getPigeonYaw();
         }
@@ -732,14 +751,19 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void holdArmPosition(double pos){
-        double armPower = .01*(-getPotDegrees() + pos);
+        double armPower = armController.calculate(getPotDegrees() - pos);
         if (armPower < 0){
-            armPower = Math.max(-.3, armPower);
+            armPower = Math.max(-.2, armPower);
         }
         else{
-            armPower = Math.min(.3, armPower);
+            armPower = Math.min(.4, armPower);
         }
         moveArm(armPower);
+    }
+
+    @Override
+    public void resetArmPID() {
+        armController.reset();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////gripper commands
@@ -758,5 +782,27 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void setLightsOn(boolean on) {
         lights.set(on);
+    }
+
+    @Override
+    public void coneGrabInAction(boolean on) {
+        coneGrabLights.set(on);
+    }
+
+    @Override
+    public void robotTipping(boolean tip) {
+        pitchLights.set(tip);
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////floor sensors
+
+    @Override
+    public boolean getLeftFloorSensor() {
+        return floorSensorLeftForward.isPressed();
+    }
+
+    @Override
+    public boolean getRightFloorSensor() {
+        return floorSensorRightForward.isPressed();
     }
 }

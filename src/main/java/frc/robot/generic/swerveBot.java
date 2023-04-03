@@ -409,6 +409,8 @@ public class    swerveBot extends GenericRobot{
 
 ///////////////////////////////////////////////////////////////////////////drive motor
     @Override
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){this.setDrive(xspd,yspd,turnspd,auto,true);}
+    @Override
     public void setDrive(double xspd, double yspd, double turnspd) {
         this.setDrive(xspd,yspd,turnspd,false, false);
     }
@@ -654,7 +656,7 @@ public class    swerveBot extends GenericRobot{
 
     /////////////////////////////////////////////////////////////////////////////Light Sensor Code
 
-    @Override
+    /*@Override
     public boolean getLeftLightSensor(){return leftLightSensor.get();}
 
     @Override
@@ -671,4 +673,5 @@ public class    swerveBot extends GenericRobot{
     public double getTOFAmbientLightLevel(){
         return timeOfFlightSensor.getAmbientLightLevel();
     }
+    public boolean getRightLightSensor(){return rightLightSensor.get();}*/
 }

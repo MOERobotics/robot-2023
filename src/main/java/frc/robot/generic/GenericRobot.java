@@ -123,6 +123,17 @@ public abstract class GenericRobot {
 
     public void setPigeonYaw(double startYaw){}
 
+    public double getPigeonBoundedYaw(double pigeonYaw){
+        if (pigeonYaw < 0){
+            return (pigeonYaw - 180)%360+180;
+        }
+        else{
+            return (pigeonYaw + 180)%360-180;
+        }
+    }
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// Drive Motor Commands
 
     ////////////////////////////////////////////////////////// Encoders
@@ -278,6 +289,9 @@ public abstract class GenericRobot {
     public void setDrive(double xspd, double yspd, double turnspd, boolean auto, boolean fieldCentric){
 
     }
+    public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
+        setDrive(xspd,yspd,turnspd,auto,true);
+    }
 
     static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
     public Pose2d getPose() {
@@ -286,6 +300,12 @@ public abstract class GenericRobot {
 
     public void setPose(Pose2d startPose){}
     public void setPose(){}
+
+    public void resetPose(){
+        resetStartPivots();
+        resetStartHeading();
+        resetStartDists();
+    }
 
 
     public void resetStartHeading() {
@@ -339,6 +359,7 @@ public abstract class GenericRobot {
     public void holdArmPosition(double pos){
 
     }
+    public void resetArmPID(){}
 
     public void liftArm(){
 
@@ -362,14 +383,20 @@ public abstract class GenericRobot {
     public void setRed(boolean redStatus){Red = redStatus;}
 
     ///////////////////////////////////////////////////////////Light Sensors
-    public boolean getLeftLightSensor(){return false;}
+    public boolean getLeftFloorSensor(){return false;}
 
-    public boolean getRightLightSensor(){return false;}
+    public boolean getRightFloorSensor(){return false;}
 
     ////////////////////////////////////////////////////////////solenoid lights
 
     public void setLightsOn(boolean on){
     }
+
+    public void coneGrabInAction(boolean on){}
+
+    public void robotTipping(boolean tip){}
+
+    public void robotHeartbeat(boolean beat){}
 
     //////////////////////////////////////////////////////////// TimeOfFlight Sensors
 

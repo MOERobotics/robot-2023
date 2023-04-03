@@ -1,9 +1,10 @@
-package frc.robot.autonomous;
+package frc.robot.autonomousgraveyard;
 
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;

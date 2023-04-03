@@ -9,9 +9,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.autonomous.*;
+import frc.robot.autonomousgraveyard.*;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.TherMOEDynamic;
-import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
@@ -21,14 +21,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class Robot extends TimedRobot {
   Joystick autoSelect = new Joystick(0);
   public static final genericAutonomous
-        A1CDock = new A1CDock(),
         A1C = new A1C(),
-        ExitAndEngage = new ExitAndEngageSideways(),
-        mobilityEngage = new mobilityEngage(),
         A1B2C = new A1B2C(),
-        A1 = new A1();
+        A1 = new A1(),
+        F2Engage = new F2Engage(),
+        ScoreAndStop = new ScoreAndStop(),
+        A1BHigh = new A1BHigh();
 
-  genericAutonomous autonomous = A1C;
+  genericAutonomous autonomous = new A1BHigh();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
 //    GenericRobot robot = new TherMOEDynamic();
@@ -70,6 +70,12 @@ public class Robot extends TimedRobot {
      robot.setRed(false);
    }
    SmartDashboard.putBoolean("isAuto", false);
+   if (Math.abs(robot.getPitch()) > 10 || Math.abs(robot.getRoll()) > 10){
+       robot.robotTipping(true);
+   }
+   else{
+       robot.robotTipping(false);
+   }
   }
 
 
@@ -108,12 +114,16 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
    SmartDashboard.putBoolean("isAuto", false);
-   if (autoSelect.getRawButtonPressed(1)) autonomous = A1CDock;
+   if (autoSelect.getRawButtonPressed(1))
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
-   if (autoSelect.getRawButtonPressed(3)) autonomous = ExitAndEngage;
+   if (autoSelect.getRawButtonPressed(3))
    if (autoSelect.getRawButtonPressed(4)) autonomous = A1B2C;
-   if (autoSelect.getRawButtonPressed(5)) autonomous = mobilityEngage;
+   if (autoSelect.getRawButtonPressed(5)) autonomous = A1BHigh;
    if (autoSelect.getRawButtonPressed(6)) autonomous = A1;
+   if (autoSelect.getRawButtonPressed(7))
+   if (autoSelect.getRawButtonPressed(8)) autonomous = F2Engage;
+   if (autoSelect.getRawButtonPressed(9)) autonomous = ScoreAndStop;
+
   }
 
 

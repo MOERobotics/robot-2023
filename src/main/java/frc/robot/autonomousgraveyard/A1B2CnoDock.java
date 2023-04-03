@@ -1,15 +1,16 @@
-package frc.robot.autonomous;
+package frc.robot.autonomousgraveyard;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
 import frc.robot.helpers.AutoCodeLines;
 import org.opencv.core.Point;
 
-public class A1B2CnoDock extends genericAutonomous{
+public class A1B2CnoDock extends genericAutonomous {
     private final Timer m_timer = new Timer();
 
     //TODO: Verify

@@ -1,9 +1,9 @@
 package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
@@ -13,9 +13,14 @@ import frc.robot.commands.AutoConeCubeStack;
 import frc.robot.commands.autoBalance;
 import frc.robot.commands.genericCommand;
 import frc.robot.generic.GenericRobot;
-import frc.robot.helpers.ButtonBox;
 import frc.robot.vision.Detection;
 import frc.robot.vision.MoeNetVision;
+import org.opencv.core.Point;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class DriveCode extends GenericTeleop{
@@ -28,8 +33,9 @@ public class DriveCode extends GenericTeleop{
     Joystick xboxFuncOp = new Joystick(2);
     Joystick buttonBox = new Joystick(0);
     Timer m_timer = new Timer();
+    Timer armTimer = new Timer();
     double xspd, yspd, turnspd;
-    double HeightsDeg[] = new double[] {33.4, 84.8, 101.1};
+    double HeightsDeg[] = new double[] {20, 84.8, 97};
     int autoStep = 0;
 
     //////////////////////////////////////////////////////////////////////////////////////////////////Arm Code Constants
@@ -43,10 +49,12 @@ public class DriveCode extends GenericTeleop{
     boolean init = false;
     boolean balanceInit  = false;
 
+    boolean notSeenObjectYet = true;
+
     double desiredYaw = 0;
-    double desiredPos = -6;
+    double desiredArmPos = -6;
     PIDController yawControl = new PIDController(1.0e-1, 0,0);
-    PIDController inPlacePID = new PIDController(3.0e-2, 3.0e-3, 0);
+    PIDController inPlacePID = new PIDController(1e-1, 0*3e-3, 4e-3);
     MoeNetVision vision;
     boolean secondTrip = false;
     boolean firstTrip = false;
@@ -54,6 +62,34 @@ public class DriveCode extends GenericTeleop{
     double xPoseOfWall = 0;
     boolean lightsOn = false;
     boolean fieldCentric = true;
+    boolean autoCollectStopDriving = false;
+
+
+
+    double x = 0;
+    double y = 0;
+    double armLength = 40;
+    Point startingPos = new Point(0,0);
+    Point shelfStationRed = new Point(56, 265);
+    Point shelfStationBlue = new Point(650-55, 265);
+    Point shelfStationRedLeft = new Point (56,240.7-7+1.5);
+    Point shelfStationRedRight = new Point(56, 284-3+1.5+4);
+    Point shelfStationBlueLeft = new Point (595, 279);
+    Point shelfStationBlueRight = new Point(595, 232.7-5);
+    Point shelfStation = new Point(0,0);
+    Rotation2d startRot = new Rotation2d(0);
+
+    double startX = 0;
+    boolean clockTurn = false;
+    boolean counterTurn = false;
+    boolean clockTurnPartial = false;
+    boolean counterTurnPartial = false;
+    double oldYaw;
+
+    double pigYaw = 0;
+    boolean autoDrive = false;
+    boolean coneGrabOn = false;
+
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -82,19 +118,35 @@ public class DriveCode extends GenericTeleop{
         pressed = false;
         lightsOn = false;
         fieldCentric = true;
+        clockTurn = false;
+        counterTurn = false;
+        desiredArmPos = robot.getPotDegrees();
+        if (robot.getRed()){
+            startRot = new Rotation2d(Math.PI);
+        }
+        else{
+            startRot = new Rotation2d(0);
+        }
+        if (robot.getRed()) robot.setPigeonYaw(180);
+        if (!robot.getRed()) robot.setPigeonYaw(0);
+        armTimer.restart();
     }
 
     @Override
     public void teleopPeriodic(GenericRobot robot) {
         SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
-        SmartDashboard.putNumber("desiredArmPos", desiredPos);
+        SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
+        Pose2d currPose = robot.getPose();
+        if (armTimer.get() < .1) desiredArmPos = robot.getPotDegrees();
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
         Pose2d robotPose = robot.getPose();
         fieldCentric = true;
         armPower = 0;
+        autoDrive = false;
+        coneGrabOn = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
         xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
         yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
@@ -107,7 +159,7 @@ public class DriveCode extends GenericTeleop{
             balanceCommand = false;
         }
 
-        if (xboxDriver.getRawButton(5)) { // speed boosters
+        if (xboxDriver.getRawButton(5)) { // speed un-boosters
             turnspd /= 2;
         }
         if (xboxDriver.getRawButton(6)) {
@@ -116,10 +168,12 @@ public class DriveCode extends GenericTeleop{
         }
 
         if (turnspd != 0){
+            clockTurn = false;
+            counterTurn = false;
             desiredYaw = robot.getYaw();
         }
         else {
-            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3)) {
+            if (xspd != 0 || yspd != 0 || xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2) || clockTurn || counterTurn) {
                 turnspd = yawControl.calculate(desiredYaw - robot.getYaw());
             }
         }
@@ -134,81 +188,212 @@ public class DriveCode extends GenericTeleop{
             robot.setPose(m_pose);
             yawControl.reset();
             desiredYaw = 0;
+            if (robot.getRed()) robot.setPigeonYaw(180);
+            if (!robot.getRed()) robot.setPigeonYaw(0);
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////end swerve code
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////Point robot to object
 
+        SmartDashboard.putBoolean("Do you see object yet?", notSeenObjectYet);
+        SmartDashboard.putNumber("desiredYaw", desiredYaw);
         if (xboxDriver.getRawAxis(3) >.1) {
             SmartDashboard.putNumber("desiredYaw", desiredYaw);
+
             Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
-            if (firstDetection != null) {
+            if ((notSeenObjectYet) && (firstDetection != null) ) {
                 var objOffset = firstDetection.location.getTranslation().toTranslation2d()
                         .times(Units.metersToInches(1));
-                double distance = objOffset.getNorm();
-                var targetPosition = objOffset.interpolate(new Translation2d(), 1 - (distance) / distance);
-                //Pose2d desiredPose = robotPose.transformBy(new Transform2d(targetPosition, new Rotation2d()));
+                var targetPosition = objOffset.interpolate(new Translation2d(), 0);
                 double yDiff = targetPosition.getY();
                 double xDiff = targetPosition.getX();
-                desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff)*180/Math.PI;
+                desiredYaw = robot.getYaw() - Math.atan2(yDiff, xDiff) * 180 / Math.PI;
                 turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
                 fieldCentric = false;
+                notSeenObjectYet = false;
+                SmartDashboard.putNumber("visionWeirdPoseX", currPose.transformBy(new Transform2d(targetPosition, new Rotation2d())).getX());
+                SmartDashboard.putNumber("visionWeirdPosey", currPose.transformBy(new Transform2d(targetPosition, new Rotation2d())).getY());
+                SmartDashboard.putNumber("visionWeirdPoseRot", currPose.transformBy(new Transform2d(targetPosition, new Rotation2d())).getRotation().getDegrees());
+            }
+            else if (notSeenObjectYet) {
+                xspd = turnspd = 0;
+            }
+            else {
+                lightsOn = true;
+                fieldCentric = false;
+                turnspd = inPlacePID.calculate(desiredYaw - robot.getYaw());
+                xspd = 84;
+                if (robot.cargoDetected()){
+                    autoCollectStopDriving = true;
+                }
+                if (autoCollectStopDriving){
+                    xspd = 0;
+                    turnspd = 0;
+                }
             }
         }
+        else {
+            lightsOn = false;
+            inPlacePID.reset();
+            autoCollectStopDriving = false;
+            notSeenObjectYet = true;
+        }
+////////////////////////////////////////////////////////////////////////////////////////rotate 180 clockwise of 180 counterclock
 
+        if (counterTurnPartial){
+            desiredYaw -= 90;
+            counterTurnPartial = false;
+        }
+        if (clockTurnPartial){
+            desiredYaw += 90;
+            clockTurnPartial = false;
+        }
+        if (xboxDriver.getRawAxis(5) > .8){
+                desiredYaw = oldYaw - 90;
+                counterTurn = true;
+                clockTurn = false;
+                counterTurnPartial = true;
+                clockTurnPartial = false;
+        }
+        else if (xboxDriver.getRawAxis(5) < -.8){
+            desiredYaw = oldYaw + 90;
+            counterTurn = false;
+            clockTurn = true;
+            counterTurnPartial = false;
+            clockTurnPartial = true;
+        }
+        else{
+            oldYaw = robot.getYaw();
+        }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////D-Pad controls
+
+        switch (DriveCode.POVDirection.getDirection(xboxDriver.getPOV())) {
+            case NORTH:
+                xspd = 12;
+                break;
+            case EAST:
+                yspd = -12;
+                break;
+            case SOUTH:
+                xspd = -12;
+                break;
+            case WEST:
+                yspd = 12;
+                break;
+
+        }
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
         if (xboxDriver.getRawButtonPressed(3)){
             autoStep = 0;
             xPoseOfWall = robotPose.getX();
+            shelfStation = new Point(shelfStationBlueLeft.x, shelfStationBlueLeft.y);
+            if (robot.getRed()){
+                shelfStation = new Point(shelfStationRedLeft.x, shelfStationRedLeft.y);
+            }
         }
-        if (xboxDriver.getRawButton(3)){
+        if (xboxDriver.getRawButtonPressed(2)){
+            autoStep = 0;
+            xPoseOfWall = robotPose.getX();
+            shelfStation = new Point(shelfStationBlueRight.x, shelfStationBlueRight.y);
+            if (robot.getRed()){
+                shelfStation = new Point(shelfStationRedRight.x, shelfStationRedRight.y);
+            }
+        }
+        if (xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)){
+            coneGrabOn = true;
             SmartDashboard.putNumber("autoStep", autoStep);
-            xspd = yspd = 0;
+            SmartDashboard.putNumber("startPosX", startingPos.x);
+            SmartDashboard.putNumber("startPosY", startingPos.y);
+            SmartDashboard.putNumber("desiredPoseShelfX", shelfStation.x);
+            SmartDashboard.putNumber("desiredPoseShelfY", shelfStation.y);
 
-            switch (autoStep){
+            boolean poseNull = true;
+            Pose3d visPose = vision.getPose();
+            if (visPose.getX() != -1){
+                poseNull = false;
+                x = visPose.getX();
+                if (robot.getRed()){
+                    y = visPose.getY() + 9;
+                }
+                else{
+                    y = visPose.getY() - 30; //TODO: check if offset shdnt be off
+                }
+            }
+
+            startingPos = new Point(x, y);
+            double shelfCollectSpeed = 48;
+            desiredYaw = robot.getYaw();
+            pigYaw = robot.getPigeonYaw();
+            if (!robot.getRed()) pigYaw -= 180;
+            pigYaw = robot.getPigeonBoundedYaw(pigYaw);
+            autoDrive = true;
+            switch(autoStep) {
                 case 0:
-                    xspd = -30;
-                    yspd = 0;
-                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 50){
-                        xspd = yspd = 0;
-                        desiredPos = 78;
-                        xPoseOfWall = robotPose.getX();
-                        autoStep ++;
-                    }
+                    robot.resetStartDists();
+                    robot.resetStartPivots();
+                    robot.resetStartHeading();
+                    if (!robot.getRed()) startRot = new Rotation2d(Math.PI);
+                    if (robot.getRed()) startRot = new Rotation2d(0);
+                    robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                    openGripper = true;
+
+                    desiredArmPos = 82;
+                    if (!poseNull)autoStep++;
+                    m_timer.restart();
                     break;
                 case 1:
-                    xspd = 0;
-                    yspd = 0;
-                    if (Math.abs(robot.getPotDegrees() - desiredPos) <= 2){
-                        autoStep ++;
+                    double xDiff, yDiff, totDiff;
+                    xDiff = shelfStation.x - robotPose.getX();
+                    if (!poseNull && m_timer.get() >= .15 && Math.abs(xDiff) >= 18){
+                        System.out.println(Double.toString(visPose.getX()) + " "+ Double.toString(visPose.getY()));
+                        robot.resetStartDists();
+                        robot.resetStartHeading();
+                        robot.resetStartPivots();
+                        robot.setPose(new Pose2d(startingPos.x, startingPos.y, startRot));
+                        m_timer.restart();
+                    }
+                    xDiff = shelfStation.x - robotPose.getX();
+                    yDiff = shelfStation.y - robotPose.getY();
+                    totDiff = Math.hypot(xDiff, yDiff);
+                    SmartDashboard.putNumber("totalDiff", totDiff);
+                    xspd = shelfCollectSpeed * xDiff/totDiff;
+                    yspd = shelfCollectSpeed * yDiff/totDiff;
+
+                    if (totDiff <= 1) {
+                        xspd = 0;
+                        yspd = 0;
+                        m_timer.reset();
+                        m_timer.start();
+                        autoStep++;
                     }
                     break;
                 case 2:
-                    xspd = 12;
-                    if (Math.abs(xPoseOfWall - robotPose.getX()) >= 21){
-                        xspd = yspd = 0;
-                        openGripper = false;
-                        m_timer.reset();
-                        m_timer.start();
+                    xspd = yspd = 0;
+                    openGripper = false;
+                    if (m_timer.get() >= 1){
+                        desiredArmPos = 88;
                         autoStep ++;
+                        startX = robotPose.getX();
                     }
                     break;
                 case 3:
-                    if(m_timer.get() <= .2){
-                        autoStep++;
-                        xPoseOfWall = robotPose.getX();
-                    }
-                    break;
-                case 4:
-                    xspd = -12;
-                    desiredPos = 84;
-                    if (Math.abs(xPoseOfWall) - robotPose.getX() >= 10){
+                    xspd = -shelfCollectSpeed;
+                    if (robot.getRed()) xspd *= -1;
+                    yspd = 0;
+                    if (Math.abs(robotPose.getX() - startX) >= 12){
+                        coneGrabOn = false;
                         xspd = yspd = 0;
                     }
                     break;
+                case 4:
+                    coneGrabOn = false;
+                    xspd = yspd = 0;
+                    break;
             }
+            turnspd = yawControl.calculate(pigYaw);
 
         }
 
@@ -226,17 +411,16 @@ public class DriveCode extends GenericTeleop{
             autoMode = false;
         }
 //////////////////////////////////////////////////////////////////////////////////////////////////collector rolls
-        if (xboxFuncOp.getRawAxis(3) > 0.10){ //collect in
+        if (xboxFuncOp.getRawAxis(3) > 0.10 || xboxDriver.getRawAxis(3) > 0.1){ //collect in
             raiseTopRoller = false;
             openGripper = true;
             armPower = -.1;
-            desiredPos = -4;
+            desiredArmPos = -4;
             if(robot.cargoInCollector()) secondTrip = true;
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip){
-                collectorRPM = 3000;
-                desiredPos = -4;
+                desiredArmPos = -4;
                 armPower = 0;
             }
             if(secondTrip){
@@ -251,7 +435,7 @@ public class DriveCode extends GenericTeleop{
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
-            desiredPos = -4; //tuck arm in
+            desiredArmPos = -4; //tuck arm in
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
@@ -267,12 +451,14 @@ public class DriveCode extends GenericTeleop{
             openGripper = false;
         }
 
+
         double powerForArm = -.2*robot.deadzone(xboxFuncOp.getRawAxis(1), .2); //moves arm up and down
         if (powerForArm != 0){
             armPower = powerForArm;
         }
         if(armPower != 0){
-            desiredPos = robot.getPotDegrees();
+            robot.resetArmPID();
+            desiredArmPos = robot.getPotDegrees();
         }
         if (robot.getPotDegrees() > 0) raiseTopRoller = true; //arm fail-safes to obey the rules
 
@@ -283,7 +469,8 @@ public class DriveCode extends GenericTeleop{
          */
         int height = heightIndex();
         if (pressed){
-            desiredPos = HeightsDeg[height];
+            robot.resetArmPID();
+            desiredArmPos = HeightsDeg[height];
             pressed = false;
         }
 //////////////////////////////////////////////////////////////////////////////////////////lights on hp command
@@ -303,18 +490,21 @@ public class DriveCode extends GenericTeleop{
             balance.periodic(robot);
         }
         else {
+            SmartDashboard.putNumber("turnspd", turnspd);
             balanceInit = false;
-            robot.setDrive(xspd, yspd, turnspd, false, fieldCentric);
+            robot.setDrive(xspd, yspd, turnspd, autoDrive, fieldCentric);
         }
         robot.collect(collectorRPM, autoMode);
         robot.raiseTopRoller(raiseTopRoller);
         robot.openGripper(openGripper);
         robot.setLightsOn(lightsOn);
+        robot.coneGrabInAction(coneGrabOn);
         if (armPower != 0) {
+            robot.resetArmPID();
             robot.moveArm(armPower);
         }
         else{
-            robot.holdArmPosition(desiredPos);
+            robot.holdArmPosition(desiredArmPos);
         }
     }
 
@@ -334,4 +524,40 @@ public class DriveCode extends GenericTeleop{
         }
         return heightIndex;
     }
+
+    public enum POVDirection {
+        NORTH(0),
+        NORTHEAST(45),
+        EAST(90),
+        SOUTHEAST(135),
+        SOUTH(180),
+        SOUTHWEST(225),
+        WEST(270), //best
+        NORTHWEST(315),
+        NULL(-1);
+
+        private final int angle;
+
+        POVDirection(int angle) {
+            this.angle = angle;
+        }
+
+        public int getAngle() {
+            return angle;
+        }
+
+        //Kevin voodoo to turn ints into directions
+        public static final Map<Integer, POVDirection> directionMap =
+                Arrays.stream(POVDirection.values()).collect(
+                        Collectors.toMap(
+                                POVDirection::getAngle,
+                                Function.identity()
+                        )
+                );
+
+        public static POVDirection getDirection(int angle) {
+            return directionMap.getOrDefault(angle, POVDirection.NULL);
+        }
+    }
 }
+

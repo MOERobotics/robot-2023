@@ -39,15 +39,15 @@ public final class MoeNetVision {
             new LimelightCamera(),
             new OakCamera()
     );
-    GenericRobot gr;
+    GenericRobot robot;
     double currentYaw = 0;
     LinkedList<Pose3d> staticPoses = new LinkedList<>();
 
     Pose3d initialPose;
     Transform3d autoToFieldSpace = new Transform3d();
 
-    public MoeNetVision(GenericRobot gr){
-        this.gr = gr;
+    public MoeNetVision(GenericRobot robot){
+        this.robot = robot;
     }
 
     /**
@@ -55,7 +55,7 @@ public final class MoeNetVision {
      * robot is steady.
      */
     public void disabledPeriodic(){
-        double nextYaw = gr.getPigeonYaw();
+        /*double nextYaw = robot.getPigeonYaw();
         if(Math.abs(nextYaw-currentYaw)>ROTATING_THRESHOLD){
             staticPoses.clear();
         }else{
@@ -84,7 +84,7 @@ public final class MoeNetVision {
                     new Pose3d(),
                     initialPose
             );
-        }
+        }*/
     }
 
     private Pose3d getPoseAverage() {
@@ -112,7 +112,7 @@ public final class MoeNetVision {
     }
 
     public void genericPeriodic() {
-        Pose3d odometryPose = new Pose3d(gr.getPose());
+        /*Pose3d odometryPose = new Pose3d(robot.getPose());
         odometryPose = scalePose(odometryPose, METERS_PER_INCH);
         Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
 
@@ -122,11 +122,11 @@ public final class MoeNetVision {
                     odometryPose,
                     odometryPoseFS.interpolate(getVisionPose().estimatedPose, .04)
             );
-        }
+        }*/
     }
 
-    private EstimatedRobotPose getVisionPose(){
-        EstimatedRobotPose pose = null;
+    private Pose3d getVisionPose(){
+        Pose3d fakePose = new Pose3d(new Translation3d(-1,-1,-1), new Rotation3d());
         for(NetworkCamera camera : cameras){
             EstimatedRobotPose camPose;
             try {
@@ -136,11 +136,11 @@ public final class MoeNetVision {
                 continue;
             }
             if(camPose != null){
-                pose = camPose;
+                fakePose = camPose.estimatedPose;
                 break;
             }
         }
-        return pose;
+        return fakePose;
     }
 
     /**
@@ -148,10 +148,15 @@ public final class MoeNetVision {
      * @return Pose3d in meters
      */
     public Pose3d getPose(){
-        Pose3d odometryPose = new Pose3d(gr.getPose());
-        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
-        Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
-        return odometryPoseFS;
+        Pose3d visPose = getVisionPose();
+        if (visPose.getX() == -1){
+            return visPose;
+        }
+        return scalePose(visPose, INCHES_PER_METER);
+//        Pose3d odometryPose = new Pose3d(robot.getPose());
+//        odometryPose = scalePose(odometryPose, METERS_PER_INCH);
+//        Pose3d odometryPoseFS = odometryPose.transformBy(autoToFieldSpace);
+//        return odometryPoseFS;
     }
 
     public boolean poseFound(){

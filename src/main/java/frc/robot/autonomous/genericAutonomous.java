@@ -1,5 +1,6 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.generic.GenericRobot;
 
 public abstract class genericAutonomous {
@@ -10,7 +11,7 @@ public abstract class genericAutonomous {
     }
 
     public void autonomousPeriodic(GenericRobot robot){
-
+        SmartDashboard.putNumber("autoStep", autonomousStep);
     }
 
     public double positionFunctionX(double s){
@@ -31,9 +32,6 @@ public abstract class genericAutonomous {
     public double velocityFunctionTheta(double s, double time){
         return 0;
     }
-    public double vFX(double s, int autoStep) { return 0; }
-    public double vFY(double s, int autoStep) { return 0; }
-
     public double getS(double time){
         return time;
     }

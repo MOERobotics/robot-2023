@@ -1,11 +1,12 @@
-package frc.robot.autonomous;
+package frc.robot.autonomousgraveyard;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.genericAutonomous;
 import frc.robot.generic.GenericRobot;
 
 
-public class mobilityEngage extends genericAutonomous{
+public class mobilityEngage extends genericAutonomous {
     double basePower = 35.0;
     double high = 13.5;
     double climbPower = 30.0;
