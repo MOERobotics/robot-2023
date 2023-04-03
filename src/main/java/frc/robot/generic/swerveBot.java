@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
-public class    swerveBot extends GenericRobot{
+public class swerveBot extends GenericRobot{
     private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
@@ -74,7 +74,8 @@ public class    swerveBot extends GenericRobot{
     PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
-    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(0);
+    //Todo: AAAA
+    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
     SwerveDriveOdometry m_odometry;
 
     /////////////////////////////////////////////////////////////Light Sensors
@@ -85,7 +86,7 @@ public class    swerveBot extends GenericRobot{
 
     ///////////////////////////////////////////////////////////////Ultrasonic sensor
 
-    Ultrasonic pingSensor = new Ultrasonic(0,0);
+    Ultrasonic pingSensor = new Ultrasonic(10,11);
 
 
 
@@ -660,13 +661,13 @@ public class    swerveBot extends GenericRobot{
     }
 
     /////////////////////////////////////////////////////////////////////////////Light Sensor Code
-
-    /*@Override
+/*
+    @Override
     public boolean getLeftLightSensor(){return leftLightSensor.get();}
 
     @Override
     public boolean getRightLightSensor(){return rightLightSensor.get();}
-
+*/
     ///////////////////////////////////////////////////////////////////////////////////TimeOfFlight Code
 
     @Override
@@ -678,7 +679,7 @@ public class    swerveBot extends GenericRobot{
     public double getTOFAmbientLightLevel(){
         return timeOfFlightSensor.getAmbientLightLevel();
     }
-    public boolean getRightLightSensor(){return rightLightSensor.get();}*/
+    public boolean getRightLightSensor(){return rightLightSensor.get();}
 
     //////////////////////////////////////////////////////Ultrasonic senisores
     @Override
