@@ -804,5 +804,7 @@ public class TherMOEDynamic extends GenericRobot{
     public boolean getRightFloorSensor() {
         return floorSensorRightForward.isPressed();
     }
+    /////////////////////////////////////////////////////////////////////////////////ultrasonics add after swerve tested
+
 
 }
