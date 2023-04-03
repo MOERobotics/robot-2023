@@ -12,6 +12,7 @@ import frc.robot.autonomous.*;
 import frc.robot.autonomousgraveyard.*;
 import frc.robot.generic.GenericRobot;
 import frc.robot.generic.TherMOEDynamic;
+import frc.robot.generic.swerveBot;
 import frc.robot.teleop.DriveCode;
 import frc.robot.teleop.GenericTeleop;
 import frc.robot.vision.MoeNetVision;
@@ -31,7 +32,8 @@ public class Robot extends TimedRobot {
   genericAutonomous autonomous = new A1BHigh();
   GenericTeleop teleop = new DriveCode();
   DriverStation.Alliance OurAllianceColor;
-  GenericRobot robot = new TherMOEDynamic();
+    //GenericRobot robot = new TherMOEDynamic();
+    GenericRobot robot = new swerveBot();
   MoeNetVision vision = new MoeNetVision(robot);
   Field2d field = new Field2d();
 
@@ -69,6 +71,8 @@ public class Robot extends TimedRobot {
      robot.setRed(false);
    }
    SmartDashboard.putBoolean("isAuto", false);
+   SmartDashboard.putNumber("TOF Distance", robot.getTOFDistance());
+   SmartDashboard.putNumber("TOF Lucas Thingy", robot.getTOFAmbientLightLevel());
    if (Math.abs(robot.getPitch()) > 10 || Math.abs(robot.getRoll()) > 10){
        robot.robotTipping(true);
    }

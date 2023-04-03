@@ -292,7 +292,7 @@ public abstract class GenericRobot {
     public void setDrive(double xspd, double yspd, double turnspd, boolean auto){
         setDrive(xspd,yspd,turnspd,auto,true);
     }
-    
+
     static final Pose2d defaultPose = new Pose2d(0,0,new Rotation2d(0));
     public Pose2d getPose() {
         return defaultPose;
@@ -397,5 +397,18 @@ public abstract class GenericRobot {
     public void robotTipping(boolean tip){}
 
     public void robotHeartbeat(boolean beat){}
+
+    //////////////////////////////////////////////////////Ultrasonicsenisores
+    public double getPingMillimeters(){return 0;}
+    public boolean setPingAutoMode(){return false;}
+    public double getPingInches(){return 0;}
+
+    public void PingEnabled(boolean state){}
+
+    //////////////////////////////////////////////////////////// TimeOfFlight Sensors
+
+    public double getTOFDistance(){return 0;}
+
+    public double getTOFAmbientLightLevel(){return 0;}
 
 }

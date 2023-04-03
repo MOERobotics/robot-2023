@@ -40,6 +40,8 @@ public class SmartDash {
         SmartDashboard.putBoolean("floorSensorRight", robot.getRightFloorSensor());
 
         SmartDashboard.putNumber("pigeonBoundYaw", robot.getPigeonBoundedYaw(robot.getPigeonYaw()));
+        SmartDashboard.putNumber("TimeOfFlight Range", robot.getTOFDistance());
+        SmartDashboard.putNumber("TimeOfFlight AmbientLightLevel", robot.getTOFAmbientLightLevel());
 
         robot.getDriveDistanceInchesLeftA();
         robot.getDriveDistanceInchesLeftB();

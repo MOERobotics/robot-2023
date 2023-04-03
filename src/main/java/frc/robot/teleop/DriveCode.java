@@ -88,6 +88,8 @@ public class DriveCode extends GenericTeleop{
     boolean autoDrive = false;
     boolean coneGrabOn = false;
 
+    double ultrasonicCycleCounter = 0;
+
 
     @Override
     public void teleopInit(GenericRobot robot) {
@@ -135,6 +137,7 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
         SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
+
         Pose2d currPose = robot.getPose();
         if (armTimer.get() < .1) desiredArmPos = robot.getPotDegrees();
 
@@ -522,6 +525,15 @@ public class DriveCode extends GenericTeleop{
         }
         else{
             robot.holdArmPosition(desiredArmPos);
+        }
+
+        ////////////////////////////////////////////////////////ultrasonic stuff
+        ultrasonicCycleCounter++;
+        if(ultrasonicCycleCounter>=2) {
+            robot.PingEnabled(true);
+            SmartDashboard.putNumber("Ultrasonic Inches",robot.getPingInches());
+            robot.PingEnabled(false);
+            ultrasonicCycleCounter=0;
         }
     }
 

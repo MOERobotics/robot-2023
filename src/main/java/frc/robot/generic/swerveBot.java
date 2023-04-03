@@ -8,6 +8,7 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,11 +18,12 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 
-public class    swerveBot extends GenericRobot{
+public class swerveBot extends GenericRobot{
     private final Timer m_timer = new Timer();
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
@@ -72,6 +74,8 @@ public class    swerveBot extends GenericRobot{
     PIDController pivotRightAPID = new PIDController(8.0e-3,0,0);
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
+    //Todo: AAAA
+    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
     SwerveDriveOdometry m_odometry;
 
     /////////////////////////////////////////////////////////////Light Sensors
@@ -79,6 +83,10 @@ public class    swerveBot extends GenericRobot{
     DigitalInput rightLightSensor = new DigitalInput(1);
 
     Pose2d startingPoseOdom = defaultPose;
+
+    ///////////////////////////////////////////////////////////////Ultrasonic sensor
+
+    Ultrasonic pingSensor = new Ultrasonic(10,11);
 
 
 
@@ -139,7 +147,6 @@ public class    swerveBot extends GenericRobot{
         pivotLeftMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorA.setIdleMode(CANSparkMax.IdleMode.kBrake);
         pivotRightMotorB.setIdleMode(CANSparkMax.IdleMode.kBrake);
-
 
         leftMotorARPM.setP(1.5e-4);
         leftMotorARPM.setI(0);
@@ -218,6 +225,7 @@ public class    swerveBot extends GenericRobot{
         SmartDashboard.putNumber("rightACurrPivot", getPivotRightMotorA());
         SmartDashboard.putNumber("leftBCurrPivot", getPivotLeftMotorB());
         SmartDashboard.putNumber("rightBCurrPivot", getPivotRightMotorB());
+
         Pose2d myPose = m_odometry.update(Rotation2d.fromDegrees(currHeading),
                 new SwerveModulePosition[] {
                         new SwerveModulePosition(getDriveDistanceInchesLeftA(), Rotation2d.fromDegrees(getPivotLeftMotorA())),
@@ -653,10 +661,34 @@ public class    swerveBot extends GenericRobot{
     }
 
     /////////////////////////////////////////////////////////////////////////////Light Sensor Code
-
-    /*@Override
+/*
+    @Override
     public boolean getLeftLightSensor(){return leftLightSensor.get();}
 
     @Override
-    public boolean getRightLightSensor(){return rightLightSensor.get();}*/
+    public boolean getRightLightSensor(){return rightLightSensor.get();}
+*/
+    ///////////////////////////////////////////////////////////////////////////////////TimeOfFlight Code
+
+    @Override
+    public double getTOFDistance(){
+        return timeOfFlightSensor.getRange();
+    }
+
+    @Override
+    public double getTOFAmbientLightLevel(){
+        return timeOfFlightSensor.getAmbientLightLevel();
+    }
+
+    public boolean getRightLightSensor(){return rightLightSensor.get();}
+
+    //////////////////////////////////////////////////////Ultrasonic senisores
+    @Override
+    public double getPingMillimeters(){return pingSensor.getRangeMM();}
+    @Override
+    public boolean setPingAutoMode(){return false;}
+    @Override
+    public double getPingInches(){return pingSensor.getRangeInches();}
+    @Override
+    public void PingEnabled(boolean state){pingSensor.setEnabled(state);}
 }
