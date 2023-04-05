@@ -24,8 +24,8 @@ public class TherMOEDynamic extends GenericRobot{
     public final double armRadius = 44;
     public final double MIN_ARM_HEIGHT = MAX_ARM_HEIGHT-armRadius-2;
 
-    public final double lowestAngle = -6;
-    public final double greatestAngle = 100;
+    public final double lowestAngle = -4;
+    public final double greatestAngle = 105;
     public final double shoulderCalib = 3.21;
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
 
@@ -92,6 +92,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     Solenoid coneGrabLights;
     Solenoid pitchLights;
+    Solenoid heartbeat;
 
     AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
     CANCoder shoulder2 = new WPI_CANCoder(35);
@@ -222,7 +223,7 @@ public class TherMOEDynamic extends GenericRobot{
         lights = new Solenoid(PneumaticsModuleType.REVPH, 9);
         coneGrabLights = new Solenoid(PneumaticsModuleType.REVPH, 14);
         pitchLights = new Solenoid(PneumaticsModuleType.REVPH, 15);
-
+        heartbeat = new Solenoid(PneumaticsModuleType.REVPH, 13);
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////Helpful swerve commands
@@ -665,6 +666,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void moveArm(double power) {
+
         if (getPotDegrees() <= lowestAngle && power < 0){
             power = 0;
         }
@@ -753,6 +755,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public void holdArmPosition(double pos){
+        pos = Math.max(lowestAngle, pos);
         double armPower = armController.calculate(getPotDegrees() - pos);
         if (armPower < 0){
             armPower = Math.max(-.2, armPower);
@@ -794,6 +797,11 @@ public class TherMOEDynamic extends GenericRobot{
     @Override
     public void robotTipping(boolean tip) {
         pitchLights.set(tip);
+    }
+
+    @Override
+    public void robotHeartbeat(boolean beat) {
+        heartbeat.set(beat);
     }
 
     //////////////////////////////////////////////////////////////////////////////////floor sensors

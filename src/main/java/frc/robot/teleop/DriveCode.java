@@ -34,6 +34,7 @@ public class DriveCode extends GenericTeleop{
     Joystick buttonBox = new Joystick(0);
     Timer m_timer = new Timer();
     Timer armTimer = new Timer();
+    Timer heartBeat = new Timer();
     double xspd, yspd, turnspd;
     double HeightsDeg[] = new double[] {20, 82, 97};
     int autoStep = 0;
@@ -63,7 +64,7 @@ public class DriveCode extends GenericTeleop{
     boolean lightsOn = false;
     boolean fieldCentric = true;
     boolean autoCollectStopDriving = false;
-
+    boolean heartbeat = false;
 
 
     double x = 0;
@@ -88,7 +89,9 @@ public class DriveCode extends GenericTeleop{
     boolean autoDrive = false;
     boolean coneGrabOn = false;
 
-    double ultrasonicCycleCounter = 0;
+    double desiredDistanceFromHPStation = 1016; //in mm
+    double constant = 2000;
+    double tinyConstant = .1;
 
 
     @Override
@@ -130,6 +133,7 @@ public class DriveCode extends GenericTeleop{
         if (robot.getRed()) robot.setPigeonYaw(180);
         if (!robot.getRed()) robot.setPigeonYaw(0);
         armTimer.restart();
+        heartBeat.restart();
     }
 
     @Override
@@ -270,8 +274,8 @@ public class DriveCode extends GenericTeleop{
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////D-Pad controls
 
-        double strafexspd = robot.deadzone(xboxFuncOp.getRawAxis(5), .7);
-        double strafeyspd = robot.deadzone(xboxFuncOp.getRawAxis(4), .7);
+        double strafexspd = -1*robot.deadzone(xboxFuncOp.getRawAxis(5), .7);
+        double strafeyspd = -1*robot.deadzone(xboxFuncOp.getRawAxis(4), .7);
         if (strafexspd != 0) xspd = Math.signum(strafexspd)*12;
         if (strafeyspd != 0) yspd = Math.signum(strafeyspd)*12;
         ///^Roshik controls :)
@@ -440,12 +444,12 @@ public class DriveCode extends GenericTeleop{
             raiseTopRoller = false;
             openGripper = true;
             armPower = -.1;
-            desiredArmPos = -4;
+            desiredArmPos = -3;
             if(robot.cargoInCollector()) secondTrip = true;
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip){
-                desiredArmPos = -4;
+                desiredArmPos = -3;
                 armPower = 0;
             }
             if(secondTrip){
@@ -460,7 +464,7 @@ public class DriveCode extends GenericTeleop{
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
-            desiredArmPos = -4; //tuck arm in
+            desiredArmPos = -3; //tuck arm in
             collectorRPM = -7500;
         }
         else{ //no more collecting :(
@@ -498,7 +502,16 @@ public class DriveCode extends GenericTeleop{
             desiredArmPos = HeightsDeg[height];
             pressed = false;
         }
-//////////////////////////////////////////////////////////////////////////////////////////lights on hp command
+//////////////////////////////////////////////////////////////////////////////////////////lights on close to hp station-heartbeat
+        double ourDist = Math.min(robot.getTOFDistance(), constant);
+        ourDist = desiredDistanceFromHPStation + 0;
+        double period = 1/(Math.pow(((ourDist-desiredDistanceFromHPStation)/constant),2) + tinyConstant);
+        if (Math.sin(2*Math.PI*period*heartBeat.get()) > 0){
+            heartbeat = true;
+        }
+        else{
+            heartbeat = false;
+        }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Power setters
         if (balanceCommand){
@@ -518,6 +531,7 @@ public class DriveCode extends GenericTeleop{
         robot.raiseTopRoller(raiseTopRoller);
         robot.openGripper(openGripper);
         robot.setLightsOn(lightsOn);
+        robot.robotHeartbeat(heartbeat);
         robot.coneGrabInAction(coneGrabOn);
         if (armPower != 0) {
             robot.resetArmPID();
@@ -527,14 +541,6 @@ public class DriveCode extends GenericTeleop{
             robot.holdArmPosition(desiredArmPos);
         }
 
-        ////////////////////////////////////////////////////////ultrasonic stuff
-        ultrasonicCycleCounter++;
-        if(ultrasonicCycleCounter>=2) {
-            robot.PingEnabled(true);
-            SmartDashboard.putNumber("Ultrasonic Inches",robot.getPingInches());
-            robot.PingEnabled(false);
-            ultrasonicCycleCounter=0;
-        }
     }
 
     public int heightIndex(){
