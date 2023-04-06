@@ -71,7 +71,6 @@ public class Robot extends TimedRobot {
    }
    SmartDashboard.putBoolean("isAuto", false);
    SmartDashboard.putNumber("TOF Distance", robot.getTOFDistance());
-   SmartDashboard.putNumber("TOF Lucas Thingy", robot.getTOFAmbientLightLevel());
    if (Math.abs(robot.getPitch()) > 10 || Math.abs(robot.getRoll()) > 10){
        robot.robotTipping(true);
    }

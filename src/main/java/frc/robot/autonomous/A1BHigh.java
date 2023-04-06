@@ -74,7 +74,6 @@ public class A1BHigh extends genericAutonomous {
         armPower = 0;
         vision = new MoeNetVision(robot);
         startRot = new Rotation2d(0);
-        autonomousStep = 0;
         lightOn = false;
         autoMode = false;
         robot.setPigeonYaw(0);
@@ -98,7 +97,7 @@ public class A1BHigh extends genericAutonomous {
         }
         robot.resetPose();
         robot.setPose(new Pose2d(positionA.x, positionA.y, startRot));
-        autonomousStep = 0;
+        autonomousStep = -1;
         PID.enableContinuousInput(-180,180);
         xspd = yspd = 0;
         openGripper = true;
@@ -124,6 +123,11 @@ public class A1BHigh extends genericAutonomous {
         SmartDashboard.putBoolean("tripHappened", tripHappened);
         armPower = 0;
         switch (autonomousStep) {
+            case -1:
+                if(m_timer.get() > .1){
+                    autonomousStep++;
+                }
+                break;
             case 0: //resets everything
                 collectorUp = false;
                 desiredYaw = 0;
@@ -306,7 +310,8 @@ public class A1BHigh extends genericAutonomous {
                 break;
 
         }
-        if (autonomousStep > 0) turnspd = PID.calculate(desiredYaw-robot.getYaw());
+        turnspd = 0;
+        if (xspd != 0 && yspd != 0) turnspd = PID.calculate(desiredYaw-robot.getYaw());
         robot.raiseTopRoller(collectorUp);
         robot.setDrive(xspd, yspd, turnspd, true, true);
         robot.collect(collectorRPM, autoMode);

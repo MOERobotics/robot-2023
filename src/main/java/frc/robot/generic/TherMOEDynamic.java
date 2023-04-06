@@ -13,10 +13,11 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import com.playingwithfusion.TimeOfFlight;
+
 
 import static com.revrobotics.CANSparkMaxLowLevel.MotorType.kBrushless;
 import static com.revrobotics.SparkMaxAnalogSensor.Mode.kAbsolute;
+import static com.revrobotics.SparkMaxAnalogSensor.Mode.kRelative;
 
 public class TherMOEDynamic extends GenericRobot{
     AHRS navx = new AHRS(SPI.Port.kMXP, (byte) 50);
@@ -94,7 +95,8 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid pitchLights;
     Solenoid heartbeat;
 
-    AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
+    //AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
+    AnalogInput distanceSensor = leftArmMotor.getAnalog(kAbsolute);
     CANCoder shoulder2 = new WPI_CANCoder(35);
 
     SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
@@ -114,7 +116,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     PIDController armController = new PIDController(.01, 0.18e-2, 0);
 
-    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
+    //TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
 
     // Robot chassic dimensions, shaft to shaft.
     static final double w = 13.875;
@@ -123,6 +125,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     Pose2d startingPoseOdom = defaultPose;
     PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
+    double armOffset = -4;
 
     public TherMOEDynamic(){
 
@@ -136,6 +139,8 @@ public class TherMOEDynamic extends GenericRobot{
         floorSensorRightForward.enableLimitSwitch(false);
         floorSensorLeftForward.enableLimitSwitch(false);
         floorSensorLeftReverse.enableLimitSwitch(false);
+
+
 
         m_ph.enableCompressorAnalog(100,120);
 
@@ -718,7 +723,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public double getArmPosition() {
-        SmartDashboard.putNumber("potentiometer Reading - shoulder1", shoulder.getPosition());
+        //SmartDashboard.putNumber("potentiometer Reading - shoulder1", shoulder.getPosition());
         SmartDashboard.putNumber("pot Reading - shoulder 2", shoulder2.getAbsolutePosition());
         double theta =  getPotRadians();
         double height = MAX_ARM_HEIGHT - armRadius + armRadius*Math.sin(theta);
@@ -732,7 +737,7 @@ public class TherMOEDynamic extends GenericRobot{
     }
     @Override
     public double getPotDegrees(){
-        return -shoulder2.getAbsolutePosition();
+        return -shoulder2.getAbsolutePosition() - armOffset;
     }
 
     @Override
@@ -820,12 +825,6 @@ public class TherMOEDynamic extends GenericRobot{
 
     @Override
     public double getTOFDistance() {
-        return timeOfFlightSensor.getRange();
+        return distanceSensor.getVoltage();
     }
-
-    @Override
-    public double getTOFAmbientLightLevel(){
-        return timeOfFlightSensor.getAmbientLightLevel();
-    }
-
 }

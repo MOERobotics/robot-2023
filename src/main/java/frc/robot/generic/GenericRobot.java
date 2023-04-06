@@ -409,6 +409,5 @@ public abstract class GenericRobot {
 
     public double getTOFDistance(){return 0;}
 
-    public double getTOFAmbientLightLevel(){return 0;}
 
 }

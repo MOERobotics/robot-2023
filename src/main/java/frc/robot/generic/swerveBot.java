@@ -8,7 +8,6 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import com.playingwithfusion.TimeOfFlight;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -75,7 +74,7 @@ public class swerveBot extends GenericRobot{
     PIDController pivotRightBPID = new PIDController(8.0e-3,0,0);
 
     //Todo: AAAA
-    TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
+    //TimeOfFlight timeOfFlightSensor = new TimeOfFlight(40);
     SwerveDriveOdometry m_odometry;
 
     /////////////////////////////////////////////////////////////Light Sensors
@@ -670,7 +669,7 @@ public class swerveBot extends GenericRobot{
 */
     ///////////////////////////////////////////////////////////////////////////////////TimeOfFlight Code
 
-    @Override
+   /* @Override
     public double getTOFDistance(){
         return timeOfFlightSensor.getRange();
     }
@@ -678,7 +677,7 @@ public class swerveBot extends GenericRobot{
     @Override
     public double getTOFAmbientLightLevel(){
         return timeOfFlightSensor.getAmbientLightLevel();
-    }
+    }*/
 
     public boolean getRightLightSensor(){return rightLightSensor.get();}
 

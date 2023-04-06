@@ -60,7 +60,7 @@ public class F2Engage extends genericAutonomous{
         xspd = yspd = turnspd = 0;
         vision = new MoeNetVision(robot);
         startRot = new Rotation2d(0);
-        autonomousStep = 0;
+        autonomousStep = -1;
         lightOn = false;
         robot.setPigeonYaw(0);
         startPosition.x        = startPositionBlue.x;
@@ -89,6 +89,7 @@ public class F2Engage extends genericAutonomous{
         robot.resetPose();
         robot.resetAttitude();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
+        m_timer.restart();
     }
 
     @Override
@@ -98,6 +99,11 @@ public class F2Engage extends genericAutonomous{
         currPitch = robot.getPitch();
         visionPose = vision.getPose();
         switch(autonomousStep){
+            case -1:
+                if (m_timer.get() > .1){
+                    autonomousStep ++;
+                }
+                break;
             case 0:
                 collectorRPM = 0;
                 robot.resetPose();
@@ -113,7 +119,7 @@ public class F2Engage extends genericAutonomous{
             case 1: //rollback to get ready to score
                 xspd = -40;
                 if (robot.getRed()) xspd *= -1;
-                if (Math.abs(startXPose - currPose.getX()) >= 24){
+                if (Math.abs(startXPose - currPose.getX()) >= 25){
                     xspd = yspd = 0;
                     m_timer.restart();
                     autonomousStep++;
@@ -239,9 +245,8 @@ public class F2Engage extends genericAutonomous{
                 }
                 break;
             case 11: // go up incline
-                if(Math.abs(robot.getPose().getX() - xPos) >= 34+26){
-                    climbPower *= 13;
-                    climbPower /= 30;
+                if(Math.abs(robot.getPose().getX() - xPos) >= 34+26+4){
+                    climbPower = Math.signum(climbPower)*13;
                 }
                 xspd = climbPower;
                 if (Math.abs(currPitch) < dropping) {

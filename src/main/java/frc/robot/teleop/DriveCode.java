@@ -74,7 +74,7 @@ public class DriveCode extends GenericTeleop{
     Point shelfStationRedLeft = new Point (53.5,240.7-7+1.5);
     Point shelfStationRedRight = new Point(53.5, 284-3+1.5);
     Point shelfStationBlueLeft = new Point (597.5, 279);
-    Point shelfStationBlueRight = new Point(596.5, 232.7-5);
+    Point shelfStationBlueRight = new Point(596.5, 232.7-5-2);
     Point shelfStation = new Point(0,0);
     Rotation2d startRot = new Rotation2d(0);
 
@@ -512,6 +512,7 @@ public class DriveCode extends GenericTeleop{
         else{
             heartbeat = false;
         }
+        if (ourDist < desiredDistanceFromHPStation) heartbeat = false;
         if (Math.abs(ourDist - desiredDistanceFromHPStation) <= 1){
             heartbeat = true;
         }
