@@ -504,13 +504,16 @@ public class DriveCode extends GenericTeleop{
         }
 //////////////////////////////////////////////////////////////////////////////////////////lights on close to hp station-heartbeat
         double ourDist = Math.min(robot.getTOFDistance(), constant);
-        ourDist = desiredDistanceFromHPStation + 0;
+        //ourDist = desiredDistanceFromHPStation + 0;
         double period = 1/(Math.pow(((ourDist-desiredDistanceFromHPStation)/constant),2) + tinyConstant);
         if (Math.sin(2*Math.PI*period*heartBeat.get()) > 0){
             heartbeat = true;
         }
         else{
             heartbeat = false;
+        }
+        if (Math.abs(ourDist - desiredDistanceFromHPStation) <= 1){
+            heartbeat = true;
         }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////Power setters
