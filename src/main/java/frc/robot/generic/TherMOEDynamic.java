@@ -95,8 +95,7 @@ public class TherMOEDynamic extends GenericRobot{
     Solenoid pitchLights;
     Solenoid heartbeat;
 
-    //AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute);
-    AnalogInput distanceSensor = leftArmMotor.getAnalog(kAbsolute);
+    //AnalogInput shoulder = leftArmMotor.getAnalog(kAbsolute)
     CANCoder shoulder2 = new WPI_CANCoder(35);
 
     SparkMaxLimitSwitch cargoFinderForward = bottomCollectorRoller.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
@@ -822,9 +821,4 @@ public class TherMOEDynamic extends GenericRobot{
     }
     /////////////////////////////////////////////////////////////////////////////////ultrasonics add after swerve tested
 
-
-    @Override
-    public double getTOFDistance() {
-        return distanceSensor.getVoltage();
-    }
 }

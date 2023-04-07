@@ -27,7 +27,7 @@ public class A1BHighTest extends genericAutonomous {
     double armPower = 0;
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point positionABlue = new Point(59.88 + 21, 195.47); //SCORE HERE
-    Point position1Blue = new Point(59.88+24, 194.735+6);
+    Point position1Blue = new Point(59.88+24+6, 194.735+6);
     Point positionARevisitedBlue = new Point(59.88+21, 195.47); //SCORE HERE
     Point positionBBlue = new Point(53.88, 170.47+6);
 
@@ -282,7 +282,7 @@ public class A1BHighTest extends genericAutonomous {
     @Override
     public double getS(double time){
         if (autonomousStep == 0)return 0;
-        if (autonomousStep == 3) return AutoCodeLines.getS(distAto1, .55, desiredInchesPerSecond, time);
+        if (autonomousStep == 3) return AutoCodeLines.getS(distAto1, .15, desiredInchesPerSecond, time);
         if (autonomousStep == 5) return AutoCodeLines.getS(dist1toARevisted, .55, desiredInchesPerSecond, time);
         if (autonomousStep == 7) return AutoCodeLines.getS(distARevisitedtoB, .25, desiredInchesPerSecond-30, time);
         return 0;
@@ -290,7 +290,7 @@ public class A1BHighTest extends genericAutonomous {
     @Override
     public double getdS(double time){
         if (autonomousStep == 0) return 0;
-        if (autonomousStep == 3) return AutoCodeLines.getdS(distAto1, .55, desiredInchesPerSecond, time);
+        if (autonomousStep == 3) return AutoCodeLines.getdS(distAto1, .15, desiredInchesPerSecond, time);
         if (autonomousStep == 5) return AutoCodeLines.getdS(dist1toARevisted, .55, desiredInchesPerSecond, time);
         if (autonomousStep == 7) return AutoCodeLines.getdS(distARevisitedtoB, .25, desiredInchesPerSecond-30, time);
         return 0;

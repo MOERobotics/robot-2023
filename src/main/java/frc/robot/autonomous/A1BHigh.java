@@ -28,7 +28,7 @@ public class A1BHigh extends genericAutonomous {
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
     Point positionABlue = new Point(59.88 + 21, 195.47); //SCORE HERE
     Point position1Blue = new Point(176.88, 194.735+6);
-    Point positionARevisitedBlue = new Point(59.88+21, 195.47); //SCORE HERE
+    Point positionARevisitedBlue = new Point(59.88+21, 192.47); //SCO// RE HERE
     Point positionBBlue = new Point(53.88, 170.47+6);
 
 
@@ -100,7 +100,7 @@ public class A1BHigh extends genericAutonomous {
         autonomousStep = -1;
         PID.enableContinuousInput(-180,180);
         xspd = yspd = 0;
-        openGripper = true;
+        openGripper = false;
         m_timer.restart();
         timeToWait = false;
         tripHappened = false;
@@ -210,7 +210,7 @@ public class A1BHigh extends genericAutonomous {
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
                 if (s >= 20){
-                    armPos = -6;
+                    armPos = -3;
                 }
                 if (s >= distAto1) {
                     xspd = 0;
@@ -220,7 +220,7 @@ public class A1BHigh extends genericAutonomous {
                 }
                 break;
             case 4: ///object detection step + pickup
-                armPower = -.3;
+                armPower = -.2;
                 firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
                 if(firstDetection != null){
                     var objOffset = firstDetection.location.getTranslation().toTranslation2d()

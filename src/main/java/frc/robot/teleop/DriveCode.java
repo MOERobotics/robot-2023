@@ -354,8 +354,11 @@ public class DriveCode extends GenericTeleop{
                     openGripper = true;
 
                     desiredArmPos = 82;
-                    if (!poseNull && Math.abs(pigYaw) <= 5 && Math.abs(robot.getPotDegrees() - desiredArmPos) <= 10)autoStep++;
-                    m_timer.restart();
+                    if (!poseNull && Math.abs(pigYaw) <= 5 && Math.abs(robot.getPotDegrees() - desiredArmPos) <= 10){
+                        autoStep++;
+                        System.out.println("I found my pose and I am ready to go to step 1");
+                        m_timer.restart();
+                    }
                     break;
                 case 1:
                     double xDiff, yDiff, totDiff;
@@ -380,6 +383,7 @@ public class DriveCode extends GenericTeleop{
                         yspd = 0;
                         m_timer.reset();
                         m_timer.start();
+                        System.out.println("I am ready to go to step 2");
                         autoStep++;
                     }
                     break;
@@ -395,6 +399,7 @@ public class DriveCode extends GenericTeleop{
                     }
                     if (m_timer.get() > .5){
                         xspd = yspd = 0;
+                        System.out.println("I am ready to go to step 3");
                         m_timer.restart();
                         autoStep ++;
                     }
@@ -405,6 +410,7 @@ public class DriveCode extends GenericTeleop{
                     if (m_timer.get() >= 1){
                         desiredArmPos = 88;
                         autoStep ++;
+                        System.out.println("I am ready to go to step 4");
                         startX = robotPose.getX();
                     }
                     break;

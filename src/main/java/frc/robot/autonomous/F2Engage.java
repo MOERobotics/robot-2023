@@ -90,6 +90,7 @@ public class F2Engage extends genericAutonomous{
         robot.resetAttitude();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
         m_timer.restart();
+        openGripper = false;
     }
 
     @Override
@@ -126,7 +127,7 @@ public class F2Engage extends genericAutonomous{
                 }
                 break;
             case 2: //score the cone
-                armPos = 85;
+                armPos = 81;
                 if (m_timer.get() > .2){
                     openGripper = true;
                     if (m_timer.get() > .4) {
@@ -225,7 +226,7 @@ public class F2Engage extends genericAutonomous{
                 break;
             case 9: //go to spot before engage
                 SmartDashboard.putNumber("dist2", dist2);
-                collectorRPM = 0;
+                collectorRPM = 4000;
                 t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s, t) + xPidK*(positionFunctionX(s) - currPose.getX());
@@ -238,7 +239,6 @@ public class F2Engage extends genericAutonomous{
                 break;
             case 10:
                 xspd = basePower;
-                collectorRPM = 0;
                 if (Math.abs(currPitch) > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
