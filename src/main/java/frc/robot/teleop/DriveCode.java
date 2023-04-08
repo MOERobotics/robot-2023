@@ -106,7 +106,7 @@ public class DriveCode extends GenericTeleop{
         robot.setOffsetRightA();
         robot.setOffsetRightB();
 
-        robot.resetAttitude();
+        //robot.resetAttitude();
         robot.resetPIDPivot();
 
         robot.resetStartHeading();
@@ -130,8 +130,8 @@ public class DriveCode extends GenericTeleop{
         else{
             startRot = new Rotation2d(0);
         }
-        if (robot.getRed()) robot.setPigeonYaw(180);
-        if (!robot.getRed()) robot.setPigeonYaw(0);
+        //if (robot.getRed()) robot.setPigeonYaw(180);
+        //if (!robot.getRed()) robot.setPigeonYaw(0);
         armTimer.restart();
         heartBeat.restart();
     }

@@ -39,6 +39,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
    robot.resetPigeon();
+   robot.resetAttitude();
 
    OurAllianceColor = DriverStation.getAlliance();
 

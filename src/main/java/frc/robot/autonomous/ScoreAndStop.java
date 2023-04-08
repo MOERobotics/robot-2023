@@ -65,7 +65,7 @@ public class ScoreAndStop extends genericAutonomous {
                 }
                 break;
             case 1: //rollback to get ready to score
-                xspd = -30;
+                xspd = -40;
                 if (robot.getRed()) xspd *= -1;
                 if (Math.abs(startXPose - currPose.getX()) >= 24) {
                     xspd = yspd = 0;
@@ -75,7 +75,7 @@ public class ScoreAndStop extends genericAutonomous {
                 break;
             case 2: //score the cone
 
-                armPos = 85;
+                armPos = 81;
                 if (m_timer.get() > .2) {
                     openGripper = true;
                     if (m_timer.get() >.4) {

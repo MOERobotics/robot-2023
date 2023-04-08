@@ -26,9 +26,9 @@ public class A1BHigh extends genericAutonomous {
     boolean lightOn = false;
     double armPower = 0;
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
-    Point positionABlue = new Point(59.88 + 21, 195.47); //SCORE HERE
+    Point positionABlue = new Point(59.88 + 24, 195.47); //SCORE HERE
     Point position1Blue = new Point(176.88, 194.735+6);
-    Point positionARevisitedBlue = new Point(59.88+21, 192.47); //SCO// RE HERE
+    Point positionARevisitedBlue = new Point(59.88+24, 192.47); //SCO// RE HERE
     Point positionBBlue = new Point(53.88, 170.47+6);
 
 
@@ -58,7 +58,7 @@ public class A1BHigh extends genericAutonomous {
     //2nd level: 87 and 70
     double scoringArmPos = 97;
     double scoringDownwardArmPos = 81;
-    double rollBackDist = 22;
+    double rollBackDist = 24;
     Rotation2d startRot;
     MoeNetVision vision;
     PIDController PID = new PIDController(kP, 0, 0);
@@ -159,7 +159,7 @@ public class A1BHigh extends genericAutonomous {
                 }
                 break;
             case 2: // go back and drop that cone!
-                xspd = -50;
+                xspd = -40;
                 if (robot.getRed()) xspd *= -1;
                 yspd = 0;
                 if(Math.abs(currPose.getX() - startX) >= rollBackDist){
