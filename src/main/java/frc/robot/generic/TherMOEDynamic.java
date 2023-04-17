@@ -807,7 +807,16 @@ public class TherMOEDynamic extends GenericRobot{
     public boolean getRightFloorSensor() {
         return floorSensorRightForward.isPressed();
     }
-    /////////////////////////////////////////////////////////////////////////////////ultrasonics add after swerve tested
+    ///////////////////////////////////////////////////////////////////////////////////TimeOfFlight Code
 
+    @Override
+    public double getTOFDistance(){
+        return timeOfFlightSensor.getRange();
+    }
+
+    @Override
+    public double getTOFAmbientLightLevel(){
+        return timeOfFlightSensor.getAmbientLightLevel();
+    }
 
 }
