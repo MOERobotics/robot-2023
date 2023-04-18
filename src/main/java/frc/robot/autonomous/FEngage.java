@@ -13,7 +13,7 @@ import org.opencv.core.Point;
 
 public class FEngage extends genericAutonomous{
 
-    Point startPosition       = new Point(85,108);
+    Point startPosition       = new Point(59,108);
     Point firstScorePosition  = new Point(69, 108);
     double xLeftChargeStation = 230;
     Point estimatedCubeSpot   = new Point(270, 100);
@@ -21,7 +21,7 @@ public class FEngage extends genericAutonomous{
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
     double xLeftChargeStationBlue     = 230;
-    Point estimatedCubeSpotBlue   = new Point(270, 100);
+    Point estimatedCubeSpotBlue   = new Point(240, 112);
     Point spotBeforeEngageBlue    = new Point(220, 108);
 
     double dist1 = AutoCodeLines.getDistance(startPositionBlue, firstScorePositionBlue);
@@ -105,19 +105,34 @@ public class FEngage extends genericAutonomous{
                     autonomousStep ++;
                 }
                 break;
-            case 0:
-                collectorRPM = 0;
-                robot.resetPose();
-                collectorUp = true;
+            case 0: //resets everything
+                collectorUp = false;
                 openGripper = false;
-                armPos = 101.1;
-                m_timer.restart();
-                if (Math.abs(robot.getPotDegrees() - armPos) <= 10){
-                    startXPose = currPose.getX();
-                    autonomousStep ++;
+                collectorRPM = 0;
+                robot.resetStartDists();
+                robot.resetStartPivots();
+                robot.resetStartHeading();
+                xspd = yspd = turnspd = 0;
+                autonomousStep ++;
+                m_timer.reset();
+                m_timer.get();
+                startXPose = currPose.getX();
+                break;
+            case 1: //roll forward and lift your arm
+                xspd = 40;
+                if (robot.getRed()) xspd *= -1;
+                yspd = 0;
+                if(Math.abs(currPose.getX() - startXPose) >= 24){
+                    xspd = 0;
+                    armPos = 97;
+                    if (Math.abs(robot.getPotDegrees() - armPos) <= 10){
+                        startXPose = currPose.getX();
+                        m_timer.restart();
+                        autonomousStep ++;
+                    }
                 }
                 break;
-            case 1: //rollback to get ready to score
+            case 2: //rollback to get ready to score
                 xspd = -40;
                 if (robot.getRed()) xspd *= -1;
                 if (Math.abs(startXPose - currPose.getX()) >= 24){
@@ -126,7 +141,7 @@ public class FEngage extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 2: //score the cone
+            case 3: //score the cone
                 armPos = 81;
                 if (m_timer.get() > .2){
                     openGripper = true;
@@ -137,48 +152,48 @@ public class FEngage extends genericAutonomous{
                     }
                 }
                 break;
-            case 3: //drive over the charge station
+            case 4: //drive over the charge station
                 xspd = basePower;
                 yspd = turnspd = 0;
                 if (Math.abs(currPose.getX()-startXPose) >= 20){
                     armPos = -4;
                     xspd = 0;
                     m_timer.restart();
-                    autonomousStep = 23;
+                    autonomousStep ++;
                 }
                 break;
-            case 23:
+            case 5:
                 if (robot.getPotDegrees()<5){
                     xspd = basePower;
                     if (Math.abs(currPitch) > firstBreak) {
                         armPos = -4;
                         m_timer.restart();
                         //Add length of the robot from front encoder to end of back wheel.
-                        autonomousStep = 4;
+                        autonomousStep ++;
                     }
                 }
                 break;
-            case 4: //are we on the incline
+            case 6: //are we on the incline
                 xspd = basePower;
                 if (currPitch > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
                 }
                 break;
-            case 5: //flattened
+            case 7: //flattened
                 xspd = climbPower;
                 if (Math.abs(currPitch) < dropping) {
                     autonomousStep++;
                 }
                 break;
-            case 6: //down incline
+            case 8: //down incline
                 xspd = climbPower+4;
                 if (Math.abs(currPitch) > high){
 
                     autonomousStep ++;
                 }
                 break;
-            case 7://on ground
+            case 9://on ground
                 xspd = climbPower+4;
                 if (Math.abs(currPitch) < desiredPitch){
                     collectorUp = false;
@@ -189,7 +204,26 @@ public class FEngage extends genericAutonomous{
                     autonomousStep ++;
                 }
                 break;
-            case 8: //go to spot before engage
+            case 10: //get cube
+
+                double xDiff = desiredCubePos.getX()-currPose.getX() + 6;
+                double yDiff = desiredCubePos.getY()-currPose.getY();
+                double totDiff = Math.hypot(xDiff, yDiff);
+                xspd = yspd = 0;
+                if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
+                if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
+                if (robot.cargoDetected() || m_timer.get() > 3){
+                    estimatedCubeSpot = new Point(currPose.getX(), currPose.getY());
+                    dist2 = AutoCodeLines.getDistance(estimatedCubeSpot, spotBeforeEngage);
+                    collectorRPM = 4000;
+                    xspd = yspd = 0;
+                    m_timer.restart();
+                    climbPower*= -1;
+                    basePower*= -1;
+                    autonomousStep += 1;
+                }
+                break;
+            case 11: //go to spot before engage
                 SmartDashboard.putNumber("dist2", dist2);
                 collectorRPM = 4000;
                 t = m_timer.get();
@@ -202,14 +236,14 @@ public class FEngage extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 9:
+            case 12:
                 xspd = basePower;
                 if (Math.abs(currPitch) > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
                 }
                 break;
-            case 10: // go up incline
+            case 13: // go up incline
                 if(Math.abs(robot.getPose().getX() - xPos) >= 34+26+4){
                     climbPower = Math.signum(climbPower)*13;
                 }
@@ -219,15 +253,14 @@ public class FEngage extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-
-            case 11: // start
+            case 14: // start
                 xspd = correctionPower;
                 m_timer.reset();
                 m_timer.start();
                 //This is a future feature to stop and let others get on before autobalancing.
                 autonomousStep++;
                 break;
-            case 12:
+            case 15:
                 if ((currPitch < -desiredPitch) && (m_timer.get() <1)) { //correcting begins
                     timerDelta = m_timer.get();
                     xspd = -correctionPower; //backward
@@ -307,7 +340,7 @@ public class FEngage extends genericAutonomous{
             return AutoCodeLines.getS(dist1, .1, 20, time);
         }
         else{
-            return AutoCodeLines.getS(dist2, .1, 60, time);
+            return AutoCodeLines.getS(dist2, .1, 40, time);
         }
     }
 
@@ -317,7 +350,7 @@ public class FEngage extends genericAutonomous{
             return AutoCodeLines.getdS(dist1, .1, 20, time);
         }
         else{
-            return AutoCodeLines.getdS(dist2, .1, 60, time);
+            return AutoCodeLines.getdS(dist2, .1, 40, time);
         }
     }
 }

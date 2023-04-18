@@ -26,7 +26,7 @@ public class A1BHigh extends genericAutonomous {
     boolean lightOn = false;
     double armPower = 0;
     ////////////////////////////////////////////////////////////////////////////////////////////////Point stuff
-    Point positionABlue = new Point(59.88 + 24, 195.47); //SCORE HERE
+    Point positionABlue = new Point(59.88, 195.47); //SCORE HERE
     Point position1Blue = new Point(176.88, 194.735+6);
     Point positionARevisitedBlue = new Point(59.88+24, 192.47); //SCO// RE HERE
     Point positionBBlue = new Point(53.88, 170.47+6);
@@ -145,14 +145,15 @@ public class A1BHigh extends genericAutonomous {
                 m_timer.get();
                 startX = currPose.getX();
                 break;
-            case 1: //lift your arm
-                xspd = 0;
+            case 1: //roll forward and lift your arm
+                xspd = 40;
                 if (robot.getRed()) xspd *= -1;
                 yspd = 0;
-                if(Math.abs(currPose.getX() - startX) <= 1){
+                if(Math.abs(currPose.getX() - startX) >= rollBackDist){
                     xspd = 0;
                     armPos = scoringArmPos;
                     if (Math.abs(robot.getPotDegrees() - armPos) <= 10){
+                        startX = currPose.getX();
                         m_timer.restart();
                         autonomousStep ++;
                     }

@@ -12,8 +12,8 @@ import frc.robot.vision.MoeNetVision;
 import org.opencv.core.Point;
 
 public class ScoreAndStop extends genericAutonomous {
-    Point startPosition       = new Point(85,108);
-    Point startPositionBlue   = new Point(85, 100);
+    Point startPosition       = new Point(59,108);
+    Point startPositionBlue   = new Point(59, 100);
     Rotation2d startRot;
     Timer m_timer = new Timer();
     boolean lightOn, collectorUp, openGripper;
@@ -45,6 +45,7 @@ public class ScoreAndStop extends genericAutonomous {
         robot.resetPose();
         robot.resetAttitude();
         robot.setPose(new Pose2d(startPosition.x, startPosition.y, startRot));
+        m_timer.restart();
     }
 
     @Override
@@ -52,19 +53,39 @@ public class ScoreAndStop extends genericAutonomous {
         SmartDashboard.putNumber("autoStep", autonomousStep);
         Pose2d currPose = robot.getPose();
         switch(autonomousStep) {
-            case 0:
-                collectorRPM = 0;
-                robot.resetPose();
-                collectorUp = true;
-                openGripper = false;
-                armPos = 101.1;
-                m_timer.restart();
-                if (Math.abs(robot.getPotDegrees() - armPos) <= 10) {
-                    startXPose = currPose.getX();
+            case -1:
+                if(m_timer.get() > .1){
                     autonomousStep++;
                 }
                 break;
-            case 1: //rollback to get ready to score
+            case 0: //resets everything
+                collectorUp = false;
+                openGripper = false;
+                collectorRPM = 0;
+                robot.resetStartDists();
+                robot.resetStartPivots();
+                robot.resetStartHeading();
+                xspd = yspd = turnspd = 0;
+                m_timer.reset();
+                m_timer.get();
+                startXPose = currPose.getX();
+                autonomousStep ++;
+                break;
+            case 1: //roll forward and lift your arm
+                xspd = 40;
+                if (robot.getRed()) xspd *= -1;
+                yspd = 0;
+                if(Math.abs(currPose.getX() - startXPose) >= 24){
+                    xspd = 0;
+                    armPos = 97;
+                    if (Math.abs(robot.getPotDegrees() - armPos) <= 10){
+                        startXPose = currPose.getX();
+                        m_timer.restart();
+                        autonomousStep ++;
+                    }
+                }
+                break;
+            case 2: //rollback to get ready to score
                 xspd = -40;
                 if (robot.getRed()) xspd *= -1;
                 if (Math.abs(startXPose - currPose.getX()) >= 24) {
@@ -73,7 +94,7 @@ public class ScoreAndStop extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 2: //score the cone
+            case 3: //score the cone
 
                 armPos = 81;
                 if (m_timer.get() > .2) {
@@ -85,7 +106,7 @@ public class ScoreAndStop extends genericAutonomous {
                     }
                 }
                 break;
-            case 3: //drive forward
+            case 4: //drive forward
                 xspd = defaultPower;
                 if (robot.getRed()) xspd *= -1;
                 xPos = currPose.getX();
@@ -98,7 +119,7 @@ public class ScoreAndStop extends genericAutonomous {
                     autonomousStep++;
                 }
                 break;
-            case 4:
+            case 5:
                 xspd = 0;
                 break;
 
