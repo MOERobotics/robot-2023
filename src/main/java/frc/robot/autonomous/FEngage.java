@@ -16,7 +16,7 @@ public class FEngage extends genericAutonomous{
     Point startPosition       = new Point(85,108);
     Point firstScorePosition  = new Point(69, 108);
     double xLeftChargeStation = 230;
-    Point estimatedCubeSpot   = new Point(270, 100);
+    Point estimatedCubeSpot   = new Point(240, 112);
     Point spotBeforeEngage    = new Point(220, 108);
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
@@ -189,7 +189,25 @@ public class FEngage extends genericAutonomous{
                     autonomousStep ++;
                 }
                 break;
-            case 8: //go to spot before engage
+            case 8: //get cube
+                double xDiff = desiredCubePos.getX()-currPose.getX() + 6;
+                double yDiff = desiredCubePos.getY()-currPose.getY();
+                double totDiff = Math.hypot(xDiff, yDiff);
+                xspd = yspd = 0;
+                if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
+                if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
+                if (robot.cargoDetected() || m_timer.get() > 3){
+                    estimatedCubeSpot = new Point(currPose.getX(), currPose.getY());
+                    dist2 = AutoCodeLines.getDistance(estimatedCubeSpot, spotBeforeEngage);
+                    collectorRPM = 4000;
+                    xspd = yspd = 0;
+                    m_timer.restart();
+                    climbPower*= -1;
+                    basePower*= -1;
+                    autonomousStep += 1;
+                }
+                break;
+            case 9: //go to spot before engage
                 SmartDashboard.putNumber("dist2", dist2);
                 collectorRPM = 4000;
                 t = m_timer.get();
@@ -202,14 +220,14 @@ public class FEngage extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-            case 9:
+            case 10:
                 xspd = basePower;
                 if (Math.abs(currPitch) > high) {
                     xPos = robot.getPose().getX();
                     autonomousStep++;
                 }
                 break;
-            case 10: // go up incline
+            case 11: // go up incline
                 if(Math.abs(robot.getPose().getX() - xPos) >= 34+26+4){
                     climbPower = Math.signum(climbPower)*13;
                 }
@@ -219,15 +237,14 @@ public class FEngage extends genericAutonomous{
                     autonomousStep++;
                 }
                 break;
-
-            case 11: // start
+            case 12: // start
                 xspd = correctionPower;
                 m_timer.reset();
                 m_timer.start();
                 //This is a future feature to stop and let others get on before autobalancing.
                 autonomousStep++;
                 break;
-            case 12:
+            case 13:
                 if ((currPitch < -desiredPitch) && (m_timer.get() <1)) { //correcting begins
                     timerDelta = m_timer.get();
                     xspd = -correctionPower; //backward
@@ -307,7 +324,7 @@ public class FEngage extends genericAutonomous{
             return AutoCodeLines.getS(dist1, .1, 20, time);
         }
         else{
-            return AutoCodeLines.getS(dist2, .1, 60, time);
+            return AutoCodeLines.getS(dist2, .1, 40, time);
         }
     }
 
@@ -317,7 +334,7 @@ public class FEngage extends genericAutonomous{
             return AutoCodeLines.getdS(dist1, .1, 20, time);
         }
         else{
-            return AutoCodeLines.getdS(dist2, .1, 60, time);
+            return AutoCodeLines.getdS(dist2, .1, 40, time);
         }
     }
 }
