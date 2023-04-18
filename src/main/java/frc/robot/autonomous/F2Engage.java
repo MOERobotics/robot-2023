@@ -118,7 +118,7 @@ public class F2Engage extends genericAutonomous{
                 }
                 break;
             case 1: //rollback to get ready to score
-                xspd = -40;
+                xspd = -20;
                 if (robot.getRed()) xspd *= -1;
                 if (Math.abs(startXPose - currPose.getX()) >= 24){
                     xspd = yspd = 0;

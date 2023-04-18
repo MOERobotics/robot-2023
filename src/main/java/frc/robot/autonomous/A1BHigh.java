@@ -159,7 +159,7 @@ public class A1BHigh extends genericAutonomous {
                 }
                 break;
             case 2: // go back and drop that cone!
-                xspd = -40;
+                xspd = -20;
                 if (robot.getRed()) xspd *= -1;
                 yspd = 0;
                 if(Math.abs(currPose.getX() - startX) >= rollBackDist){
