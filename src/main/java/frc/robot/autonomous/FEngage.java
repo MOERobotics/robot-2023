@@ -21,7 +21,7 @@ public class FEngage extends genericAutonomous{
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
     double xLeftChargeStationBlue     = 230;
-    Point estimatedCubeSpotBlue   = new Point(270, 100);
+    Point estimatedCubeSpotBlue   = new Point(240, 112);
     Point spotBeforeEngageBlue    = new Point(220, 108);
 
     double dist1 = AutoCodeLines.getDistance(startPositionBlue, firstScorePositionBlue);
