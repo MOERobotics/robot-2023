@@ -53,7 +53,7 @@ public class DriveCode extends GenericTeleop{
     boolean notSeenObjectYet = true;
 
     double desiredYaw = 0;
-    double desiredArmPos = -6;
+    double desiredArmPos = -5;
     PIDController yawControl = new PIDController(1.0e-1, 0,0);
     PIDController inPlacePID = new PIDController(1e-1, 0*3e-3, 4e-3);
     MoeNetVision vision;
@@ -450,12 +450,12 @@ public class DriveCode extends GenericTeleop{
             raiseTopRoller = false;
             openGripper = true;
             armPower = -.1;
-            desiredArmPos = -3;
+            desiredArmPos = -5;
             if(robot.cargoInCollector()) secondTrip = true;
             if (robot.cargoDetected()) firstTrip = true;
             collectorRPM = 7500;
             if (firstTrip){
-                desiredArmPos = -3;
+                desiredArmPos = -5;
                 armPower = 0;
             }
             if(secondTrip){
@@ -470,7 +470,7 @@ public class DriveCode extends GenericTeleop{
         }
         else if (xboxFuncOp.getRawAxis(2) > 0.10){ //collect out
             openGripper = true;
-            desiredArmPos = -3; //tuck arm in
+            desiredArmPos = -5; //tuck arm in
             collectorRPM = -7500;
         }
         else{ //no more collecting :(

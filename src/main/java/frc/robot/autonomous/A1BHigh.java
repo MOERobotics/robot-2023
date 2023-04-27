@@ -29,7 +29,7 @@ public class A1BHigh extends genericAutonomous {
     Point positionABlue = new Point(59.88, 195.47); //SCORE HERE
     Point position1Blue = new Point(176.88, 194.735+6);
     Point positionARevisitedBlue = new Point(59.88+24, 192.47); //SCO// RE HERE
-    Point positionBBlue = new Point(53.88, 170.47+6);
+    Point positionBBlue = new Point(53.88, 170.47+6-3);
 
 
     //TODO: Not sure if this needs to be fixed but, our positions B and C do not align with position A
@@ -104,6 +104,7 @@ public class A1BHigh extends genericAutonomous {
         m_timer.restart();
         timeToWait = false;
         tripHappened = false;
+        armPos = 0;
     }
 
     @Override
@@ -211,7 +212,7 @@ public class A1BHigh extends genericAutonomous {
                 }
 /////////////////////////////////////////////////////////////////////////////////vision detection code
                 if (s >= 20){
-                    armPos = -3;
+                    armPos = -5;
                 }
                 if (s >= distAto1) {
                     xspd = 0;
@@ -246,7 +247,7 @@ public class A1BHigh extends genericAutonomous {
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 4 || robot.cargoInCollector()){
+                if ((robot.cargoDetected()) || m_timer.get() > 4 || (robot.cargoInCollector() && totDiff < 50)){
                     timeToWait = true;
                     if (robot.cargoDetected()) tripHappened = true;
                     if (robot.cargoInCollector()) openGripper = false;
@@ -306,6 +307,7 @@ public class A1BHigh extends genericAutonomous {
                 armPos = scoringDownwardArmPos;
                 if (m_timer.get() > .5) {
                     xspd = yspd = turnspd = 0;
+                    armPos = 100;
                     openGripper = true;
                 }
                 break;

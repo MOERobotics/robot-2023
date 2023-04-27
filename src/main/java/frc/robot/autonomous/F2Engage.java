@@ -260,7 +260,7 @@ public class F2Engage extends genericAutonomous{
                 }
                 break;
             case 13: // go up incline
-                if(Math.abs(robot.getPose().getX() - xPos) >= 34+26+4){
+                if(Math.abs(robot.getPose().getX() - xPos) >= 34+25){
                     climbPower = Math.signum(climbPower)*13;
                 }
                 xspd = climbPower;

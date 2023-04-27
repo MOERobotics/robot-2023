@@ -16,7 +16,7 @@ public class FEngage extends genericAutonomous{
     Point startPosition       = new Point(59,108);
     Point firstScorePosition  = new Point(69, 108);
     double xLeftChargeStation = 230;
-    Point estimatedCubeSpot   = new Point(270, 100);
+    Point estimatedCubeSpot   = new Point(246, 112);
     Point spotBeforeEngage    = new Point(220, 108);
     Point startPositionBlue       = new Point(85,108);
     Point firstScorePositionBlue  = new Point(69, 108);
@@ -197,7 +197,7 @@ public class FEngage extends genericAutonomous{
                 xspd = climbPower+4;
                 if (Math.abs(currPitch) < desiredPitch){
                     collectorUp = false;
-                    collectorRPM = 9000;
+                    collectorRPM = 0;
                     robot.resetPose();
                     robot.setPose(new Pose2d(xLeftChargeStation, currPose.getY(), startRot));
                     m_timer.restart();
@@ -212,10 +212,10 @@ public class FEngage extends genericAutonomous{
                 xspd = yspd = 0;
                 if (totDiff > 0) xspd = defaultSpeed * xDiff/totDiff;
                 if (totDiff > 0) yspd = defaultSpeed * yDiff/totDiff;
-                if (robot.cargoDetected() || m_timer.get() > 3){
+                if (robot.cargoDetected() || m_timer.get() > 3 || totDiff < 2){
                     estimatedCubeSpot = new Point(currPose.getX(), currPose.getY());
                     dist2 = AutoCodeLines.getDistance(estimatedCubeSpot, spotBeforeEngage);
-                    collectorRPM = 4000;
+                    collectorRPM = 0;
                     xspd = yspd = 0;
                     m_timer.restart();
                     climbPower*= -1;
@@ -225,7 +225,7 @@ public class FEngage extends genericAutonomous{
                 break;
             case 11: //go to spot before engage
                 SmartDashboard.putNumber("dist2", dist2);
-                collectorRPM = 4000;
+                collectorRPM = 0;
                 t = m_timer.get();
                 s = getS(t);
                 xspd = velocityFunctionX(s, t) + xPidK*(positionFunctionX(s) - currPose.getX());
@@ -244,7 +244,7 @@ public class FEngage extends genericAutonomous{
                 }
                 break;
             case 13: // go up incline
-                if(Math.abs(robot.getPose().getX() - xPos) >= 34+26+4){
+                if(Math.abs(robot.getPose().getX() - xPos) >= 34+25){
                     climbPower = Math.signum(climbPower)*13;
                 }
                 xspd = climbPower;

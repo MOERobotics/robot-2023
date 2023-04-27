@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
         A1C = new A1C(),
         A1B2C = new A1B2C(),
         A1 = new A1(),
+        FEngage = new FEngage(),
         F2Engage = new F2Engage(),
         ScoreAndStop = new ScoreAndStop(),
         A1BHigh = new A1BHigh();
@@ -84,14 +85,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     SmartDashboard.putBoolean("isAuto", true);
-    autonomous.autonomousInit(robot);
+    //autonomous.autonomousInit(robot);
   }
 
 
   @Override
   public void autonomousPeriodic() {
       SmartDashboard.putBoolean("isAuto", true);
-    autonomous.autonomousPeriodic(robot);
+    //autonomous.autonomousPeriodic(robot);
   }
 
 
@@ -116,13 +117,13 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledPeriodic() {
    SmartDashboard.putBoolean("isAuto", false);
-   if (autoSelect.getRawButtonPressed(1))
+   //if (autoSelect.getRawButtonPressed(1))
    if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
-   if (autoSelect.getRawButtonPressed(3))
+   //if (autoSelect.getRawButtonPressed(3))
    if (autoSelect.getRawButtonPressed(4)) autonomous = A1B2C;
    if (autoSelect.getRawButtonPressed(5)) autonomous = A1BHigh;
    if (autoSelect.getRawButtonPressed(6)) autonomous = A1;
-   if (autoSelect.getRawButtonPressed(7))
+   if (autoSelect.getRawButtonPressed(7)) autonomous = FEngage;
    if (autoSelect.getRawButtonPressed(8)) autonomous = F2Engage;
    if (autoSelect.getRawButtonPressed(9)) autonomous = ScoreAndStop;
 

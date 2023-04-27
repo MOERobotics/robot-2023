@@ -25,7 +25,7 @@ public class TherMOEDynamic extends GenericRobot{
     public final double armRadius = 44;
     public final double MIN_ARM_HEIGHT = MAX_ARM_HEIGHT-armRadius-2;
 
-    public final double lowestAngle = -4;
+    public final double lowestAngle = -6;
     public final double greatestAngle = 105;
     public final double shoulderCalib = 3.21;
     WPI_Pigeon2 pigeon = new WPI_Pigeon2(0);
@@ -124,7 +124,7 @@ public class TherMOEDynamic extends GenericRobot{
 
     Pose2d startingPoseOdom = defaultPose;
     PneumaticHub m_ph = new PneumaticHub(PH_CAN_ID);
-    double armOffset = -4;
+    double armOffset = 0;
 
     public TherMOEDynamic(){
 
