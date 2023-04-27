@@ -157,13 +157,13 @@ public class DriveCode extends GenericTeleop{
         yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
         turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec();
 
-        if(xboxDriver.getRawButton(8)){
+        /*if(xboxDriver.getRawButton(8)){
             balanceCommand = true;
         }
         else{
             balanceCommand = false;
         }
-
+*/
         if (xboxDriver.getRawButton(5)) { // speed un-boosters
             turnspd /= 2;
         }
@@ -203,7 +203,7 @@ public class DriveCode extends GenericTeleop{
 
         SmartDashboard.putBoolean("Do you see object yet?", notSeenObjectYet);
         SmartDashboard.putNumber("desiredYaw", desiredYaw);
-        if (xboxDriver.getRawAxis(3) >.1) {
+        /*if (xboxDriver.getRawAxis(3) >.1) {
             SmartDashboard.putNumber("desiredYaw", desiredYaw);
 
             Detection firstDetection = vision.selectedObjectDetection(Detection.Cargo.CUBE, 0, 0, Double.POSITIVE_INFINITY);
@@ -243,10 +243,10 @@ public class DriveCode extends GenericTeleop{
             inPlacePID.reset();
             autoCollectStopDriving = false;
             notSeenObjectYet = true;
-        }
+        }*/
 ////////////////////////////////////////////////////////////////////////////////////////rotate 180 clockwise of 180 counterclock
 
-        if (counterTurnPartial){
+        /*if (counterTurnPartial){
             desiredYaw -= 90;
             counterTurnPartial = false;
         }
@@ -271,7 +271,7 @@ public class DriveCode extends GenericTeleop{
         else{
             oldYaw = robot.getYaw();
         }
-
+*/
 //////////////////////////////////////////////////////////////////////////////////////////////////////////D-Pad controls
 
         double strafexspd = -1*robot.deadzone(xboxFuncOp.getRawAxis(5), .7);
@@ -298,7 +298,7 @@ public class DriveCode extends GenericTeleop{
 
 ///////////////////////////////////////////////////////////////////////////////////////Start currentChecker to  pick up from hP
 
-        if (xboxDriver.getRawButtonPressed(3)){
+        /*if (xboxDriver.getRawButtonPressed(3)){
             autoStep = 0;
             xPoseOfWall = robotPose.getX();
             shelfStation = new Point(shelfStationBlueLeft.x, shelfStationBlueLeft.y);
@@ -431,7 +431,7 @@ public class DriveCode extends GenericTeleop{
             turnspd = yawControl.calculate(pigYaw);
 
         }
-
+*/
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////start collector top roller
         if (xboxFuncOp.getRawButton(5) ){ //move collector up
             raiseTopRoller = true;
