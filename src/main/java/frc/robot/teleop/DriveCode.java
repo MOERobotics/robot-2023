@@ -502,12 +502,12 @@ public class DriveCode extends GenericTeleop{
         if button box buttons pressed, autoStackCommand = true;
         only canceled if driver moves joystick
          */
-        int height = heightIndex();
+        /*int height = heightIndex();
         if (pressed){
             robot.resetArmPID();
             desiredArmPos = HeightsDeg[height];
             pressed = false;
-        }
+        }*/
 //////////////////////////////////////////////////////////////////////////////////////////lights on close to hp station-heartbeat
         double ourDist = Math.min(robot.getTOFDistance(), constant);
         //ourDist = desiredDistanceFromHPStation + 0;
