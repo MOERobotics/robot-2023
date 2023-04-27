@@ -85,14 +85,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     SmartDashboard.putBoolean("isAuto", true);
-    //autonomous.autonomousInit(robot);
+    autonomous.autonomousInit(robot);
   }
 
 
   @Override
   public void autonomousPeriodic() {
       SmartDashboard.putBoolean("isAuto", true);
-    //autonomous.autonomousPeriodic(robot);
+    autonomous.autonomousPeriodic(robot);
   }
 
 
