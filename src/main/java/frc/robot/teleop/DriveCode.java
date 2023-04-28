@@ -115,7 +115,7 @@ public class DriveCode extends GenericTeleop{
 
         robot.resetStartPivots();
         robot.setPose();
-        desiredYaw = 0;
+        desiredYaw = robot.getYaw();
         firstTrip = false;
         secondTrip = false;
         pressed = false;
@@ -143,7 +143,10 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
 
         Pose2d currPose = robot.getPose();
-        if (armTimer.get() < .1) desiredArmPos = robot.getPotDegrees();
+        if (armTimer.get() < .1){
+            desiredYaw = robot.getYaw();
+            desiredArmPos = robot.getPotDegrees();
+        }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////Send Pose to Dash
