@@ -4,103 +4,159 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.autonomous.*;
+import frc.robot.autonomousgraveyard.*;
+import frc.robot.generic.GenericRobot;
+import frc.robot.generic.TherMOEDynamic;
+import frc.robot.generic.swerveBot;
+import frc.robot.teleop.DriveCode;
+import frc.robot.teleop.GenericTeleop;
+import frc.robot.vision.MoeNetVision;
+import edu.wpi.first.wpilibj.DriverStation;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
+
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  Joystick autoSelect = new Joystick(0);
+  public static final genericAutonomous
+        A1C = new A1C(),
+        A1B2C = new A1B2C(),
+        A1 = new A1(),
+        FEngage = new FEngage(),
+        F2Engage = new F2Engage(),
+        ScoreAndStop = new ScoreAndStop(),
+        A1BHigh = new A1BHigh();
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
+  genericAutonomous autonomous = new A1BHigh();
+  GenericTeleop teleop = new DriveCode();
+  DriverStation.Alliance OurAllianceColor;
+  GenericRobot robot = new TherMOEDynamic();
+  MoeNetVision vision = new MoeNetVision(robot);
+  Field2d field = new Field2d();
+
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+   robot.resetPigeon();
+   robot.resetAttitude();
+
+   OurAllianceColor = DriverStation.getAlliance();
+
+   if (OurAllianceColor == DriverStation.Alliance.Red)
+   {
+    robot.setRed(true);
+   }
+   else {
+    robot.setRed(false);
+   }
+   if (robot.getRed()){
+    robot.setPigeonYaw(180);
+   }
+   SmartDashboard.putBoolean("isAuto", false);
   }
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {}
 
-  /**
-   * This autonomous (along with the chooser code above) shows how to select between different
-   * autonomous modes using the dashboard. The sendable chooser code works with the Java
-   * SmartDashboard. If you prefer the LabVIEW Dashboard, remove all of the chooser code and
-   * uncomment the getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to the switch structure
-   * below with additional strings. If using the SendableChooser make sure to add them to the
-   * chooser code above as well.
-   */
+  @Override
+  public void robotPeriodic() {
+
+   SmartDash.Dashboard(robot);
+   SmartDashboard.putString("autonomous", autonomous.getClass().getName());
+   OurAllianceColor = DriverStation.getAlliance();
+
+   if (OurAllianceColor == DriverStation.Alliance.Red) {
+     robot.setRed(true);
+   }
+   else {
+     robot.setRed(false);
+   }
+   SmartDashboard.putBoolean("isAuto", false);
+   SmartDashboard.putNumber("TOF Distance", robot.getTOFDistance());
+   if (Math.abs(robot.getPitch()) > 10 || Math.abs(robot.getRoll()) > 10){
+       robot.robotTipping(true);
+   }
+   else{
+       robot.robotTipping(false);
+   }
+  }
+
+
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    SmartDashboard.putBoolean("isAuto", true);
+    autonomous.autonomousInit(robot);
   }
 
-  /** This function is called periodically during autonomous. */
+
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+      SmartDashboard.putBoolean("isAuto", true);
+    autonomous.autonomousPeriodic(robot);
   }
 
-  /** This function is called once when teleop is enabled. */
-  @Override
-  public void teleopInit() {}
 
-  /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopInit() {
+    SmartDashboard.putBoolean("isAuto", false);
+    teleop.teleopInit(robot);
+  }
 
-  /** This function is called once when the robot is disabled. */
+
   @Override
-  public void disabledInit() {}
+  public void teleopPeriodic() {
+    SmartDashboard.putBoolean("isAuto", false);
+    teleop.teleopPeriodic(robot);
+  }
 
-  /** This function is called periodically when disabled. */
+
   @Override
-  public void disabledPeriodic() {}
+  public void disabledInit() {SmartDashboard.putBoolean("isAuto", false);}
 
-  /** This function is called once when test mode is enabled. */
+
   @Override
-  public void testInit() {}
+  public void disabledPeriodic() {
+   SmartDashboard.putBoolean("isAuto", false);
+   //if (autoSelect.getRawButtonPressed(1))
+   if (autoSelect.getRawButtonPressed(2)) autonomous = A1C;
+   //if (autoSelect.getRawButtonPressed(3))
+   if (autoSelect.getRawButtonPressed(4)) autonomous = A1B2C;
+   if (autoSelect.getRawButtonPressed(5)) autonomous = A1BHigh;
+   if (autoSelect.getRawButtonPressed(6)) autonomous = A1;
+   if (autoSelect.getRawButtonPressed(7)) autonomous = FEngage;
+   if (autoSelect.getRawButtonPressed(8)) autonomous = F2Engage;
+   if (autoSelect.getRawButtonPressed(9)) autonomous = ScoreAndStop;
 
-  /** This function is called periodically during test mode. */
+  }
+
+
   @Override
-  public void testPeriodic() {}
+  public void testInit() {
+   SmartDashboard.putBoolean("isAuto", false);
+   SmartDashboard.putData("Field", field);
+   robot.setPose();
+  }
 
-  /** This function is called once when the robot is first started up. */
+
+  @Override
+  public void testPeriodic() {
+   SmartDashboard.putBoolean("isAuto", false);
+   var pose = vision.getPose();
+   if (vision.poseFound()){
+      field.setRobotPose(pose.toPose2d());
+   }
+   SmartDashboard.putData("Field", field);
+   SmartDashboard.putNumber("field x", field.getRobotPose().getX());
+   SmartDashboard.putNumber("field y", field.getRobotPose().getY());
+
+   vision.genericPeriodic();
+  }
+
+
   @Override
   public void simulationInit() {}
 
-  /** This function is called periodically whilst in simulation. */
+
   @Override
   public void simulationPeriodic() {}
 }
