@@ -1,6 +1,7 @@
 package frc.robot.teleop;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.*;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -93,9 +94,15 @@ public class DriveCode extends GenericTeleop{
     double constant = 2000;
     double tinyConstant = .1;
 
+    SlewRateLimiter xLimiter;
+    SlewRateLimiter yLimiter;
+    SlewRateLimiter turnLimiter;
 
     @Override
     public void teleopInit(GenericRobot robot) {
+        xLimiter = new SlewRateLimiter(3);
+        yLimiter = new SlewRateLimiter(3);
+        turnLimiter = new SlewRateLimiter(3);
         balanceInit = false;
         yawControl.enableContinuousInput(-180,180);
         inPlacePID.enableContinuousInput(-180,180);
@@ -141,7 +148,10 @@ public class DriveCode extends GenericTeleop{
         SmartDashboard.putBoolean("BalanceCommand", balanceCommand);
         SmartDashboard.putBoolean("balancecommand init", balanceInit);
         SmartDashboard.putNumber("desiredArmPos", desiredArmPos);
+        Pose3d visPose = vision.getPose();
 
+        coneGrabOn = false;
+        if (visPose.getX() != -1) coneGrabOn = true;
         Pose2d currPose = robot.getPose();
         if (armTimer.get() < .1) desiredArmPos = robot.getPotDegrees();
 
@@ -151,17 +161,16 @@ public class DriveCode extends GenericTeleop{
         fieldCentric = true;
         armPower = 0;
         autoDrive = false;
-        coneGrabOn = false;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////Swerve
-        xspd = robot.deadzone(-xboxDriver.getRawAxis(1), .35) * robot.getMaxInchesPerSecond();
-        yspd = robot.deadzone(-xboxDriver.getRawAxis(0), .35) * robot.getMaxInchesPerSecond();
-        turnspd = robot.deadzone(-xboxDriver.getRawAxis(4), .35) * robot.getMaxRadPerSec();
+        xspd = xLimiter.calculate(robot.deadzone(-xboxDriver.getRawAxis(1), .35)) * robot.getMaxInchesPerSecond();
+        yspd = yLimiter.calculate(robot.deadzone(-xboxDriver.getRawAxis(0), .35)) * robot.getMaxInchesPerSecond();
+        turnspd = turnLimiter.calculate(robot.deadzone(-xboxDriver.getRawAxis(4), .35)) * robot.getMaxRadPerSec();
 
         if(xboxDriver.getRawButton(8)){
-            balanceCommand = true;
+            fieldCentric = false;
         }
         else{
-            balanceCommand = false;
+            fieldCentric = true;
         }
 
         if (xboxDriver.getRawButton(5)) { // speed un-boosters
@@ -315,7 +324,6 @@ public class DriveCode extends GenericTeleop{
             }
         }
         if (xboxDriver.getRawButton(3) || xboxDriver.getRawButton(2)){
-            coneGrabOn = true;
             SmartDashboard.putNumber("autoStep", autoStep);
             SmartDashboard.putNumber("startPosX", startingPos.x);
             SmartDashboard.putNumber("startPosY", startingPos.y);
@@ -323,7 +331,7 @@ public class DriveCode extends GenericTeleop{
             SmartDashboard.putNumber("desiredPoseShelfY", shelfStation.y);
 
             boolean poseNull = true;
-            Pose3d visPose = vision.getPose();
+
             if (visPose.getX() != -1){
                 poseNull = false;
                 x = visPose.getX();
@@ -419,12 +427,10 @@ public class DriveCode extends GenericTeleop{
                     if (robot.getRed()) xspd *= -1;
                     yspd = 0;
                     if (Math.abs(robotPose.getX() - startX) >= 12){
-                        coneGrabOn = false;
                         xspd = yspd = 0;
                     }
                     break;
                 case 5:
-                    coneGrabOn = false;
                     xspd = yspd = 0;
                     break;
             }
